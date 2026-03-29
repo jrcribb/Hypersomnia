@@ -113,7 +113,7 @@ namespace test_flavours {
 					knife_like.actions[weapon_action_type::SECONDARY].perform = to_animation_id(test_scene_torso_animation_id::METROPOLIS_TORSO_KNIFE_SECD);
 					knife_like.actions[weapon_action_type::PRIMARY].returner = to_animation_id(test_scene_torso_animation_id::METROPOLIS_TORSO_KNIFE_PRIM_RETURN);
 					knife_like.actions[weapon_action_type::SECONDARY].returner = to_animation_id(test_scene_torso_animation_id::METROPOLIS_TORSO_KNIFE_SECD_RETURN);
-					knife_like.pain = knife_like.actions[weapon_action_type::PRIMARY].perform;
+					//knife_like.pain = knife_like.actions[weapon_action_type::PRIMARY].perform;
 				}
 
 				{
@@ -540,7 +540,7 @@ namespace test_flavours {
 					knife_like.actions[weapon_action_type::SECONDARY].perform = to_animation_id(test_scene_torso_animation_id::RESISTANCE_TORSO_KNIFE_SECD);
 					knife_like.actions[weapon_action_type::PRIMARY].returner = to_animation_id(test_scene_torso_animation_id::RESISTANCE_TORSO_KNIFE_PRIM_RETURN);
 					knife_like.actions[weapon_action_type::SECONDARY].returner = to_animation_id(test_scene_torso_animation_id::RESISTANCE_TORSO_KNIFE_SECD_RETURN);
-					knife_like.pain = knife_like.actions[weapon_action_type::PRIMARY].perform;
+					//knife_like.pain = knife_like.actions[weapon_action_type::PRIMARY].perform;
 				}
 				{
 					auto& fists_like = torso_def.stances[item_holding_stance::FISTS_LIKE];

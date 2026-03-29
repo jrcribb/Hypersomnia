@@ -4324,6 +4324,7 @@ namespace test_flavours {
 			gun_def.num_last_bullets_to_trigger_low_ammo_cue = 0;
 			gun_def.recoil_multiplier = 4.f;
 			gun_def.kickback_towards_wielder = kickback_mult * 500.f;
+			gun_def.bots_ban = true;
 
 			gun_def.minimum_heat_to_shoot = 0.0f;
 

@@ -348,7 +348,6 @@ arena_ai_result update_arena_mode_ai(
 			? cosm[now_closest_enemy].get_logic_transform().pos
 			: vec2::zero;
 
-		LOG("Q LOS CHANGE");
 		ai_state.alertness.queue_los_change(now_closest_enemy, enemy_pos, global_time_secs);
 	}
 	else {
