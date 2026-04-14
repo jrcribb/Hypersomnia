@@ -176,20 +176,51 @@ void sentience_system::regenerate_values_and_advance_spell_logic(const logic_ste
 			);
 
 			if (sentience.has_exploded && sentience.coins_on_body > 0) {
-				::spawn_coins_queued(
-					sentience.coins_on_body,
-					subject.get_logic_transform().pos,
-					step,
-					sentience_def.coin_flavours
-				);
+				/*
+					Spawn coins at the lying corpse position once it reaches near-zero velocity.
+					If no lying corpse exists, fall back to the subject position immediately.
+				*/
+				const auto lying_corpse_id = sentience.detached.lying_corpse;
+				const auto lying_corpse = cosm[lying_corpse_id];
 
-				sentience.coins_on_body = 0;
+				auto should_spawn_coins = [&]() {
+					if (lying_corpse.dead()) {
+						return true;
+					}
+
+					const auto vel = lying_corpse.get_effective_velocity();
+					constexpr real32 epsilon_vel = 5.f;
+					return vel.length_sq() < epsilon_vel * epsilon_vel;
+				};
+
+				if (should_spawn_coins()) {
+					const auto spawn_pos = lying_corpse.alive()
+						? lying_corpse.get_logic_transform().pos
+						: subject.get_logic_transform().pos
+					;
+
+					::spawn_coins_queued(
+						sentience.coins_on_body,
+						spawn_pos,
+						step,
+						sentience_def.coin_flavours
+					);
+
+					sentience.coins_on_body = 0;
+				}
 			}
 
 			if (sentience.pending_arm_splatters > 0 && sentience.when_arms_detached.was_set()) {
 				const auto passed_secs = cosm.get_clock().get_passed_secs(sentience.when_arms_detached);
 
-				if (passed_secs >= 1.0f) {
+				/*
+					Two rounds of splatters: first at 0.5s, second at 1.0s.
+					Arms get slightly smaller splatters than default.
+				*/
+				const auto round_index = 2 - sentience.pending_arm_splatters;
+				const auto trigger_time = 0.5f + round_index * 0.5f;
+
+				if (passed_secs >= trigger_time) {
 					auto access = allocate_new_entity_access();
 
 					auto spawn_splatters_at = [&](const entity_id arm_id) {
@@ -199,7 +230,7 @@ void sentience_system::regenerate_values_and_advance_spell_logic(const logic_ste
 
 							for (int i = 0; i < 3; ++i) {
 								const auto offset = vec2::from_degrees(rng.randval(0.f, 360.f)) * rng.randval(5.f, 25.f);
-								::spawn_blood_splatter(access, rng, step, subject, arm_pos + offset, arm_pos, rng.randval(0.5f, 1.0f));
+								::spawn_blood_splatter(access, rng, step, subject, arm_pos + offset, arm_pos, rng.randval(0.3f, 0.7f));
 							}
 						}
 					};
@@ -207,14 +238,21 @@ void sentience_system::regenerate_values_and_advance_spell_logic(const logic_ste
 					spawn_splatters_at(sentience.detached.arm_upper);
 					spawn_splatters_at(sentience.detached.arm_lower);
 
-					sentience.pending_arm_splatters = 0;
+					--sentience.pending_arm_splatters;
 				}
 			}
 
 			if (sentience.pending_head_splatters > 0 && sentience.when_knocked_out.was_set()) {
 				const auto passed_secs = cosm.get_clock().get_passed_secs(sentience.when_knocked_out);
 
-				if (passed_secs >= 1.0f) {
+				/*
+					Two rounds of splatters: first at 0.5s, second at 1.0s.
+					Head splatters can be a bit larger.
+				*/
+				const auto round_index = 2 - sentience.pending_head_splatters;
+				const auto trigger_time = 0.5f + round_index * 0.5f;
+
+				if (passed_secs >= trigger_time) {
 					auto access = allocate_new_entity_access();
 
 					if (sentience.detached.head.is_set()) {
@@ -224,12 +262,12 @@ void sentience_system::regenerate_values_and_advance_spell_logic(const logic_ste
 
 							for (int i = 0; i < 3; ++i) {
 								const auto offset = vec2::from_degrees(rng.randval(0.f, 360.f)) * rng.randval(5.f, 25.f);
-								::spawn_blood_splatter(access, rng, step, subject, head_pos + offset, head_pos, rng.randval(0.3f, 0.7f));
+								::spawn_blood_splatter(access, rng, step, subject, head_pos + offset, head_pos, rng.randval(0.5f, 1.2f));
 							}
 						}
 					}
 
-					sentience.pending_head_splatters = 0;
+					--sentience.pending_head_splatters;
 				}
 			}
 

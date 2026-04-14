@@ -387,7 +387,7 @@ namespace test_flavours {
 			);
 
 			auto& f = test_flavours::add_lying_item_dynamic_body(meta);
-			f.density *= 2.5;
+			f.density *= 5.0;
 			f.restitution *= 2.;
 		}
 
@@ -399,7 +399,7 @@ namespace test_flavours {
 			);
 
 			auto& f = test_flavours::add_lying_item_dynamic_body(meta);
-			f.density *= 2.5;
+			f.density *= 5.0;
 			f.restitution *= 2.;
 		}
 
@@ -437,7 +437,7 @@ namespace test_flavours {
 			auto& meta = flavour_with_sprite(
 				id,
 				image,
-				render_layer::REMNANTS
+				render_layer::LYING_CORPSES
 			);
 
 			auto& f = test_flavours::add_lying_item_dynamic_body(meta);

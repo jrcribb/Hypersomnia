@@ -7,6 +7,7 @@
 #include "game/cosmos/data_living_one_step.h"
 #include "game/detail/explosive/detonate.h"
 #include "game/detail/sentience/gore/blood_splatter.hpp"
+#include "game/messages/pure_color_highlight_message.h"
 
 #include "augs/log.h"
 
@@ -54,8 +55,20 @@ static void try_detach_arms(
 	}
 
 	const auto subject_transform = subject.get_logic_transform();
-	const auto facing = vec2::from_degrees(subject_transform.rotation);
-	const auto perp_up = facing.perpendicular_cw();
+
+	/*
+		Use the damage direction (if available) to determine the perpendicular
+		flight directions for detached arms. This looks more natural than
+		using the corpse facing since arms should fly sideways relative to
+		the bullet impact direction.
+	*/
+	const auto base_direction = [&]() {
+		if (sentience.last_corpse_damage_direction.is_nonzero()) {
+			return sentience.last_corpse_damage_direction.normalize();
+		}
+		return vec2::from_degrees(subject_transform.rotation);
+	}();
+	const auto perp_up = base_direction.perpendicular_cw();
 
 	auto determine_arm_is_upper = [&]() -> bool {
 		if (point_of_impact.is_nonzero()) {
@@ -112,7 +125,7 @@ static void try_detach_arms(
 				}
 
 				s.when_arms_detached = step.get_cosmos().get_timestamp();
-				s.pending_arm_splatters += 3;
+				s.pending_arm_splatters += 2;
 			}
 
 			const auto predictability = 
@@ -129,9 +142,14 @@ static void try_detach_arms(
 		}
 	);
 
+	/*
+		Spawn an immediate splatter at the damage location,
+		oriented in the flight direction.
+	*/
 	{
 		auto rng = cosm.get_rng_for(subject);
-		::spawn_blood_splatter(access, rng, step, subject, subject_transform.pos + fly_direction * 20.f, subject_transform.pos, 1.0f);
+		const auto splatter_origin = point_of_impact.is_nonzero() ? point_of_impact : subject_transform.pos;
+		::spawn_blood_splatter(access, rng, step, subject, splatter_origin + fly_direction * 20.f, splatter_origin, 0.7f);
 	}
 }
 
@@ -286,14 +304,27 @@ void handle_corpse_detonation(
 			const auto typed_subject_id = subject.get_id();
 			const bool should_flip = sentience.should_flip_tattered_sprite();
 
+			/*
+				Lying corpse inherits velocity from the tattered corpse
+				plus 50 units in the last damage direction.
+			*/
+			const auto tattered_velocity = subject.get_effective_velocity();
+			const auto damage_push = [&]() {
+				if (sentience.last_corpse_damage_direction.is_nonzero()) {
+					return sentience.last_corpse_damage_direction.normalize() * 50.f;
+				}
+				return vec2::zero;
+			}();
+			const auto lying_velocity = tattered_velocity + damage_push;
+
 			cosmic::queue_create_entity(
 				step,
 				corpse_flavour,
-				[lying_transform, should_flip](const auto& typed_entity, auto& agg) {
+				[lying_transform, lying_velocity, should_flip](const auto& typed_entity, auto& agg) {
 					typed_entity.set_logic_transform(lying_transform);
 
 					const auto& rigid_body = typed_entity.template get<components::rigid_body>();
-					rigid_body.set_velocity(vec2::zero);
+					rigid_body.set_velocity(lying_velocity);
 					rigid_body.set_angular_velocity(0.f);
 
 					if (should_flip) {
@@ -307,6 +338,23 @@ void handle_corpse_detonation(
 					if (const auto typed_subject = step.get_cosmos()[typed_subject_id]) {
 						auto& s = typed_subject.template get<components::sentience>();
 						s.detached.lying_corpse = typed_entity;
+					}
+
+					/*
+						Send a white highlight for the lying corpse when it first appears.
+						Analogous to the damage highlight in audiovisual_state.cpp.
+					*/
+					{
+						constexpr float highlight_size_bounce_mult = 1.5f;
+
+						messages::pure_color_highlight msg;
+						msg.subject = typed_entity;
+						msg.input.starting_alpha_ratio = 1.f;
+						msg.input.maximum_duration_seconds = 0.12f;
+						msg.input.color = white;
+						msg.input.size_mult_start = highlight_size_bounce_mult;
+
+						step.post_message(msg);
 					}
 				}
 			);
@@ -395,7 +443,11 @@ void perform_knockout(
 
 		if (sentience.is_dead() && origin.circumstances.headshot) {
 			const auto head_transform = typed_subject.get_logic_transform();
-			const auto head_velocity = direction * sentience_def.base_detached_head_speed;
+			/*
+				Head flies in the opposite direction of the damage,
+				at reduced speed for a heavier feel.
+			*/
+			const auto head_velocity = -direction * sentience_def.base_detached_head_speed * 0.5f;
 			const auto typed_subject_id = typed_subject.get_id();
 			const auto head_effect = sentience_def.detached_head_particles;
 
@@ -417,7 +469,7 @@ void perform_knockout(
 						if (const auto typed_subject = step.get_cosmos()[typed_subject_id]) {
 							auto& s = typed_subject.template get<components::sentience>();
 							s.detached.head = typed_entity;
-							s.pending_head_splatters = 3;
+							s.pending_head_splatters = 2;
 						}
 
 						const auto predictability = 
@@ -443,10 +495,16 @@ void perform_knockout(
 
 			spawn_detached_body_part(sentience_def.detached_flavours.head);
 
+			/*
+				Spawn an immediate splatter at the damage location,
+				oriented in the head's flight direction.
+			*/
 			{
 				auto access = allocate_new_entity_access();
 				auto rng = cosm.get_rng_for(subject);
-				::spawn_blood_splatter(access, rng, step, subject, head_transform.pos + direction * 20.f, head_transform.pos, 1.0f);
+				const auto splatter_origin = point_of_impact.is_nonzero() ? point_of_impact : head_transform.pos;
+				const auto flight_dir = head_velocity.is_nonzero() ? head_velocity.normalize() : -direction;
+				::spawn_blood_splatter(access, rng, step, subject, splatter_origin + flight_dir * 20.f, splatter_origin, 1.2f);
 			}
 		}
 

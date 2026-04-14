@@ -2,6 +2,7 @@
 #include "game/cosmos/just_create_entity.h"
 #include "game/cosmos/entity_flavour_id.h"
 #include "game/components/rigid_body_component.h"
+#include "game/components/interpolation_component.h"
 #include "augs/misc/randomization.h"
 
 /*
@@ -67,6 +68,14 @@ inline void spawn_coins_queued(
 				coin_transform.pos += random_dir * spawn_offset;
 
 				coin_entity.set_logic_transform(coin_transform);
+
+				/*
+					Snap interpolation to the actual spawn position to avoid
+					the coin briefly appearing at (0,0) and interpolating.
+				*/
+				if (auto* interp = coin_entity.find<components::interpolation>()) {
+					interp->snap_to(coin_transform);
+				}
 
 				if (auto rigid_body = coin_entity.find<components::rigid_body>()) {
 					rigid_body.set_velocity(random_dir * rng.randval(50.0f, 400.0f));
