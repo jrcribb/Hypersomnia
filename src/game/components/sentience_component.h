@@ -199,7 +199,7 @@ namespace components {
 				Flip when exactly one arm is detached and
 				it was the lower arm (i.e. the first arm was NOT upper).
 			*/
-			return arms_queued_for_detach == 1 && !first_arm_queued_as_upper;
+			return arms_queued_for_detach == 1 && first_arm_queued_as_upper;
 		}
 
 		template <class T>
