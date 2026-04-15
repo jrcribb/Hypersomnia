@@ -1,5 +1,6 @@
 #include <cstdint>
 #include "sentience_system.h"
+#include "game/messages/pure_color_highlight_message.h"
 
 #include "augs/templates/get_by_dynamic_id.h"
 #include "augs/math/math.h"
@@ -178,18 +179,17 @@ void sentience_system::regenerate_values_and_advance_spell_logic(const logic_ste
 			if (sentience.has_exploded && sentience.coins_on_body > 0) {
 				/*
 					Spawn coins at the lying corpse position once it reaches near-zero velocity.
-					If no lying corpse exists, fall back to the subject position immediately.
 				*/
 				const auto lying_corpse_id = sentience.detached.lying_corpse;
 				const auto lying_corpse = cosm[lying_corpse_id];
 
 				auto should_spawn_coins = [&]() {
 					if (lying_corpse.dead()) {
-						return true;
+						return false;
 					}
 
 					const auto vel = lying_corpse.get_effective_velocity();
-					constexpr real32 epsilon_vel = 5.f;
+					constexpr real32 epsilon_vel = 700.f;
 					return vel.length_sq() < epsilon_vel * epsilon_vel;
 				};
 
@@ -207,6 +207,15 @@ void sentience_system::regenerate_values_and_advance_spell_logic(const logic_ste
 					);
 
 					sentience.coins_on_body = 0;
+
+					if (sentience_def.corpse_fall_sound.id.is_set()) {
+						auto sound = sentience_def.corpse_fall_sound;
+						sound.start(
+							step,
+							sound_effect_start_input::at_listener(subject),
+							never_predictable_v
+						);
+					}
 				}
 			}
 

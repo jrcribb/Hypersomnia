@@ -9,6 +9,7 @@
 #include "game/detail/sentience/gore/blood_splatter.hpp"
 #include "game/detail/sentience/gore/idle_splatter.hpp"
 #include "game/messages/pure_color_highlight_message.h"
+#include "game/detail/view_input/sound_effect_input.h"
 
 #include "augs/log.h"
 
@@ -244,7 +245,7 @@ void handle_corpse_detonation(
 		gentle = false: violent explosion with detonation, splatters, and damage push.
 		gentle = true: quiet bleed-out fall, only spawns the lying corpse entity.
 	*/
-	auto spawn_lying_corpse = [&](const bool gentle) {
+	auto spawn_lying_corpse = [&](bool gentle) {
 		const auto subject_pos = subject.get_logic_transform().pos;
 		const auto subject_transform = subject.get_logic_transform();
 
@@ -347,6 +348,7 @@ void handle_corpse_detonation(
 
 					const auto& rigid_body = typed_entity.template get<components::rigid_body>();
 					rigid_body.set_velocity(lying_velocity);
+					LOG_NVPS(lying_velocity.length());
 					rigid_body.set_angular_velocity(0.f);
 
 					if (should_flip) {
@@ -381,8 +383,8 @@ void handle_corpse_detonation(
 						}
 
 						if (gentle) {
-							msg.input.size_mult_start = 1.2f;
-							msg.input.maximum_duration_seconds = 0.25f;
+							msg.input.size_mult_start = 1.15f;
+							msg.input.maximum_duration_seconds = 0.18f;
 						}
 
 						step.post_message(msg);
