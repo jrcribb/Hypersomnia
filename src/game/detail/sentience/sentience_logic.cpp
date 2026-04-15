@@ -233,18 +233,25 @@ void handle_corpse_detonation(
 	/* The accumulated negative damage on the corpse (health.value is negative when dead) */
 	const auto accumulated_corpse_damage = -health.value;
 
-	auto explode_corpse = [&]() {
-		::detonate({
-			step,
-			subject,
-			sentience_def.corpse_explosion,
-			subject.get_logic_transform()
-		}, false);
-
-		/* Spawn blood splatters in all directions based on accumulated corpse damage */
+	/*
+		gentle = false: violent explosion with detonation, splatters, and damage push.
+		gentle = true: quiet bleed-out fall, only spawns the lying corpse entity.
+	*/
+	auto spawn_lying_corpse = [&](const bool gentle) {
 		const auto subject_pos = subject.get_logic_transform().pos;
 		const auto subject_transform = subject.get_logic_transform();
-		::spawn_blood_splatters_omnidirectional(access, step, subject, subject_pos, accumulated_corpse_damage);
+
+		if (!gentle) {
+			::detonate({
+				step,
+				subject,
+				sentience_def.corpse_explosion,
+				subject.get_logic_transform()
+			}, false);
+
+			/* Spawn blood splatters in all directions based on accumulated corpse damage */
+			::spawn_blood_splatters_omnidirectional(access, step, subject, subject_pos, accumulated_corpse_damage);
+		}
 
 		/*
 			Determine lying corpse rotation from last received damage direction.
@@ -261,8 +268,8 @@ void handle_corpse_detonation(
 		const auto lying_facing = vec2::from_degrees(lying_rotation);
 		const auto lying_perp = lying_facing.perpendicular_cw();
 
-		/* Spawn blood splatters at positions of broken body parts on the lying corpse */
-		{
+		if (!gentle) {
+			/* Spawn blood splatters at positions of broken body parts on the lying corpse */
 			auto rng = cosm.get_rng_for(subject);
 
 			auto spawn_splatters_at_offset = [&](const vec2 offset, const int count) {
@@ -313,12 +320,12 @@ void handle_corpse_detonation(
 			const bool should_flip = sentience.should_flip_tattered_sprite();
 
 			/*
-				Lying corpse inherits velocity from the tattered corpse
-				plus 50 units in the last damage direction.
+				Lying corpse inherits velocity from the tattered corpse.
+				On violent explosion, also add a push in the last damage direction.
 			*/
 			const auto tattered_velocity = subject.get_effective_velocity();
 			const auto damage_push = [&]() {
-				if (sentience.last_corpse_damage_direction.is_nonzero()) {
+				if (!gentle && sentience.last_corpse_damage_direction.is_nonzero()) {
 					return sentience.last_corpse_damage_direction.normalize() * 1300.f;
 				}
 				return vec2::zero;
@@ -383,8 +390,15 @@ void handle_corpse_detonation(
 		const auto passed_secs = clk.get_passed_secs(when_ignited);
 
 		if (passed_secs + secs_simulated_by_damaging >= sentience_def.corpse_burning_seconds) {
-			explode_corpse();
+			spawn_lying_corpse(false);
 		}
+	}
+	else if (sentience.is_dead() && sentience.idle_blood_drip_count >= 3) {
+		/*
+			The tattered corpse has bled out.
+			Gently fall to the ground without any explosion effects.
+		*/
+		spawn_lying_corpse(true);
 	}
 }
 
