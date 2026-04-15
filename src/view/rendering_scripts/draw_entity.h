@@ -525,52 +525,10 @@ FORCE_INLINE void specific_entity_drawer(
 				else if (is_lying_corpse) {
 					/*
 						The lying corpse is now a separate plain_sprited_body entity.
-						Draw corpse head or head splatter overlay at the lying corpse's real transform.
+						Head/splatter overlay is drawn in the LYING_CORPSES layer job
+						(enqueue_illuminated_rendering_jobs.hpp) right after each corpse body,
+						so that it stays on the correct render layer.
 					*/
-					const auto& cosm = typed_handle.get_cosmos();
-					const auto lying_corpse_id = sentience.detached.lying_corpse;
-
-					if (const auto lying_corpse = cosm[lying_corpse_id]) {
-						const auto& sentience_def = typed_handle.template get<invariants::sentience>();
-						const auto head_offset = vec2(sentience_def.corpse_head_offset);
-
-						const auto lying_viewing = lying_corpse.get_viewing_transform(in.interp);
-
-						const bool head_detached = sentience.detached.head.is_set();
-						const bool was_headshot = sentience.knockout_origin.circumstances.headshot;
-						const bool draw_head = !head_detached && !was_headshot;
-
-						if (draw_head) {
-							if (sentience_def.corpse_head_image.is_set()) {
-								invariants::sprite sprite;
-								sprite.set(sentience_def.corpse_head_image, in.manager);
-
-								const auto head_size = sprite.get_size();
-								/* Align right edge of head sprite to the head slot position */
-								const auto align_offset = vec2(-static_cast<float>(head_size.x) / 2.f, 0.f);
-
-								auto input = in.make_input_for<invariants::sprite>();
-								input.renderable_transform = lying_viewing * transformr(head_offset + align_offset, 0.f);
-								input.colorize.mult_alpha(teleport_alpha);
-								render_visitor(sprite, in.manager, input);
-							}
-						}
-						else {
-							if (sentience_def.corpse_head_splatter_image.is_set()) {
-								invariants::sprite sprite;
-								sprite.set(sentience_def.corpse_head_splatter_image, in.manager);
-
-								const auto splatter_size = sprite.get_size();
-								/* Align left edge of splatter sprite to the head slot position */
-								const auto align_offset = vec2(static_cast<float>(splatter_size.x) / 2.f, 0.f);
-
-								auto input = in.make_input_for<invariants::sprite>();
-								input.renderable_transform = lying_viewing * transformr(head_offset + align_offset, 0.f);
-								input.colorize.mult_alpha(teleport_alpha);
-								render_visitor(sprite, in.manager, input);
-							}
-						}
-					}
 				}
 				else {
 					/* Tattered standing corpse - draw tattered torso sprite */

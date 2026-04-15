@@ -3,6 +3,7 @@
 #include "game/detail/visible_entities.hpp"
 #include "view/rendering_scripts/is_reasonably_in_view.hpp"
 #include "game/detail/use_interaction_logic.h"
+#include "game/detail/inventory/direct_attachment_offset.h"
 
 const rgba CHARACTER_SHADOW_COLOR = rgba(0, 0, 0, 80);
 const vec2 CHARACTER_SHADOW_OFFSET = vec2(7, 7);
@@ -569,7 +570,13 @@ void enqueue_illuminated_rendering_jobs(
 				h4 = make_helper(D::GROUND_DECALS),
 				h5 = make_helper(D::GROUND_DECALS_NEONS),
 				h6 = make_helper(D::LYING_CORPSES),
-				h7 = make_helper(D::LYING_CORPSES_NEONS)
+				h7 = make_helper(D::LYING_CORPSES_NEONS),
+				&cosm,
+				&interp,
+				&game_images,
+				queried_cone,
+				corpses_in = make_drawing_input(D::LYING_CORPSES),
+				corpse_neons_in = make_drawing_input(D::LYING_CORPSES_NEONS)
 			]() {
 				h4.draw<
 					render_layer::GROUND_DECALS
@@ -582,6 +589,101 @@ void enqueue_illuminated_rendering_jobs(
 				h6.draw<
 					render_layer::LYING_CORPSES
 				>();
+
+				/*
+					Draw corpse head/splatter overlays on the LYING_CORPSES layer.
+					Iterates all sentiences (capped at 300) to find ones
+					with a lying corpse, then draws directly if in camera view.
+					Uses torso.head offset from the lying corpse sprite + head_anchor from the head sprite.
+				*/
+
+				const auto camera_aabb = queried_cone.get_visible_world_rect_aabb();
+				const auto& logicals = cosm.get_logical_assets();
+
+				cosm.for_each_having<components::sentience>([&](const auto& typed_handle) {
+					const auto& sentience = typed_handle.template get<components::sentience>();
+
+					if (!sentience.is_dead() || !sentience.has_exploded) {
+						return;
+					}
+
+					const auto lying_corpse_id = sentience.detached.lying_corpse;
+
+					if (const auto lying_corpse = cosm[lying_corpse_id]) {
+						const auto lying_viewing = lying_corpse.get_viewing_transform(interp);
+
+						if (!camera_aabb.hover(lying_viewing.pos)) {
+							return;
+						}
+
+						const auto& sentience_def = typed_handle.template get<invariants::sentience>();
+
+						const bool head_detached = sentience.detached.head.is_set();
+						const bool was_headshot = sentience.knockout_origin.circumstances.headshot;
+						const bool should_draw_head = !head_detached && !was_headshot;
+
+						const auto image = should_draw_head
+							? sentience_def.corpse_head_image
+							: sentience_def.corpse_head_splatter_image
+						;
+
+						if (!image.is_set()) {
+							return;
+						}
+
+						/*
+							Get torso offsets from the lying corpse sprite's image.
+							Flip if the lying corpse entity is vertically flipped.
+						*/
+						const auto corpse_image_id = lying_corpse.template get<invariants::sprite>().image_id;
+						auto corpse_torso = logicals.get_offsets(corpse_image_id).torso;
+
+						const bool corpse_flipped = [&]() {
+							if (const auto flips = lying_corpse.calc_flip_flags()) {
+								return flips->vertically;
+							}
+							return false;
+						}();
+
+						if (corpse_flipped) {
+							corpse_torso.flip_vertically();
+						}
+
+						invariants::sprite sprite;
+						sprite.set(image, game_images);
+
+						auto input = corpses_in.make_input_for<invariants::sprite>();
+
+						/*
+							Both head and splatter use torso.head offset + their own head_anchor.
+						*/
+
+						auto head_anchor = logicals.get_offsets(image).item.head_anchor;
+
+						if (corpse_flipped) {
+							head_anchor.flip_vertically();
+						}
+
+						const auto target_offset = ::get_anchored_offset(corpse_torso.head, head_anchor);
+						input.renderable_transform = lying_viewing * target_offset;
+
+						if (corpse_flipped) {
+							input.flip.vertically = true;
+						}
+
+						augs::draw(sprite, game_images, input);
+
+						/*
+							Draw neon map for the head/splatter overlay.
+						*/
+
+						auto neon_input = corpse_neons_in.make_input_for<invariants::sprite>();
+						neon_input.renderable_transform = input.renderable_transform;
+						neon_input.flip = input.flip;
+						neon_input.use_neon_map = true;
+						augs::draw(sprite, game_images, neon_input);
+					}
+				});
 
 				h7.draw_neons<
 					render_layer::LYING_CORPSES
