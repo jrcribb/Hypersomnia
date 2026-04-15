@@ -302,6 +302,7 @@ namespace invariants {
 		particle_effect_input corpse_catch_fire_particles;
 		sound_effect_input corpse_catch_fire_sound;
 		sound_effect_input corpse_fall_sound;
+		sound_effect_input arm_detach_sound;
 
 		real32 damage_required_for_corpse_explosion = 60.f;
 		real32 corpse_burning_seconds = 0.5f;

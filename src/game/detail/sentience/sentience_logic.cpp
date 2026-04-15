@@ -106,6 +106,7 @@ static void try_detach_arms(
 		This will be spawned in the post_construction callback using the arm entity as orbit subject.
 	*/
 	const auto arm_splatter_origin = point_of_impact.is_nonzero() ? point_of_impact : subject_transform.pos;
+	const auto arm_detach_sound = sentience_def.arm_detach_sound;
 
 	/* Increment immediately to prevent duplicate spawns before post_construction fires */
 	if (is_first_arm) {
@@ -121,7 +122,7 @@ static void try_detach_arms(
 
 			const auto& rigid_body = typed_entity.template get<components::rigid_body>();
 			rigid_body.set_velocity(arm_velocity);
-			rigid_body.set_angular_velocity(40.f);
+			rigid_body.set_angular_velocity(700.f);
 			rigid_body.get_special().during_cooldown_ignore_collision_with = typed_subject_id;
 
 			if (should_flip) {
@@ -131,7 +132,7 @@ static void try_detach_arms(
 			}
 		},
 
-		[head_effect, typed_subject_id, is_upper, access, arm_splatter_origin, fly_direction](const auto& typed_entity, const logic_step step) {
+		[head_effect, typed_subject_id, is_upper, access, arm_splatter_origin, fly_direction, arm_detach_sound](const auto& typed_entity, const logic_step step) {
 			if (const auto typed_subject = step.get_cosmos()[typed_subject_id]) {
 				auto& s = typed_subject.template get<components::sentience>();
 
@@ -183,6 +184,23 @@ static void try_detach_arms(
 				msg.input.color = white;
 
 				step.post_message(msg);
+			}
+
+			/*
+				Play the arm detach sound from the dead player's perspective.
+			*/
+			if (arm_detach_sound.id.is_set()) {
+				const auto predictability = 
+					step.get_settings().effect_prediction.predict_death_particles 
+					? always_predictable_v
+					: never_predictable_v
+				;
+
+				arm_detach_sound.start(
+					step,
+					sound_effect_start_input::at_listener(typed_subject_id),
+					predictability
+				);
 			}
 		}
 	);
