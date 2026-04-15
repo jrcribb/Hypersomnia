@@ -48,7 +48,6 @@ static void try_detach_arms(
 		return;
 	}
 
-	auto& cosm = step.get_cosmos();
 	const auto arm_flavour = sentience_def.detached_flavours.arm_upper;
 
 	if (!arm_flavour.is_set()) {
@@ -98,6 +97,12 @@ static void try_detach_arms(
 	const auto head_effect = sentience_def.detached_head_particles;
 	const bool should_flip = !is_upper;
 
+	/*
+		Precompute the splatter origin for the immediate arm splatter.
+		This will be spawned in the post_construction callback using the arm entity as orbit subject.
+	*/
+	const auto arm_splatter_origin = point_of_impact.is_nonzero() ? point_of_impact : subject_transform.pos;
+
 	/* Increment immediately to prevent duplicate spawns before post_construction fires */
 	if (is_first_arm) {
 		sentience.first_arm_queued_as_upper = is_upper;
@@ -122,7 +127,7 @@ static void try_detach_arms(
 			}
 		},
 
-		[head_effect, typed_subject_id, is_upper](const auto& typed_entity, const logic_step step) {
+		[head_effect, typed_subject_id, is_upper, access, arm_splatter_origin, fly_direction](const auto& typed_entity, const logic_step step) {
 			if (const auto typed_subject = step.get_cosmos()[typed_subject_id]) {
 				auto& s = typed_subject.template get<components::sentience>();
 
@@ -148,18 +153,19 @@ static void try_detach_arms(
 				particle_effect_start_input::orbit_local(typed_entity, { vec2::zero, 180 } ),
 				predictability
 			);
+
+			/*
+				Spawn an immediate splatter at the damage location,
+				oriented in the flight direction.
+				Use typed_entity (arm) as orbit subject to avoid orbit glitches.
+			*/
+			{
+				auto& cosm = step.get_cosmos();
+				auto rng = cosm.get_rng_for(typed_entity.get_id());
+				::spawn_blood_splatter(access, rng, step, typed_entity, arm_splatter_origin + fly_direction * 20.f, arm_splatter_origin, 0.7f);
+			}
 		}
 	);
-
-	/*
-		Spawn an immediate splatter at the damage location,
-		oriented in the flight direction.
-	*/
-	{
-		auto rng = cosm.get_rng_for(subject);
-		const auto splatter_origin = point_of_impact.is_nonzero() ? point_of_impact : subject_transform.pos;
-		::spawn_blood_splatter(access, rng, step, subject, splatter_origin + fly_direction * 20.f, splatter_origin, 0.7f);
-	}
 }
 
 void handle_corpse_damage(
@@ -474,6 +480,14 @@ void perform_knockout(
 			const auto typed_subject_id = typed_subject.get_id();
 			const auto head_effect = sentience_def.detached_head_particles;
 
+			/*
+				Precompute the splatter origin and flight direction for the immediate head splatter.
+				This will be spawned in the post_construction callback using the head entity as orbit subject.
+			*/
+			const auto head_splatter_origin = point_of_impact.is_nonzero() ? point_of_impact : head_transform.pos;
+			const auto head_flight_dir = head_velocity.is_nonzero() ? vec2(head_velocity).normalize() : -direction;
+			const auto head_access = allocate_new_entity_access();
+
 			auto spawn_detached_body_part = [&](const auto& flavour) {
 				cosmic::queue_create_entity(
 					step,
@@ -488,7 +502,7 @@ void perform_knockout(
 						rigid_body.get_special().during_cooldown_ignore_collision_with = typed_subject_id;
 					},
 
-					[head_effect, typed_subject_id](const auto& typed_entity, const logic_step step) {
+					[head_effect, typed_subject_id, head_access, head_splatter_origin, head_flight_dir](const auto& typed_entity, const logic_step step) {
 						if (const auto typed_subject = step.get_cosmos()[typed_subject_id]) {
 							auto& s = typed_subject.template get<components::sentience>();
 							s.detached.head = typed_entity;
@@ -512,23 +526,22 @@ void perform_knockout(
 							particle_effect_start_input::orbit_local(typed_subject_id, { vec2::zero, 180 } ),
 							predictability
 						);
+
+						/*
+							Spawn an immediate splatter at the damage location,
+							oriented in the head's flight direction.
+							Use typed_entity (head) as orbit subject to avoid orbit glitches.
+						*/
+						{
+							auto& cosm = step.get_cosmos();
+							auto rng = cosm.get_rng_for(typed_entity.get_id());
+							::spawn_blood_splatter(head_access, rng, step, typed_entity, head_splatter_origin + head_flight_dir * 20.f, head_splatter_origin, 1.2f);
+						}
 					}
 				);
 			};
 
 			spawn_detached_body_part(sentience_def.detached_flavours.head);
-
-			/*
-				Spawn an immediate splatter at the damage location,
-				oriented in the head's flight direction.
-			*/
-			{
-				auto access = allocate_new_entity_access();
-				auto rng = cosm.get_rng_for(subject);
-				const auto splatter_origin = point_of_impact.is_nonzero() ? point_of_impact : head_transform.pos;
-				const auto flight_dir = head_velocity.is_nonzero() ? vec2(head_velocity).normalize() : -direction;
-				::spawn_blood_splatter(access, rng, step, subject, splatter_origin + flight_dir * 20.f, splatter_origin, 1.2f);
-			}
 		}
 
 		if (sentience.is_dead()) {
