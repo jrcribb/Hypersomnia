@@ -170,7 +170,7 @@ void handle_corpse_damage(
 	const vec2 point_of_impact
 ) {
 	if (impact_direction.is_nonzero()) {
-		sentience.last_corpse_damage_direction = -impact_direction;
+		sentience.last_corpse_damage_direction = impact_direction;
 	}
 
 	auto& health = sentience.get<health_meter_instance>();
@@ -252,7 +252,7 @@ void handle_corpse_detonation(
 		*/
 		const auto lying_rotation = [&]() {
 			if (sentience.last_corpse_damage_direction.is_nonzero()) {
-				return sentience.last_corpse_damage_direction.degrees();
+				return (-sentience.last_corpse_damage_direction).degrees();
 			}
 			return subject_transform.rotation;
 		}();
@@ -319,7 +319,7 @@ void handle_corpse_detonation(
 			const auto tattered_velocity = subject.get_effective_velocity();
 			const auto damage_push = [&]() {
 				if (sentience.last_corpse_damage_direction.is_nonzero()) {
-					return sentience.last_corpse_damage_direction.normalize() * 50.f;
+					return sentience.last_corpse_damage_direction.normalize() * 1300.f;
 				}
 				return vec2::zero;
 			}();
@@ -358,7 +358,7 @@ void handle_corpse_detonation(
 						messages::pure_color_highlight msg;
 						msg.subject = typed_entity;
 						msg.input.starting_alpha_ratio = 1.f;
-						msg.input.maximum_duration_seconds = 0.12f;
+						msg.input.maximum_duration_seconds = 0.25f;
 						msg.input.color = white;
 						msg.input.size_mult_start = highlight_size_bounce_mult;
 
