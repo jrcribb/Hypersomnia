@@ -451,6 +451,7 @@ void movement_system::apply_movement_forces(const logic_step step) {
 				const auto& common_assets = cosm.get_common_assets();
 				auto standard_effect = common_assets.standard_footstep;
 				auto chosen_effect = standard_effect;
+				bool corpse_stepped = false;
 				
 				{
 					/* Choose effect based on where the foot has landed */
@@ -478,6 +479,7 @@ void movement_system::apply_movement_forces(const logic_step step) {
 									if (fix->filter == filters[predefined_filter_type::DEAD_LYING_CHARACTER]) {
 										chosen_effect = common_assets.lying_corpse_footstep;
 										chosen_speed_mult = 0.6f;
+										corpse_stepped = true;
 										return true;
 									}
 								}
@@ -506,7 +508,7 @@ void movement_system::apply_movement_forces(const logic_step step) {
 				}
 
 				const auto gain_mult = speed_mult / 2;
-				const auto pitch_mult = std::min(1.7f, 1 + gain_mult);
+				const auto pitch_mult = std::min(1.7f, 1 + (corpse_stepped ? gain_mult / 4 : gain_mult));
 
 				sound.modifier.gain *= gain_mult;
 				sound.modifier.pitch *= pitch_mult;
@@ -578,7 +580,7 @@ void movement_system::apply_movement_forces(const logic_step step) {
 				/* Blood footstep logic - only for sentient and conscious entities */
 				const bool is_sentient_and_conscious = is_sentient && sentience->is_conscious();
 
-				if (is_sentient_and_conscious) {
+				if (!corpse_stepped && is_sentient_and_conscious) {
 					/* Radius in pixels to detect blood decals near foot position */
 					static constexpr real32 BLOOD_DETECTION_RADIUS = 20.f;
 					/* Steps added per blood splatter intersected */
@@ -711,6 +713,10 @@ void movement_system::apply_movement_forces(const logic_step step) {
 
 						--movement.blood_step_counter;
 					}
+				}
+
+				if (corpse_stepped) {
+					movement.blood_step_counter = 0;
 				}
 			};
 
