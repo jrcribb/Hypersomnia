@@ -273,6 +273,20 @@ std::optional<transformr> spatial_properties_mixin<E>::find_logic_transform() co
 	}
 
 	/*
+		If this is a dead body with a spawned lying corpse, return the corpse's transform instead.
+		This makes the body's spatial properties follow the corpse which has physics.
+	*/
+	if (const auto sentience = handle.template find<components::sentience>()) {
+		if (const auto lying_corpse_id = sentience->detached.lying_corpse; lying_corpse_id != entity_id()) {
+			if (const auto lying_corpse = handle.get_cosmos()[lying_corpse_id]) {
+				if (const auto corpse_transform = lying_corpse.find_logic_transform()) {
+					return corpse_transform;
+				}
+			}
+		}
+	}
+
+	/*
 		Since an alive owner body always implies that the entity has fixtures component,
 		it is equivalent to the call of:
 
