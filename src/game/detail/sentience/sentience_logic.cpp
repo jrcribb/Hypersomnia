@@ -332,7 +332,7 @@ void handle_corpse_detonation(
 			*/
 			const auto tattered_velocity = subject.get_effective_velocity();
 			const auto damage_push = [&]() {
-				if (!gentle && sentience.last_corpse_damage_direction.is_nonzero()) {
+				if (sentience.last_corpse_damage_direction.is_nonzero()) {
 					return sentience.last_corpse_damage_direction.normalize() * 1300.f;
 				}
 				return vec2::zero;
@@ -356,7 +356,7 @@ void handle_corpse_detonation(
 					}
 				},
 
-				[typed_subject_id](const auto& typed_entity, const logic_step step) {
+				[typed_subject_id, gentle](const auto& typed_entity, const logic_step step) {
 					if (const auto typed_subject = step.get_cosmos()[typed_subject_id]) {
 						auto& s = typed_subject.template get<components::sentience>();
 						s.detached.lying_corpse = typed_entity;
@@ -366,6 +366,7 @@ void handle_corpse_detonation(
 						Send a white highlight for the lying corpse when it first appears.
 						Analogous to the damage highlight in audiovisual_state.cpp.
 					*/
+
 					{
 						constexpr float highlight_size_bounce_mult = 1.5f;
 
@@ -374,7 +375,15 @@ void handle_corpse_detonation(
 						msg.input.starting_alpha_ratio = 1.f;
 						msg.input.maximum_duration_seconds = 0.25f;
 						msg.input.color = white;
-						msg.input.size_mult_start = highlight_size_bounce_mult;
+
+						if (!gentle) {
+							msg.input.size_mult_start = highlight_size_bounce_mult;
+						}
+
+						if (gentle) {
+							msg.input.size_mult_start = 1.2f;
+							msg.input.maximum_duration_seconds = 0.25f;
+						}
 
 						step.post_message(msg);
 					}

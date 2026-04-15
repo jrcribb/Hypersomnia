@@ -10,7 +10,7 @@
 inline constexpr real32 IDLE_SPLATTER_HP_THRESHOLD = 0.2f;
 
 /* Number of blood drips before a dead tattered corpse falls to the ground */
-inline constexpr int IDLE_SPLATTER_MAX_CORPSE_DRIPS = 3;
+inline constexpr int IDLE_SPLATTER_MAX_CORPSE_DRIPS = 6;
 
 /* Drip interval in milliseconds */
 inline constexpr real32 IDLE_SPLATTER_CORPSE_INTERVAL_MS = 500.f;
