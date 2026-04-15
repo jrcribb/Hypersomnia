@@ -123,9 +123,10 @@ namespace components {
 		int pending_head_splatters = 0;
 		real32 health_value_at_death = 0.f;
 		int arms_queued_for_detach = 0;
-		bool first_arm_queued_as_upper = false;
 		int idle_blood_drip_count = 0;
 		vec2 last_corpse_damage_direction;
+		bool first_arm_queued_as_upper = false;
+		pad_bytes<3> pad3;
 		// END GEN INTROSPECTOR
 
 		bool is_requesting_any_interaction() const {
