@@ -5496,7 +5496,7 @@ void load_test_scene_particle_effects(
 			em.spread_degrees = float_range(3, 8);
 			/* Short stream duration with fast swing */
 			em.stream_lifetime_ms = float_range(200, 200);
-			em.particles_per_sec = float_range(800, 1200);
+			em.particles_per_sec = float_range(200, 300);
 			em.swing_spread = float_range(10, 10);
 			em.swings_per_sec = float_range(3, 3);
 			/* Initial burst for extra punch */
