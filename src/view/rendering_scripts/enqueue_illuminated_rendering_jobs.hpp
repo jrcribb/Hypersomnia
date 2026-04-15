@@ -568,17 +568,22 @@ void enqueue_illuminated_rendering_jobs(
 			auto job = [
 				h4 = make_helper(D::GROUND_DECALS),
 				h5 = make_helper(D::GROUND_DECALS_NEONS),
-				h6 = make_helper(D::LYING_CORPSES)
+				h6 = make_helper(D::LYING_CORPSES),
+				h7 = make_helper(D::LYING_CORPSES_NEONS)
 			]() {
 				h4.draw<
 					render_layer::GROUND_DECALS
 				>();
 
-				h4.draw_neons<
+				h5.draw_neons<
 					render_layer::GROUND_DECALS
 				>();
 
 				h6.draw<
+					render_layer::LYING_CORPSES
+				>();
+
+				h7.draw_neons<
 					render_layer::LYING_CORPSES
 				>();
 			};

@@ -732,6 +732,8 @@ void illuminated_rendering(const illuminated_rendering_input in) {
 	/* Render ground decals (blood splatters) with full illumination */
 	set_shader(shaders.standard);
 	renderer.call_triangles(D::GROUND_DECALS);
+
+	set_shader_with_matrix(shaders.illuminated);
 	renderer.call_triangles(D::LYING_CORPSES);
 
 	if (strict_fow) {
