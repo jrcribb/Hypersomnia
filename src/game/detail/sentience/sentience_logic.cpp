@@ -442,12 +442,19 @@ void handle_corpse_detonation(
 			spawn_lying_corpse(false);
 		}
 	}
-	else if (sentience.is_dead() && sentience.idle_blood_drip_count >= IDLE_SPLATTER_MAX_CORPSE_DRIPS) {
-		/*
-			The tattered corpse has bled out.
-			Gently fall to the ground without any explosion effects.
-		*/
-		spawn_lying_corpse(true);
+	else if (sentience.is_dead()) {
+		const auto max_drips = sentience.knockout_origin.circumstances.headshot
+			? IDLE_SPLATTER_MAX_CORPSE_DRIPS / 2
+			: IDLE_SPLATTER_MAX_CORPSE_DRIPS
+		;
+
+		if (sentience.idle_blood_drip_count >= max_drips) {
+			/*
+				The tattered corpse has bled out.
+				Gently fall to the ground without any explosion effects.
+			*/
+			spawn_lying_corpse(true);
+		}
 	}
 }
 
