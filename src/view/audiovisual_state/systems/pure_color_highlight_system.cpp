@@ -6,11 +6,13 @@
 #include "game/components/render_component.h"
 #include "game/components/interpolation_component.h"
 #include "game/components/fixtures_component.h"
+#include "game/components/owner_component.h"
 
 #include "view/viewables/image_in_atlas.h"
 #include "view/viewables/images_in_atlas_map.h"
 
 #include "view/rendering_scripts/draw_entity.h"
+#include "view/rendering_scripts/corpse_head_overlays.h"
 
 #include "view/audiovisual_state/systems/pure_color_highlight_system.h"
 #include "view/audiovisual_state/systems/interpolation_system.h"
@@ -85,5 +87,41 @@ void pure_color_highlight_system::draw_highlights(
 		const auto sm = vec2(current_size_mult, current_size_mult);
 
 		draw_color_highlight(subject, target_color, in, sm);
+
+		/*
+			Also highlight corpse head overlays on lying corpses.
+		*/
+
+		if (const auto* owner_comp = subject.find<components::owner>()) {
+			const auto owner_handle = cosm[owner_comp->owner_body];
+
+			if (owner_handle.alive()) {
+				const auto* owner_sentience = owner_handle.find<components::sentience>();
+
+				if (owner_sentience != nullptr && owner_sentience->has_exploded) {
+					const auto& sentience_def = owner_handle.get<invariants::sentience>();
+					const auto& logicals = cosm.get_logical_assets();
+					const auto viewing = subject.get_viewing_transform(in.interp);
+
+					::for_each_corpse_head_overlay(subject, *owner_sentience, sentience_def, viewing, logicals,
+						[&](const corpse_head_overlay_info& overlay) {
+							invariants::sprite sprite;
+							sprite.set(overlay.image_id, in.manager);
+							sprite.set_color(target_color);
+							sprite.size = vec2(sprite.size) * sm;
+
+							auto draw_input = in.make_input_for<invariants::sprite>();
+							draw_input.renderable_transform = overlay.world_transform;
+
+							if (overlay.flipped) {
+								draw_input.flip.vertically = true;
+							}
+
+							augs::draw(sprite, in.manager, draw_input);
+						}
+					);
+				}
+			}
+		}
 	}
 }

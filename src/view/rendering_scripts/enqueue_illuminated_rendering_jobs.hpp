@@ -4,6 +4,7 @@
 #include "view/rendering_scripts/is_reasonably_in_view.hpp"
 #include "game/detail/use_interaction_logic.h"
 #include "game/detail/inventory/direct_attachment_offset.h"
+#include "view/rendering_scripts/corpse_head_overlays.h"
 
 const rgba CHARACTER_SHADOW_COLOR = rgba(0, 0, 0, 80);
 const vec2 CHARACTER_SHADOW_OFFSET = vec2(7, 7);
@@ -618,81 +619,27 @@ void enqueue_illuminated_rendering_jobs(
 
 						const auto& sentience_def = typed_handle.template get<invariants::sentience>();
 
-						/*
-							Get torso offsets from the lying corpse sprite's image.
-							Flip if the lying corpse entity is vertically flipped.
-						*/
-						const auto corpse_image_id = lying_corpse.template get<invariants::sprite>().image_id;
-						auto corpse_torso = logicals.get_offsets(corpse_image_id).torso;
+						::for_each_corpse_head_overlay(lying_corpse, sentience, sentience_def, lying_viewing, logicals,
+							[&](const corpse_head_overlay_info& overlay) {
+								invariants::sprite sprite;
+								sprite.set(overlay.image_id, game_images);
 
-						const bool corpse_flipped = [&]() {
-							if (const auto flips = lying_corpse.calc_flip_flags()) {
-								return flips->vertically;
+								auto input = corpses_in.make_input_for<invariants::sprite>();
+								input.renderable_transform = overlay.world_transform;
+
+								if (overlay.flipped) {
+									input.flip.vertically = true;
+								}
+
+								augs::draw(sprite, game_images, input);
+
+								auto neon_input = corpse_neons_in.make_input_for<invariants::sprite>();
+								neon_input.renderable_transform = overlay.world_transform;
+								neon_input.flip = input.flip;
+								neon_input.use_neon_map = true;
+								augs::draw(sprite, game_images, neon_input);
 							}
-							return false;
-						}();
-
-						if (corpse_flipped) {
-							corpse_torso.flip_vertically();
-						}
-
-						auto draw_overlay_at_head = [&](const assets::image_id overlay_image) {
-							invariants::sprite sprite;
-							sprite.set(overlay_image, game_images);
-
-							auto input = corpses_in.make_input_for<invariants::sprite>();
-
-							auto head_anchor = logicals.get_offsets(overlay_image).item.head_anchor;
-
-							if (corpse_flipped) {
-								head_anchor.flip_vertically();
-							}
-
-							const auto target_offset = ::get_anchored_offset(corpse_torso.head, head_anchor);
-							input.renderable_transform = lying_viewing * target_offset;
-
-							if (corpse_flipped) {
-								input.flip.vertically = true;
-							}
-
-							augs::draw(sprite, game_images, input);
-
-							auto neon_input = corpse_neons_in.make_input_for<invariants::sprite>();
-							neon_input.renderable_transform = input.renderable_transform;
-							neon_input.flip = input.flip;
-							neon_input.use_neon_map = true;
-							augs::draw(sprite, game_images, neon_input);
-						};
-
-						const bool head_detached = sentience.detached.head.is_set();
-						const bool was_headshot = sentience.knockout_origin.circumstances.headshot;
-						const bool should_draw_head = !head_detached && !was_headshot;
-
-						const auto head_or_splatter = should_draw_head
-							? sentience_def.corpse_head_image
-							: sentience_def.corpse_head_splatter_image
-						;
-
-						if (head_or_splatter.is_set()) {
-							draw_overlay_at_head(head_or_splatter);
-						}
-
-						/*
-							Body splatter: only for intact corpses
-							(not headshotted, head attached, both arms attached).
-						*/
-						const bool both_arms_intact =
-							!sentience.detached.arm_upper.is_set()
-							&& !sentience.detached.arm_lower.is_set()
-						;
-
-						if (const bool should_draw_body_splatter = !was_headshot && !head_detached && both_arms_intact) {
-							const auto body_splatter = sentience_def.corpse_body_splatter_image;
-
-							if (body_splatter.is_set()) {
-								draw_overlay_at_head(body_splatter);
-							}
-						}
+						);
 					}
 				});
 
