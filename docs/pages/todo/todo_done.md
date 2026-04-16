@@ -7405,3 +7405,19 @@ This will discard your redo history."
 - find closest unoccupied tile if the target tile is occupied, in pathfinding
 
 - splat further the more damage is applied
+- po respawnie zajebanego trzeba poprawic mu filtry znowu
+
+- play shot animation when receiving any dmg
+	- timestamp last received dmg?
+
+- łeb niech bedzie ciezszy zeby nie lecial tak daleko, moze tez spawnowac krew 1-2 razy tak jak lapy odpadniete
+
+
+- gore system
+	- headshot -> has to deal additional 30 dmg for an arm to fall off, but like if the headshot caused to go from 10 to -26, then you have to deal up to -56 for an arm to fall off
+	- normal kill -> any time the health is below -30, arm falls off
+	- after corpse explosion, spawn a corpse sprite that can be walked on with a specific sound
+
+- low effort - gory sprity dla idle stojacych rozjebanych bo z nich kapie krew to musi byc widac
+	- dla głów też
+

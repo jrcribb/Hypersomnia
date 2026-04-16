@@ -738,3 +738,6 @@ summary: Just a hidden scratchpad.
     - just send the list of all hashes once and send it in a single chunk?
     - per file is okay too I guess
 - ban blunaz for bots to not confuse people
+- mozna sprobowac rysowac tylko te bloodsplattery co sa w fovie
+	- "co tu sie odjebalo" effect
+	- i nie beda sie pokazywac splattery za scianami w dziwnych miejscach
