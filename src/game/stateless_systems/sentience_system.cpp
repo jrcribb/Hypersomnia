@@ -602,7 +602,7 @@ messages::health_event sentience_system::process_health_event(messages::health_e
 			//ensure_geq(health.value, static_cast<decltype(health.value)>(0));
 
 			/* Always spawn blood splatters for health damage, including corpse damage */
-			if (amount > 0) {
+			if (!was_dead_already && amount > 0) {
 				const auto impact_dir = h.impact_velocity.is_nonzero() ? h.impact_velocity.normalize() : vec2::zero;
 				blood_splatter_params params;
 				params.damage_per_splatter = 15;

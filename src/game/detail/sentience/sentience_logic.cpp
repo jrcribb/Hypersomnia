@@ -159,7 +159,7 @@ static void try_detach_arms(
 				oriented in the flight direction.
 				Use typed_entity (arm) as orbit subject to avoid orbit glitches.
 			*/
-			if (false)
+
 			{
 				auto& cosm = step.get_cosmos();
 				auto rng = cosm.get_rng_for(typed_entity.get_id());
