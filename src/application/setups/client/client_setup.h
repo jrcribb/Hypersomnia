@@ -378,6 +378,7 @@ class client_setup :
 				callback(q.get_queue<M::start_temporary_light>());
 				callback(q.get_queue<M::start_particle_effect>());
 				callback(q.get_queue<M::stop_particle_effect>());
+				callback(q.get_queue<M::change_particle_effect>());
 
 				callback(q.get_queue<M::start_sound_effect>());
 				callback(q.get_queue<M::stop_sound_effect>());

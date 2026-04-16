@@ -9,6 +9,7 @@
 #include "game/detail/sentience/gore/blood_splatter.hpp"
 #include "game/detail/sentience/gore/idle_splatter.hpp"
 #include "game/messages/pure_color_highlight_message.h"
+#include "game/messages/start_particle_effect.h"
 #include "game/detail/view_input/sound_effect_input.h"
 
 #include "augs/log.h"
@@ -371,6 +372,34 @@ void handle_corpse_detonation(
 			}();
 			const auto lying_velocity = tattered_velocity + damage_push;
 
+			/*
+				Precompute the head offset for the lying corpse sprite
+				so we can retarget the detached_head_particles stream.
+			*/
+			const bool head_detached = sentience.detached.head.is_set() || sentience.knockout_origin.circumstances.headshot;
+			const auto head_effect = sentience_def.detached_head_particles;
+
+			const auto corpse_head_offset = [&]() {
+				if (head_detached && head_effect.id.is_set()) {
+					const auto corpse_image_id = cosm.on_flavour(
+						corpse_flavour,
+						[](const auto& f) { return f.get_image_id(); }
+					);
+
+					if (corpse_image_id.is_set()) {
+						auto head_off = cosm.get_logical_assets().get_offsets(corpse_image_id).torso.head;
+
+						if (should_flip) {
+							head_off.flip_vertically();
+						}
+
+						return head_off;
+					}
+				}
+
+				return transformi();
+			}();
+
 			cosmic::queue_create_entity(
 				step,
 				corpse_flavour,
@@ -389,7 +418,7 @@ void handle_corpse_detonation(
 					}
 				},
 
-				[typed_subject_id, gentle](const auto& typed_entity, const logic_step step) {
+				[typed_subject_id, gentle, head_detached, head_effect, corpse_head_offset](const auto& typed_entity, const logic_step step) {
 					if (const auto typed_subject = step.get_cosmos()[typed_subject_id]) {
 						auto& s = typed_subject.template get<components::sentience>();
 						s.detached.lying_corpse = typed_entity;
@@ -419,6 +448,28 @@ void handle_corpse_detonation(
 						}
 
 						step.post_message(msg);
+					}
+
+					/*
+						Retarget the detached_head_particles stream from the tattered corpse
+						to the lying corpse with the correct head offset.
+					*/
+					if (head_detached && head_effect.id.is_set()) {
+						const auto predictability =
+							step.get_settings().effect_prediction.predict_death_particles
+							? always_predictable_v
+							: never_predictable_v
+						;
+
+						messages::change_particle_effect change;
+						change.predictability = predictability;
+						change.match_chased_subject = typed_subject_id;
+						change.match_orbit_offset = vec2::zero;
+						change.match_effect_id = head_effect.id;
+						change.new_target = typed_entity;
+						change.new_offset = { vec2(corpse_head_offset.pos), corpse_head_offset.rotation + 180.f };
+
+						step.post_message(change);
 					}
 				}
 			);
