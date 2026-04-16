@@ -24,7 +24,8 @@ static void try_detach_arms(
 	components::sentience& sentience,
 	const invariants::sentience& sentience_def,
 	const vec2 point_of_impact,
-	const real32 damage_amount
+	const real32 damage_amount,
+	const damage_origin& origin
 ) {
 	if (!sentience.is_dead()) {
 		return;
@@ -111,7 +112,16 @@ static void try_detach_arms(
 		sentience.first_arm_queued_as_upper = is_upper;
 	}
 	sentience.arms_queued_for_detach++;
-	sentience.coins_on_body += 500;
+	
+	/*
+		Only award coins for arm detachment if the damage comes from a different faction.
+		This prevents players from teamkilling to get the award from detaching arms (gore).
+	*/
+	const auto victim_faction = subject.get_official_faction();
+
+	if (origin.sender.faction_of_sender != victim_faction || victim_faction == faction_type::SPECTATOR) {
+		sentience.coins_on_body += 500;
+	}
 
 	cosmic::queue_create_entity(
 		step,
@@ -200,13 +210,15 @@ static void try_detach_arms(
 }
 
 void handle_corpse_damage(
+	const allocate_new_entity_access access,
 	const logic_step step,
 	const entity_handle subject,
 	components::sentience& sentience,
 	const invariants::sentience& sentience_def,
 	const vec2 impact_direction,
 	const vec2 point_of_impact,
-	const real32 damage_amount
+	const real32 damage_amount,
+	const damage_origin& origin
 ) {
 	/*
 		Only update the damage direction if it hasn't been set yet.
@@ -274,7 +286,7 @@ void handle_corpse_damage(
 
 	const auto prev_arms_queued = sentience.arms_queued_for_detach;
 
-	try_detach_arms(allocate_new_entity_access(), step, subject, sentience, sentience_def, point_of_impact, damage_amount);
+	try_detach_arms(access, step, subject, sentience, sentience_def, point_of_impact, damage_amount, origin);
 
 	/*
 		If an arm was just detached while the lying corpse already exists,
@@ -860,7 +872,7 @@ void perform_knockout(
 		}
 
 		if (sentience.is_dead()) {
-			try_detach_arms(allocate_new_entity_access(), step, typed_subject, sentience, sentience_def, point_of_impact, damage_amount);
+			try_detach_arms(allocate_new_entity_access(), step, typed_subject, sentience, sentience_def, point_of_impact, damage_amount, origin);
 		}
 	});
 }

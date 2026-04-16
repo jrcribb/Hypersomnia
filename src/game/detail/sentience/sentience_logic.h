@@ -6,8 +6,8 @@
 #include "game/detail/view_input/sound_effect_input.h"
 
 #include "game/cosmos/logic_step.h"
+#include "game/detail/damage_origin.h"
 
-struct damage_origin;
 class allocate_new_entity_access;
 
 template <class E>
@@ -70,13 +70,15 @@ void resurrect(const logic_step step, const E& typed_handle, const float spawn_p
 }
 
 void handle_corpse_damage(
+	const allocate_new_entity_access access,
 	const logic_step step,
 	const entity_handle subject,
 	components::sentience& sentience,
 	const invariants::sentience& sentience_def,
-	const vec2 impact_direction = vec2::zero,
-	const vec2 point_of_impact = vec2::zero,
-	const real32 damage_amount = 0.f
+	const vec2 impact_direction,
+	const vec2 point_of_impact,
+	const real32 damage_amount,
+	const damage_origin& origin
 );
 
 void handle_corpse_detonation(

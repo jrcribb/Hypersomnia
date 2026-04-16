@@ -177,48 +177,59 @@ void sentience_system::regenerate_values_and_advance_spell_logic(const logic_ste
 				sentience_def
 			);
 
+			auto has_corpse_fallen = [&]() {
+				const auto lying_corpse = cosm[sentience.detached.lying_corpse];
+
+				if (lying_corpse.dead()) {
+					return false;
+				}
+
+				const auto vel = lying_corpse.get_effective_velocity();
+				constexpr real32 epsilon_vel = 700.f;
+				return vel.length_sq() < epsilon_vel * epsilon_vel;
+			};
+
 			if (sentience.has_exploded && sentience.coins_on_body > 0) {
 				/*
 					Spawn coins at the lying corpse position once it reaches near-zero velocity.
 				*/
-				const auto lying_corpse_id = sentience.detached.lying_corpse;
-				const auto lying_corpse = cosm[lying_corpse_id];
-
-				auto should_spawn_coins = [&]() {
-					if (lying_corpse.dead()) {
-						return false;
-					}
-
-					const auto vel = lying_corpse.get_effective_velocity();
-					constexpr real32 epsilon_vel = 700.f;
-					return vel.length_sq() < epsilon_vel * epsilon_vel;
-				};
-
-				if (should_spawn_coins()) {
+				if (has_corpse_fallen()) {
+					const auto lying_corpse_id = sentience.detached.lying_corpse;
+					const auto lying_corpse = cosm[lying_corpse_id];
 					const auto spawn_pos = lying_corpse.alive()
-						? lying_corpse.get_logic_transform().pos
-						: subject.get_logic_transform().pos
-					;
+					? lying_corpse.get_logic_transform().pos
+					: subject.get_logic_transform().pos
+				;
 
-					::spawn_coins_queued(
-						sentience.coins_on_body,
-						spawn_pos,
-						step,
-						sentience_def.coin_flavours
-					);
+				::spawn_coins_queued(
+					sentience.coins_on_body,
+					spawn_pos,
+					step,
+					sentience_def.coin_flavours
+				);
 
-					sentience.coins_on_body = 0;
-
-					if (sentience_def.corpse_fall_sound.id.is_set()) {
-						auto sound = sentience_def.corpse_fall_sound;
-						sound.start(
-							step,
-							sound_effect_start_input::at_listener(subject),
-							never_predictable_v
-						);
-					}
-				}
+				sentience.coins_on_body = 0;
 			}
+		}
+
+		if (sentience.has_exploded && !sentience.corpse_fall_sound_played) {
+			/*
+				Play corpse fall sound when the corpse settles (velocity check passes).
+				This plays even if there are no coins to spawn (e.g., teammate death).
+			*/
+			if (has_corpse_fallen()) {
+				if (sentience_def.corpse_fall_sound.id.is_set()) {
+					auto sound = sentience_def.corpse_fall_sound;
+					sound.start(
+						step,
+						sound_effect_start_input::at_listener(subject),
+						never_predictable_v
+					);
+				}
+
+				sentience.corpse_fall_sound_played = true;
+			}
+		}
 
 			if (sentience.pending_arm_splatters > 0 && sentience.when_arms_detached.was_set()) {
 				const auto passed_secs = cosm.get_clock().get_passed_secs(sentience.when_arms_detached);
@@ -638,13 +649,15 @@ messages::health_event sentience_system::process_health_event(messages::health_e
 			}
 
 			::handle_corpse_damage(
+				access,
 				step,
 				subject,
 				sentience,
 				sentience_def,
 				h.impact_velocity.is_nonzero() ? h.impact_velocity.normalize() : vec2::zero,
 				h.point_of_impact,
-				h.damage.total()
+				h.damage.total(),
+				h.origin
 			);
 
 			break;
