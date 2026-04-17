@@ -612,17 +612,18 @@ void enqueue_illuminated_rendering_jobs(
 
 					if (const auto lying_corpse = cosm[lying_corpse_id]) {
 						const auto lying_viewing = lying_corpse.get_viewing_transform(interp);
-
-						if (!camera_aabb.hover(lying_viewing.pos)) {
-							return;
-						}
-
 						const auto& sentience_def = typed_handle.template get<invariants::sentience>();
 
 						::for_each_corpse_head_overlay(lying_corpse, sentience, sentience_def, lying_viewing, logicals,
 							[&](const corpse_head_overlay_info& overlay) {
 								invariants::sprite sprite;
 								sprite.set(overlay.image_id, game_images);
+
+								const auto overlay_aabb = ltrb::center_and_size(overlay.world_transform.pos, vec2(game_images.at(overlay.image_id).get_original_size()));
+
+								if (!camera_aabb.hover(overlay_aabb)) {
+									return;
+								}
 
 								auto input = corpses_in.make_input_for<invariants::sprite>();
 								input.renderable_transform = overlay.world_transform;
