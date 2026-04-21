@@ -71,7 +71,7 @@
 
 #include "game/cosmos/for_each_entity.h"
 #include "game/detail/passes_filter.h"
-#include "game/detail/pathfinding.h"
+#include "game/detail/pathfinding/pathfinding.h"
 #include "game/detail/explosive/like_explosive.h"
 #include "game/cosmos/make_physics_path_hints.h"
 #include "application/setups/client/https_file_uploader.h"

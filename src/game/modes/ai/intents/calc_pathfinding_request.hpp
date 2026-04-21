@@ -6,8 +6,8 @@
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
 #include "game/modes/ai/behaviors/ai_target_tracking.hpp"
 #include "game/modes/ai/tasks/ai_waypoint_helpers.hpp"
-#include "game/detail/pathfinding.h"
-#include "game/detail/pathfinding_bomb.hpp"
+#include "game/detail/pathfinding/pathfinding.h"
+#include "game/detail/pathfinding/pathfinding_bomb.hpp"
 #include "game/components/marker_component.h"
 
 /*

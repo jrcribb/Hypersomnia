@@ -21,10 +21,10 @@
 
 #include "game/components/movement_component.h"
 #include "game/components/crosshair_component.h"
-#include "game/detail/pathfinding.h"
-#include "game/detail/pathfinding/navigate_pathfinding.hpp"
+#include "game/detail/pathfinding/pathfinding.h"
+#include "game/detail/path_navigation/navigate_pathfinding.hpp"
 #include "game/modes/ai/tasks/interpolate_crosshair.hpp"
-#include "game/detail/pathfinding_bomb.hpp"
+#include "game/detail/pathfinding/pathfinding_bomb.hpp"
 #include "game/messages/game_notification.h"
 #include "augs/math/repro_math.h"
 #include "game/modes/difficulty_type.h"

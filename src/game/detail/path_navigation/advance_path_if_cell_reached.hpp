@@ -1,7 +1,7 @@
 #pragma once
-#include "game/detail/pathfinding.h"
+#include "game/detail/pathfinding/pathfinding.h"
 #include "game/modes/ai/arena_mode_ai_structs.h"
-#include "game/detail/pathfinding/path_helpers.hpp"
+#include "game/detail/path_navigation/path_helpers.hpp"
 
 /*
 	Advance along the current path when reaching cell centers.

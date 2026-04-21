@@ -1,7 +1,7 @@
 #include <limits>
 #include <queue>
-#include "game/detail/pathfinding.h"
-#include "game/detail/pathfinding_graph_view.h"
+#include "game/detail/pathfinding/pathfinding.h"
+#include "game/detail/pathfinding/pathfinding_graph_view.h"
 #include "augs/algorithm/bfs.hpp"
 #include "augs/algorithm/a_star.hpp"
 #include "augs/templates/reversion_wrapper.h"

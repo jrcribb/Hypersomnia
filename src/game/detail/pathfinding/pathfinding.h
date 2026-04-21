@@ -24,7 +24,7 @@ vec2 cell_to_world(const cosmos_navmesh_island& island, const vec2u cell_xy);
 vec2u world_to_cell(const cosmos_navmesh_island& island, const vec2 world_pos);
 
 /*
-	Manhattan distance between two cells (for 4-directional A*).
+	Manhattan distance between two cells.
 */
 
 uint32_t cell_distance(const vec2u a, const vec2u b);
@@ -82,7 +82,10 @@ std::optional<std::size_t> find_best_portal_from_to(
 	                     If nullopt, we're navigating to a regular cell.
 	
 	physics_hints: optional hints for line-of-sight checks when finding closest
-	               walkable cell for non-walkable targets.
+	               walkable cell for non-walkable starts or targets.
+
+	If either start or target is not walkable, BFS finds the closest walkable cell
+	and the resulting path includes a prefix/suffix through the occupied cells.
 
 	Returns a vector of pathfinding nodes, or nullopt if no path found.
 */

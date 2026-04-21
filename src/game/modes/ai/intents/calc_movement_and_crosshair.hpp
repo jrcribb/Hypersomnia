@@ -3,7 +3,7 @@
 #include "game/cosmos/cosmos.h"
 #include "game/cosmos/entity_handle.h"
 #include "game/cosmos/make_physics_path_hints.h"
-#include "game/detail/pathfinding/navigate_pathfinding.hpp"
+#include "game/detail/path_navigation/navigate_pathfinding.hpp"
 #include "game/modes/ai/arena_mode_ai_structs.h"
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
 #include "game/modes/ai/intents/calc_movement_flags.hpp"

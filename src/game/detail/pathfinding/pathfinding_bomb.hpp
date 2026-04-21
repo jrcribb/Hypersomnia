@@ -1,5 +1,5 @@
 #pragma once
-#include "game/detail/pathfinding.h"
+#include "game/detail/pathfinding/pathfinding.h"
 #include "game/cosmos/entity_handle.h"
 #include "game/components/rigid_body_component.h"
 

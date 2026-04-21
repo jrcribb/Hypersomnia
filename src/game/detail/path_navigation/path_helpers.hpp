@@ -1,5 +1,5 @@
 #pragma once
-#include "game/detail/pathfinding.h"
+#include "game/detail/pathfinding/pathfinding.h"
 #include "game/modes/ai/arena_mode_ai_structs.h"
 #include "game/debug_drawing_settings.h"
 

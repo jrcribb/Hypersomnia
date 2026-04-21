@@ -22,12 +22,12 @@
 #include "game/messages/game_notification.h"
 #include "game/messages/health_event.h"
 #include "game/detail/inventory/weapon_reloading.hpp"
-#include "game/detail/pathfinding.h"
+#include "game/detail/pathfinding/pathfinding.h"
 #include "game/detail/inventory/perform_transfer.h"
 #include "game/detail/inventory/wielding_setup.hpp"
 #include "game/detail/inventory/perform_wielding.hpp"
 
-#include "game/detail/pathfinding/navigate_pathfinding.hpp"
+#include "game/detail/path_navigation/navigate_pathfinding.hpp"
 
 #include "game/modes/ai/ai_character_context.h"
 #include "game/modes/ai/tasks/find_closest_enemy.hpp"
