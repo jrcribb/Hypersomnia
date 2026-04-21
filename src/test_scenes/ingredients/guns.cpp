@@ -4174,7 +4174,7 @@ namespace test_flavours {
 			set_density_mult(meta, 2.0f);
 			make_default_gun_container(meta, item_holding_stance::SNIPER_LIKE, 1850.f, 0.f, false, "0.1");
 			meta.get<invariants::item>().wield_sound.id = to_sound_id(test_scene_sound_id::STANDARD_SNIPER_DRAW);
-			meta.get<invariants::item>().standard_price = 5800;
+			meta.get<invariants::item>().standard_price = 6000;
 			set_chambering_duration_ms(meta, 650.f);
 			meta.template get<invariants::item>().space_occupied_per_charge = to_space_units("8");
 			only_allow_mag(meta, test_container_items::AWKA_MAGAZINE);

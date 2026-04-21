@@ -34,11 +34,11 @@ inline void gather_waypoints_for_team(
 			const bool faction_matches = ::is_waypoint_for_faction(waypoint_faction, faction);
 
 			if (!faction_matches) {
-				AI_LOG("WAYPOINT (%x) MATCHES: %x %x", typed_handle.get_id(), waypoint_faction, faction);
+				AI_LOG("WAYPOINT (%x) MISMATCH: %x %x", typed_handle.get_id(), waypoint_faction, faction);
 				return;
 			}
 			else {
-				AI_LOG("WAYPOINT (%x) MISMATCH: %x %x", typed_handle.get_id(), waypoint_faction, faction);
+				AI_LOG("WAYPOINT (%x) MATCHES: %x %x", typed_handle.get_id(), waypoint_faction, faction);
 			}
 
 			ai_waypoint_state wp_state;

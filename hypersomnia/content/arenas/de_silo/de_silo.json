@@ -1,7 +1,7 @@
 {
     "meta": {
         "name": "de_silo",
-        "version_timestamp": "2025-10-26 21:11:32.045620 UTC"
+        "version_timestamp": "2026-04-21 18:54:06.190177 UTC"
     },
     "about": {
         "author": "lia",
@@ -17,11 +17,14 @@
         }
     },
     "playtesting": {
-        "mode": "quick_test",
-        "starting_faction": "RESISTANCE"
+        "mode": "bomb_defusal",
+        "starting_faction": "RESISTANCE",
+        "spawn_bots": true,
+        "spawn_only_enemy_bots": true
     },
     "game_modes": {
         "bomb_defusal": {
+            "default_bot_quota": 6,
             "warmup_time": 81
         },
         "gun_game": {
@@ -285,7 +288,7 @@
             "id": "@furn3",
             "domain": "FOREGROUND",
             "neon_map": {
-                "light_colors": [[0, 122, 122, 255]
+                "light_colors": [[0, 122, 122, 255, 1.0]
                 ]
             },
             "size": [128, 128],
@@ -302,7 +305,7 @@
                     100
                 ],
                 "amplification": 165.0,
-                "light_colors": [[0, 101, 89, 255], [150, 7, 7, 255]
+                "light_colors": [[0, 101, 89, 255, 1.0], [150, 7, 7, 255, 1.0]
                 ]
             },
             "size": [512, 512],
@@ -376,7 +379,7 @@
                     362
                 ],
                 "amplification": 862.0,
-                "light_colors": [[0, 122, 122, 255], [0, 125, 134, 208]
+                "light_colors": [[0, 122, 122, 255, 1.0], [0, 125, 134, 208, 1.0]
                 ]
             },
             "size": [32, 16],
@@ -541,6 +544,34 @@
     ],
     "layers": [
         {
+            "id": "Layer 1",
+            "nodes": [
+                "bot_waypoint_patrol (11)",
+                "bot_waypoint_patrol (10)",
+                "bot_waypoint_patrol (9)",
+                "bot_waypoint_patrol (8)",
+                "bot_waypoint_patrol (7)",
+                "bot_waypoint_patrol (13)",
+                "bot_waypoint_patrol (12)",
+                "bot_waypoint_patrol (6)",
+                "bot_waypoint_patrol (4)",
+                "bot_waypoint_patrol (5)",
+                "bot_waypoint_push (2)",
+                "bot_waypoint_push (1)",
+                "bot_waypoint_push",
+                "bot_waypoint_patrol (3)",
+                "bot_waypoint_patrol (2)",
+                "bot_waypoint_patrol (15)",
+                "bot_waypoint_push (5)",
+                "bot_waypoint_push (4)",
+                "bot_waypoint_push (6)",
+                "bot_waypoint_push (3)",
+                "bot_waypoint_patrol (14)",
+                "bot_waypoint_patrol (1)",
+                "bot_waypoint_patrol"
+            ]
+        },
+        {
             "id": "New layer 1",
             "is_open_in_editor": false,
             "opacity": 0.0,
@@ -686,7 +717,6 @@
         },
         {
             "id": "New layer",
-            "is_open_in_editor": false,
             "nodes": [
                 "Metal2 (16)",
                 "Metal2",
@@ -4897,6 +4927,159 @@
             "type": "ffa_spawn",
             "pos": [1407.0, 4097.0],
             "rotation": -90.0
+        },
+        {
+            "id": "bot_waypoint_patrol",
+            "type": "bot_waypoint_patrol",
+            "pos": [1136.0, 2774.0],
+            "rotation": 135.0
+        },
+        {
+            "id": "bot_waypoint_patrol (1)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1184.0, 3748.0],
+            "rotation": -130.12103271484375
+        },
+        {
+            "id": "bot_waypoint_patrol (2)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1335.0, 4114.0],
+            "rotation": -173.5839385986328
+        },
+        {
+            "id": "bot_waypoint_patrol (3)",
+            "type": "bot_waypoint_patrol",
+            "faction": "METROPOLIS",
+            "pos": [2128.0, 3201.0],
+            "rotation": -206.7568817138672
+        },
+        {
+            "id": "bot_waypoint_patrol (4)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1758.0, 2947.0],
+            "rotation": -128.12445068359375
+        },
+        {
+            "id": "bot_waypoint_patrol (5)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "pos": [1670.0, 3711.0],
+            "rotation": -51.2216796875
+        },
+        {
+            "id": "bot_waypoint_patrol (6)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [3039.0, 1928.0],
+            "rotation": -180.0
+        },
+        {
+            "id": "bot_waypoint_patrol (7)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [2775.0, 395.0],
+            "rotation": -180.0
+        },
+        {
+            "id": "bot_waypoint_patrol (8)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [1511.0, 932.0],
+            "rotation": -64.61414337158203
+        },
+        {
+            "id": "bot_waypoint_patrol (9)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [2314.0, 1453.0],
+            "rotation": -94.88766479492188
+        },
+        {
+            "id": "bot_waypoint_patrol (10)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [2149.0, 1400.0],
+            "rotation": -214.73001098632813
+        },
+        {
+            "id": "bot_waypoint_patrol (11)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [1647.0, 1399.0],
+            "rotation": -221.04071044921875
+        },
+        {
+            "id": "bot_waypoint_push",
+            "type": "bot_waypoint_push",
+            "faction": "METROPOLIS",
+            "pos": [-890.0, 3004.0],
+            "rotation": -146.0443115234375
+        },
+        {
+            "id": "bot_waypoint_push (1)",
+            "type": "bot_waypoint_push",
+            "faction": "METROPOLIS",
+            "pos": [-918.0, 967.0],
+            "rotation": -212.34646606445313
+        },
+        {
+            "id": "bot_waypoint_push (2)",
+            "type": "bot_waypoint_push",
+            "faction": "METROPOLIS",
+            "pos": [-126.0, 1651.0],
+            "rotation": -182.3974609375
+        },
+        {
+            "id": "bot_waypoint_patrol (12)",
+            "type": "bot_waypoint_patrol",
+            "pos": [517.0, 2329.0],
+            "rotation": -101.95538330078125
+        },
+        {
+            "id": "bot_waypoint_patrol (13)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1031.0, 2340.0],
+            "rotation": -81.388427734375
+        },
+        {
+            "id": "bot_waypoint_patrol (14)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "pos": [36.0, 2691.0],
+            "rotation": 37.67060852050781
+        },
+        {
+            "id": "bot_waypoint_patrol (15)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "pos": [-39.0, 3874.0],
+            "rotation": -95.7571029663086
+        },
+        {
+            "id": "bot_waypoint_push (3)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [135.0, 387.0]
+        },
+        {
+            "id": "bot_waypoint_push (4)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [592.0, 2326.0],
+            "rotation": -33.714508056640625
+        },
+        {
+            "id": "bot_waypoint_push (5)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [179.0, 3845.0],
+            "rotation": -0.5273895263671875
+        },
+        {
+            "id": "bot_waypoint_push (6)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [328.0, 2037.0]
         },
         {
             "id": "bombsite",

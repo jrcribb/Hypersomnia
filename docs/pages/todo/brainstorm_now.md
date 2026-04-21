@@ -6,9 +6,8 @@ permalink: brainstorm_now
 summary: That which we are brainstorming at the moment.
 ---
 
-- przed releasem
-	- logi usunac
-	- tutorial naprawic
+- randomized waypoints in absence of any
+	- we have multitude of maps, it will be a bother to create waypoints for all right away
 
 - boty (jeszcze)
 	- zeby sie nie obijaly o siebie - opcjonalnie omijac tile zajety przez bota
@@ -16,6 +15,12 @@ summary: That which we are brainstorming at the moment.
 	- jak przeladowuje to do najblizszego tile z coverem
 	- jak slychac kroki gdzies to przy kampieniu celowac w najblizsza kratke z coverem albo nawet stanac jak patroluje i on jest blisko
 	- unikanie nejdow tez najblizszy cover
+
+
+- przed releasem
+	- logi usunac
+	- tutorial naprawic
+
 
 - zaktualizowac tutorial
 

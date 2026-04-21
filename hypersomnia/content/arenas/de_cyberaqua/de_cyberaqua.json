@@ -1,7 +1,7 @@
 {
     "meta": {
         "name": "de_cyberaqua",
-        "version_timestamp": "2024-05-01 21:27:34.369608 UTC"
+        "version_timestamp": "2026-04-21 18:54:22.993235 UTC"
     },
     "about": {
         "author": "Pythagoras",
@@ -15,10 +15,14 @@
         }
     },
     "playtesting": {
-        "mode": "quick_test"
+        "mode": "bomb_defusal",
+        "spawn_bots": true,
+        "spawn_only_enemy_bots": true,
+        "bot_difficulty": "HARD"
     },
     "game_modes": {
         "bomb_defusal": {
+            "default_bot_quota": 6,
             "warmup_time": 81,
             "round_time": 100
         },
@@ -45,7 +49,7 @@
             "file_hash": "e4765400e269e4408a2ffdb3331e1be6ff5b26c3617dddd875954535f3fc30b2",
             "id": "@generatorconnector",
             "neon_map": {
-                "light_colors": [[48, 96, 130, 255], [136, 39, 39, 255]
+                "light_colors": [[48, 96, 130, 255, 1.0], [136, 39, 39, 255, 1.0]
                 ]
             },
             "size": [26, 35],
@@ -80,7 +84,7 @@
             "file_hash": "744629c9c1768e769b0ebec443ddba30c25d6a056c3530b734a9f17abf5459e1",
             "id": "@generatorconsolelight",
             "neon_map": {
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "neon_color": [0, 255, 255, 255],
@@ -102,7 +106,7 @@
             "neon_map": {
                 "standard_deviation": 7.0,
                 "amplification": 80.0,
-                "light_colors": [[153, 229, 80, 255], [206, 79, 0, 255], [251, 242, 54, 255], [144, 73, 25, 255], [55, 148, 110, 255], [160, 155, 35, 255], [160, 155, 35, 255]
+                "light_colors": [[153, 229, 80, 255, 1.0], [206, 79, 0, 255, 1.0], [251, 242, 54, 255, 1.0], [144, 73, 25, 255, 1.0], [55, 148, 110, 255, 1.0], [160, 155, 35, 255, 1.0], [160, 155, 35, 255, 1.0]
                 ]
             },
             "size": [162, 178],
@@ -125,7 +129,7 @@
             "neon_map": {
                 "standard_deviation": 7.0,
                 "amplification": 120.0,
-                "light_colors": [[142, 186, 197, 255]
+                "light_colors": [[142, 186, 197, 255, 1.0]
                 ]
             },
             "color": [255, 255, 255, 53],
@@ -307,7 +311,7 @@
             "file_hash": "1978f07c14bedf85d47e3a29be0eb6606b019217e980cea3730f52f7019c436e",
             "id": "@cyan_floor_1",
             "neon_map": {
-                "light_colors": [[95, 205, 228, 255], [79, 139, 151, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [79, 139, 151, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -326,7 +330,7 @@
             "file_hash": "c474cb9027c5880a9df8aa3ae2fb0b1465d5ddd0848a2909507d5ae48360fa38",
             "id": "@cyan_floor_3",
             "neon_map": {
-                "light_colors": [[95, 205, 228, 255], [79, 139, 151, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [79, 139, 151, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -345,7 +349,7 @@
             "file_hash": "2cdf1bd3efd67e64b70d2980109f0045908feffa45f08a86273de5e39673bbed",
             "id": "@cyan_floor_4",
             "neon_map": {
-                "light_colors": [[95, 205, 228, 255], [79, 139, 151, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [79, 139, 151, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -364,7 +368,7 @@
             "file_hash": "b442af5ec5d9cc4bff6473586206d49f8427cf15c439f5fce61ccfb7081f7ec4",
             "id": "@cyan_floor_5",
             "neon_map": {
-                "light_colors": [[95, 205, 228, 255], [79, 139, 151, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [79, 139, 151, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -383,7 +387,7 @@
             "file_hash": "4a834d06922847a9f0ce664f36a29b650af07aa930c9cf2b0b37dab19eaae9b9",
             "id": "@cyan_floor_6",
             "neon_map": {
-                "light_colors": [[95, 205, 228, 255], [79, 139, 151, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [79, 139, 151, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -402,7 +406,7 @@
             "file_hash": "68b90be7802630af7fb425506b87de830a4ec6d2d7de77797bd6bbaeff9e32ec",
             "id": "@cyan_floor_7",
             "neon_map": {
-                "light_colors": [[95, 205, 228, 255], [79, 139, 151, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [79, 139, 151, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -436,7 +440,7 @@
             "file_hash": "2666a5cd82eef18bf3e83efd3954aab2a4ddb17c86f6bf57c97672e2c53f705e",
             "id": "@cyan_floor_rotated",
             "neon_map": {
-                "light_colors": [[95, 205, 228, 255], [79, 139, 151, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [79, 139, 151, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -455,7 +459,7 @@
             "file_hash": "75c6e6e09cc5d9c897a6d2ade4cf5d809a22fb28fa158c425b745581676d468d",
             "id": "@bin_blue",
             "neon_map": {
-                "light_colors": [[64, 136, 179, 255], [110, 159, 72, 255], [230, 78, 28, 255], [179, 37, 37, 255], [177, 185, 63, 255], [153, 159, 63, 255], [140, 50, 50, 255], [37, 89, 35, 255], [52, 116, 153, 255], [115, 47, 47, 255], [159, 48, 48, 255], [17, 77, 16, 255]
+                "light_colors": [[64, 136, 179, 255, 1.0], [110, 159, 72, 255, 1.0], [230, 78, 28, 255, 1.0], [179, 37, 37, 255, 1.0], [177, 185, 63, 255, 1.0], [153, 159, 63, 255, 1.0], [140, 50, 50, 255, 1.0], [37, 89, 35, 255, 1.0], [52, 116, 153, 255, 1.0], [115, 47, 47, 255, 1.0], [159, 48, 48, 255, 1.0], [17, 77, 16, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -477,7 +481,7 @@
             "file_hash": "95170812d70c31cd6aed89801cb5486c2eb3365b345ed601609c1a5db9bd58f7",
             "id": "@bin_green",
             "neon_map": {
-                "light_colors": [[64, 136, 179, 255], [110, 159, 72, 255], [230, 78, 28, 255], [179, 37, 37, 255], [177, 185, 63, 255], [153, 159, 63, 255], [140, 50, 50, 255], [37, 89, 35, 255], [52, 116, 153, 255], [115, 47, 47, 255], [159, 48, 48, 255], [17, 77, 16, 255]
+                "light_colors": [[64, 136, 179, 255, 1.0], [110, 159, 72, 255, 1.0], [230, 78, 28, 255, 1.0], [179, 37, 37, 255, 1.0], [177, 185, 63, 255, 1.0], [153, 159, 63, 255, 1.0], [140, 50, 50, 255, 1.0], [37, 89, 35, 255, 1.0], [52, 116, 153, 255, 1.0], [115, 47, 47, 255, 1.0], [159, 48, 48, 255, 1.0], [17, 77, 16, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -497,7 +501,7 @@
             "file_hash": "1d652e486935e07c45429c13a6ed1cb088692890a625d49eae66cfbd1d4bb644",
             "id": "@bin_red",
             "neon_map": {
-                "light_colors": [[64, 136, 179, 255], [110, 159, 72, 255], [230, 78, 28, 255], [179, 37, 37, 255], [177, 185, 63, 255], [153, 159, 63, 255], [140, 50, 50, 255], [37, 89, 35, 255], [52, 116, 153, 255], [115, 47, 47, 255], [159, 48, 48, 255], [17, 77, 16, 255]
+                "light_colors": [[64, 136, 179, 255, 1.0], [110, 159, 72, 255, 1.0], [230, 78, 28, 255, 1.0], [179, 37, 37, 255, 1.0], [177, 185, 63, 255, 1.0], [153, 159, 63, 255, 1.0], [140, 50, 50, 255, 1.0], [37, 89, 35, 255, 1.0], [52, 116, 153, 255, 1.0], [115, 47, 47, 255, 1.0], [159, 48, 48, 255, 1.0], [17, 77, 16, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -517,7 +521,7 @@
             "file_hash": "49245b0751a20ffb3dfe7bb1d4d5f4d254df1ebe5853d870c46bcf0cfc5c966c",
             "id": "@bin_yellow",
             "neon_map": {
-                "light_colors": [[64, 136, 179, 255], [110, 159, 72, 255], [230, 78, 28, 255], [179, 37, 37, 255], [177, 185, 63, 255], [153, 159, 63, 255], [140, 50, 50, 255], [37, 89, 35, 255], [52, 116, 153, 255], [115, 47, 47, 255], [159, 48, 48, 255], [17, 77, 16, 255]
+                "light_colors": [[64, 136, 179, 255, 1.0], [110, 159, 72, 255, 1.0], [230, 78, 28, 255, 1.0], [179, 37, 37, 255, 1.0], [177, 185, 63, 255, 1.0], [153, 159, 63, 255, 1.0], [140, 50, 50, 255, 1.0], [37, 89, 35, 255, 1.0], [52, 116, 153, 255, 1.0], [115, 47, 47, 255, 1.0], [159, 48, 48, 255, 1.0], [17, 77, 16, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -539,7 +543,7 @@
             "neon_map": {
                 "standard_deviation": 8.0,
                 "amplification": 350.0,
-                "light_colors": [[85, 72, 72, 255], [128, 51, 51, 255], [85, 72, 72, 255], [58, 47, 47, 255]
+                "light_colors": [[85, 72, 72, 255, 1.0], [128, 51, 51, 255, 1.0], [85, 72, 72, 255, 1.0], [58, 47, 47, 255, 1.0]
                 ]
             },
             "size": [78, 48],
@@ -560,7 +564,7 @@
             "id": "@cq",
             "domain": "FOREGROUND",
             "neon_map": {
-                "light_colors": [[0, 255, 255, 255]
+                "light_colors": [[0, 255, 255, 255, 1.0]
                 ]
             },
             "size": [152, 36],
@@ -576,7 +580,7 @@
             "id": "@arc_console_light",
             "domain": "FOREGROUND",
             "neon_map": {
-                "light_colors": [[0, 224, 255, 255]
+                "light_colors": [[0, 224, 255, 255, 1.0]
                 ]
             },
             "size": [56, 20]
@@ -587,7 +591,7 @@
             "id": "@ball_console_light",
             "domain": "FOREGROUND",
             "neon_map": {
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "size": [18, 18]
@@ -597,7 +601,7 @@
             "file_hash": "348745712c69e8cbd33a9cdfcc9df87d37762c9483dd420a9094af29ee94e4f0",
             "id": "@brain_console_light",
             "neon_map": {
-                "light_colors": [[140, 173, 249, 255]
+                "light_colors": [[140, 173, 249, 255, 1.0]
                 ]
             },
             "size": [26, 25]
@@ -625,7 +629,7 @@
             "domain": "PHYSICAL",
             "neon_map": {
                 "amplification": 160.0,
-                "light_colors": [[176, 198, 57, 255], [138, 46, 0, 255], [103, 115, 42, 255], [191, 191, 191, 255]
+                "light_colors": [[176, 198, 57, 255, 1.0], [138, 46, 0, 255, 1.0], [103, 115, 42, 255, 1.0], [191, 191, 191, 255, 1.0]
                 ]
             },
             "size": [144, 114],
@@ -667,7 +671,7 @@
             "id": "@noweustrojstwo",
             "domain": "PHYSICAL",
             "neon_map": {
-                "light_colors": [[155, 203, 63, 255], [126, 188, 229, 255], [193, 73, 147, 255], [121, 148, 172, 255], [45, 87, 125, 255]
+                "light_colors": [[155, 203, 63, 255, 1.0], [126, 188, 229, 255, 1.0], [193, 73, 147, 255, 1.0], [121, 148, 172, 255, 1.0], [45, 87, 125, 255, 1.0]
                 ]
             },
             "size": [212, 196],
@@ -725,7 +729,7 @@
             "neon_map": {
                 "standard_deviation": 7.0,
                 "amplification": 120.0,
-                "light_colors": [[95, 205, 228, 255], [95, 205, 228, 255], [18, 214, 255, 255], [91, 114, 135, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [95, 205, 228, 255, 1.0], [18, 214, 255, 255, 1.0], [91, 114, 135, 255, 1.0]
                 ]
             },
             "size": [118, 92],
@@ -750,7 +754,7 @@
             "id": "@garden",
             "domain": "FOREGROUND",
             "neon_map": {
-                "light_colors": [[75, 255, 0, 255]
+                "light_colors": [[75, 255, 0, 255, 1.0]
                 ]
             },
             "size": [152, 36],
@@ -767,7 +771,7 @@
             "domain": "FOREGROUND",
             "neon_map": {
                 "amplification": 130.0,
-                "light_colors": [[255, 0, 0, 255]
+                "light_colors": [[255, 0, 0, 255, 1.0]
                 ]
             },
             "size": [152, 36],
@@ -785,7 +789,7 @@
             "neon_map": {
                 "standard_deviation": 8.0,
                 "amplification": 120.0,
-                "light_colors": [[255, 255, 0, 255]
+                "light_colors": [[255, 255, 0, 255, 1.0]
                 ]
             },
             "size": [152, 36],
@@ -800,7 +804,7 @@
             "file_hash": "fe0298bb7e4ce3d0d684361a9b3837cee1bc5ce64a7ece0e401bac917a250c3b",
             "id": "@szkicstracja2",
             "neon_map": {
-                "light_colors": [[99, 155, 255, 255], [249, 0, 255, 255]
+                "light_colors": [[99, 155, 255, 255, 1.0], [249, 0, 255, 255, 1.0]
                 ]
             },
             "color": [255, 255, 223, 255],
@@ -822,7 +826,7 @@
             "file_hash": "b16ebeb0cf76e269d57a3a1acb8ccc0fc15c5a946e1f8c334f57fccc11acb280",
             "id": "@szkicstracja",
             "neon_map": {
-                "light_colors": [[99, 155, 255, 255], [134, 230, 250, 255], [0, 211, 255, 255]
+                "light_colors": [[99, 155, 255, 255, 1.0], [134, 230, 250, 255, 1.0], [0, 211, 255, 255, 1.0]
                 ]
             },
             "color": [255, 255, 223, 255],
@@ -846,7 +850,7 @@
             "neon_map": {
                 "amplification": 120.0,
                 "alpha_multiplier": 0.4000000059604645,
-                "light_colors": [[144, 165, 175, 255], [0, 170, 255, 255]
+                "light_colors": [[144, 165, 175, 255, 1.0], [0, 170, 255, 255, 1.0]
                 ]
             },
             "color": [94, 203, 218, 207],
@@ -897,7 +901,7 @@
             "file_hash": "bbbc3583938871a903c442b6981a2776c76cee72eae36f96e5c05cf10cee13e4",
             "id": "@neteee",
             "neon_map": {
-                "light_colors": [[0, 255, 233, 255]
+                "light_colors": [[0, 255, 233, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -952,7 +956,7 @@
             "neon_map": {
                 "standard_deviation": 9.0,
                 "amplification": 190.0,
-                "light_colors": [[133, 196, 112, 255], [127, 178, 109, 255], [115, 166, 101, 255], [108, 158, 93, 255], [91, 130, 80, 255], [114, 165, 100, 255], [112, 161, 98, 255]
+                "light_colors": [[133, 196, 112, 255, 1.0], [127, 178, 109, 255, 1.0], [115, 166, 101, 255, 1.0], [108, 158, 93, 255, 1.0], [91, 130, 80, 255, 1.0], [114, 165, 100, 255, 1.0], [112, 161, 98, 255, 1.0]
                 ]
             },
             "color": [255, 211, 105, 255],
@@ -965,7 +969,7 @@
             "file_hash": "853b1fccf37395f29727bd0deb9308e7288e124257d7e092fe9d1ce072c6502d",
             "id": "@donic2",
             "neon_map": {
-                "light_colors": [[0, 211, 255, 255]
+                "light_colors": [[0, 211, 255, 255, 1.0]
                 ]
             },
             "size": [272, 128],
@@ -986,7 +990,7 @@
             "id": "@donicv2",
             "neon_map": {
                 "amplification": 120.0,
-                "light_colors": [[0, 255, 0, 255], [0, 255, 255, 255]
+                "light_colors": [[0, 255, 0, 255, 1.0], [0, 255, 255, 255, 1.0]
                 ]
             },
             "size": [518, 160],
@@ -1010,7 +1014,7 @@
             "neon_map": {
                 "standard_deviation": 8.0,
                 "amplification": 140.0,
-                "light_colors": [[107, 219, 197, 255], [51, 166, 130, 255]
+                "light_colors": [[107, 219, 197, 255, 1.0], [51, 166, 130, 255, 1.0]
                 ]
             },
             "color": [255, 255, 106, 255],
@@ -1132,7 +1136,7 @@
                     100
                 ],
                 "amplification": 140.0,
-                "light_colors": [[212, 248, 110, 255], [129, 165, 35, 255]
+                "light_colors": [[212, 248, 110, 255, 1.0], [129, 165, 35, 255, 1.0]
                 ]
             },
             "color": [132, 255, 200, 255],
@@ -1157,7 +1161,7 @@
                 "standard_deviation": 8.0,
                 "amplification": 220.0,
                 "alpha_multiplier": 0.699999988079071,
-                "light_colors": [[210, 121, 121, 255], [198, 85, 85, 255], [116, 108, 109, 255], [38, 32, 32, 255]
+                "light_colors": [[210, 121, 121, 255, 1.0], [198, 85, 85, 255, 1.0], [116, 108, 109, 255, 1.0], [38, 32, 32, 255, 1.0]
                 ]
             },
             "size": [96, 96],
@@ -1182,7 +1186,7 @@
                 "standard_deviation": 8.0,
                 "amplification": 220.0,
                 "alpha_multiplier": 0.5,
-                "light_colors": [[255, 185, 38, 255], [61, 39, 28, 255]
+                "light_colors": [[255, 185, 38, 255, 1.0], [61, 39, 28, 255, 1.0]
                 ]
             },
             "size": [84, 84],
@@ -1366,7 +1370,7 @@
             "neon_map": {
                 "standard_deviation": 7.0,
                 "amplification": 80.0,
-                "light_colors": [[153, 229, 80, 255], [206, 79, 0, 255], [251, 242, 54, 255], [144, 73, 25, 255], [55, 148, 110, 255], [160, 155, 35, 255], [160, 155, 35, 255]
+                "light_colors": [[153, 229, 80, 255, 1.0], [206, 79, 0, 255, 1.0], [251, 242, 54, 255, 1.0], [144, 73, 25, 255, 1.0], [55, 148, 110, 255, 1.0], [160, 155, 35, 255, 1.0], [160, 155, 35, 255, 1.0]
                 ]
             },
             "size": [249, 385],
@@ -1428,7 +1432,7 @@
             "id": "@generatormainpartlight",
             "domain": "FOREGROUND",
             "neon_map": {
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "color": [83, 255, 255, 255],
@@ -1454,7 +1458,7 @@
             "file_hash": "74f05679f9c33af4dbf88333710ec7459630a70098fbf900240d4266a01ac0d9",
             "id": "@generatorpart1",
             "neon_map": {
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "neon_color": [0, 0, 255, 255],
@@ -1510,7 +1514,7 @@
             "id": "@green_room_floor_5",
             "neon_map": {
                 "amplification": 120.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -1532,7 +1536,7 @@
             "id": "@green_room_floor_6",
             "neon_map": {
                 "amplification": 120.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -1554,7 +1558,7 @@
             "id": "@green_room_wall_a1tob1",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1576,7 +1580,7 @@
             "id": "@green_room_wall_a2",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1599,7 +1603,7 @@
             "domain": "FOREGROUND",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1622,7 +1626,7 @@
             "id": "@green_room_wall_a4",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1645,7 +1649,7 @@
             "domain": "FOREGROUND",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1667,7 +1671,7 @@
             "id": "@green_room_wall_b1",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1689,7 +1693,7 @@
             "id": "@green_room_wall_b1toc1",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1711,7 +1715,7 @@
             "id": "@green_room_wall_barier",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1733,7 +1737,7 @@
             "id": "@green_room_wall_c1",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1755,7 +1759,7 @@
             "id": "@green_room_wall_corner_a1",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1778,7 +1782,7 @@
             "domain": "FOREGROUND",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1801,7 +1805,7 @@
             "domain": "FOREGROUND",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1823,7 +1827,7 @@
             "id": "@green_room_wall_corner_a3",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1845,7 +1849,7 @@
             "id": "@green_room_wall_corner_c1",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[195, 255, 92, 255]
+                "light_colors": [[195, 255, 92, 255, 1.0]
                 ]
             },
             "color": [45, 255, 223, 255],
@@ -1866,7 +1870,7 @@
             "file_hash": "1803d1d8218942a512e8821a6568eadafcdaa70a64498de57aa0b38706a68622",
             "id": "@lab_table",
             "neon_map": {
-                "light_colors": [[223, 113, 38, 255]
+                "light_colors": [[223, 113, 38, 255, 1.0]
                 ]
             },
             "color": [255, 255, 223, 255],
@@ -1908,7 +1912,7 @@
             "domain": "FOREGROUND",
             "neon_map": {
                 "standard_deviation": 5.0,
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "size": [128, 32],
@@ -2027,7 +2031,7 @@
             "id": "@green_metal_box_closed",
             "domain": "PHYSICAL",
             "neon_map": {
-                "light_colors": [[255, 0, 0, 255], [178, 24, 4, 255], [128, 128, 128, 255]
+                "light_colors": [[255, 0, 0, 255, 1.0], [178, 24, 4, 255, 1.0], [128, 128, 128, 255, 1.0]
                 ]
             },
             "size": [128, 128],
@@ -2044,7 +2048,7 @@
             "id": "@green_metal_box_open",
             "domain": "PHYSICAL",
             "neon_map": {
-                "light_colors": [[25, 255, 25, 255], [96, 225, 1, 255], [190, 250, 230, 255], [139, 245, 211, 255], [128, 128, 128, 255]
+                "light_colors": [[25, 255, 25, 255, 1.0], [96, 225, 1, 255, 1.0], [190, 250, 230, 255, 1.0], [139, 245, 211, 255, 1.0], [128, 128, 128, 255, 1.0]
                 ]
             },
             "size": [128, 128],
@@ -2061,7 +2065,7 @@
             "id": "@pink_box",
             "domain": "PHYSICAL",
             "neon_map": {
-                "light_colors": [[255, 141, 243, 255], [66, 228, 207, 255], [228, 20, 206, 255]
+                "light_colors": [[255, 141, 243, 255, 1.0], [66, 228, 207, 255, 1.0], [228, 20, 206, 255, 1.0]
                 ]
             },
             "size": [128, 128],
@@ -2080,7 +2084,7 @@
             "neon_map": {
                 "standard_deviation": 9.0,
                 "amplification": 80.0,
-                "light_colors": [[0, 234, 255, 255]
+                "light_colors": [[0, 234, 255, 255, 1.0]
                 ]
             },
             "size": [128, 128],
@@ -2130,7 +2134,7 @@
             "id": "@violet_box",
             "domain": "PHYSICAL",
             "neon_map": {
-                "light_colors": [[96, 225, 1, 255], [35, 211, 213, 255], [35, 211, 213, 255], [32, 90, 77, 255]
+                "light_colors": [[96, 225, 1, 255, 1.0], [35, 211, 213, 255, 1.0], [35, 211, 213, 255, 1.0], [32, 90, 77, 255, 1.0]
                 ]
             },
             "size": [128, 128],
@@ -2146,7 +2150,7 @@
             "file_hash": "476d3f37c8629632a11f7b5102840f4e54629ab285299588ce8550538ee0d177",
             "id": "@yellow_barrier",
             "neon_map": {
-                "light_colors": [[232, 199, 65, 255]
+                "light_colors": [[232, 199, 65, 255, 1.0]
                 ]
             },
             "size": [32, 128],
@@ -2165,7 +2169,7 @@
             "file_hash": "ae0b55b4b5618660c96384d743f415f8604bc83a957f1e3139da7d6a7f5150a2",
             "id": "@pale_cyan_floor_1",
             "neon_map": {
-                "light_colors": [[28, 255, 246, 255]
+                "light_colors": [[28, 255, 246, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -2185,7 +2189,7 @@
             "file_hash": "cbf1766735da9d37d45178d05dc2d7e788c30e7f29529cc0670b21f672e3523f",
             "id": "@pale_cyan_floor_2",
             "neon_map": {
-                "light_colors": [[28, 255, 246, 255]
+                "light_colors": [[28, 255, 246, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -2205,7 +2209,7 @@
             "file_hash": "09d88668ce69d75e7dd518c93e44d2a01b8e59d8e359ddea6389a072529dddb7",
             "id": "@pale_cyan_floor_3",
             "neon_map": {
-                "light_colors": [[28, 255, 246, 255]
+                "light_colors": [[28, 255, 246, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -2225,7 +2229,7 @@
             "file_hash": "3ea692e57afd1df46900f8653b423790b1c5c284fb26191994b1faf788fcf7d0",
             "id": "@pale_cyan_floor_4",
             "neon_map": {
-                "light_colors": [[28, 255, 246, 255]
+                "light_colors": [[28, 255, 246, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -2246,7 +2250,7 @@
             "id": "@server_room_cable_1",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "size": [128, 38],
@@ -2259,7 +2263,7 @@
             "id": "@server_room_cable_2",
             "neon_map": {
                 "amplification": 20.0,
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "size": [128, 39],
@@ -2340,7 +2344,7 @@
             "id": "@server_room_floor_4",
             "neon_map": {
                 "amplification": 120.0,
-                "light_colors": [[114, 255, 0, 255], [220, 0, 255, 255], [143, 245, 245, 255]
+                "light_colors": [[114, 255, 0, 255, 1.0], [220, 0, 255, 255, 1.0], [143, 245, 245, 255, 1.0]
                 ]
             },
             "color": [189, 189, 189, 255],
@@ -2362,7 +2366,7 @@
             "id": "@server_room_floor_7",
             "neon_map": {
                 "amplification": 120.0,
-                "light_colors": [[114, 255, 0, 255], [220, 0, 255, 255], [143, 245, 245, 255]
+                "light_colors": [[114, 255, 0, 255, 1.0], [220, 0, 255, 255, 1.0], [143, 245, 245, 255, 1.0]
                 ]
             },
             "color": [189, 189, 189, 255],
@@ -2384,7 +2388,7 @@
             "id": "@servers",
             "domain": "PHYSICAL",
             "neon_map": {
-                "light_colors": [[0, 255, 255, 255], [172, 50, 50, 255], [110, 162, 255, 255], [172, 50, 50, 255], [110, 162, 255, 255], [172, 50, 50, 255], [153, 229, 80, 255], [48, 96, 130, 255], [59, 99, 31, 255], [201, 208, 224, 255]
+                "light_colors": [[0, 255, 255, 255, 1.0], [172, 50, 50, 255, 1.0], [110, 162, 255, 255, 1.0], [172, 50, 50, 255, 1.0], [110, 162, 255, 255, 1.0], [172, 50, 50, 255, 1.0], [153, 229, 80, 255, 1.0], [48, 96, 130, 255, 1.0], [59, 99, 31, 255, 1.0], [201, 208, 224, 255, 1.0]
                 ]
             },
             "size": [128, 52],
@@ -2399,7 +2403,7 @@
             "file_hash": "a9f5a2dd5a19487af85be1f25a6084de428964691bff6cf2ddeb2f9666e75a37",
             "id": "@sub_control",
             "neon_map": {
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "neon_color": [0, 255, 255, 255],
@@ -2434,7 +2438,7 @@
             "file_hash": "50a3318c2d0cfe4ddddc2caeab151b45a4c61e0978c358ff72441ad691c17665",
             "id": "@sub_entry_safety_light",
             "neon_map": {
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "color": [255, 116, 0, 255],
@@ -2457,7 +2461,7 @@
             "OFF_neon_map": {
                 "standard_deviation": 8.0,
                 "amplification": 120.0,
-                "light_colors": [[95, 205, 228, 255], [80, 140, 167, 255], [7, 57, 78, 255], [0, 255, 255, 255], [7, 57, 78, 255], [7, 57, 78, 255], [4, 37, 51, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0], [80, 140, 167, 255, 1.0], [7, 57, 78, 255, 1.0], [0, 255, 255, 255, 1.0], [7, 57, 78, 255, 1.0], [7, 57, 78, 255, 1.0], [4, 37, 51, 255, 1.0]
                 ]
             },
             "size": [906, 452],
@@ -2478,7 +2482,7 @@
             "neon_map": {
                 "standard_deviation": 7.0,
                 "amplification": 100.0,
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "size": [44, 44],
@@ -2497,7 +2501,7 @@
             "file_hash": "34aa2280df592cfa8395c762de16898841e216b9f2d2f5ddc00e255c93bc9385",
             "id": "@sub_fotel_cyan",
             "neon_map": {
-                "light_colors": [[0, 255, 255, 255]
+                "light_colors": [[0, 255, 255, 255, 1.0]
                 ]
             },
             "size": [84, 43],
@@ -2516,7 +2520,7 @@
             "file_hash": "ec0fe2dcedfedf58aa43b896ab1a1888445a5c38ddc32f3087c2d4c1c704fab4",
             "id": "@sub_microlight",
             "neon_map": {
-                "light_colors": [[255, 255, 255, 255]
+                "light_colors": [[255, 255, 255, 255, 1.0]
                 ]
             },
             "neon_color": [0, 227, 255, 255],
@@ -2620,7 +2624,7 @@
             "file_hash": "b8a25c02bf96c7247da78e090f475ce1e22cbb2a67e2adf9c8b0877d86b8c308",
             "id": "@warning_line",
             "neon_map": {
-                "light_colors": [[213, 167, 56, 255], [212, 196, 80, 255]
+                "light_colors": [[213, 167, 56, 255, 1.0], [212, 196, 80, 255, 1.0]
                 ]
             },
             "size": [128, 33],
@@ -2639,7 +2643,7 @@
             "file_hash": "2c482e04e9ffcf4bbff1dd93952196d9866de16e1fb40c5237e51545ee395884",
             "id": "@warning_line_corner",
             "neon_map": {
-                "light_colors": [[213, 167, 56, 255], [212, 196, 80, 255]
+                "light_colors": [[213, 167, 56, 255, 1.0], [212, 196, 80, 255, 1.0]
                 ]
             },
             "size": [90, 90],
@@ -2660,7 +2664,7 @@
             "neon_map": {
                 "standard_deviation": 8.0,
                 "amplification": 10.0,
-                "light_colors": [[95, 205, 228, 255]
+                "light_colors": [[95, 205, 228, 255, 1.0]
                 ]
             },
             "neon_color": [255, 255, 255, 106],
@@ -2679,7 +2683,7 @@
             "id": "@yellow_barrier_dynamic",
             "domain": "PHYSICAL",
             "neon_map": {
-                "light_colors": [[232, 199, 65, 255]
+                "light_colors": [[232, 199, 65, 255, 1.0]
                 ]
             },
             "size": [32, 128],
@@ -2761,6 +2765,83 @@
         }
     ],
     "layers": [
+        {
+            "id": "waypoints_push",
+            "nodes": [
+                "bot_waypoint_push (11)",
+                "bot_waypoint_push (6)",
+                "bot_waypoint_push (4)",
+                "bot_waypoint_push (10)",
+                "bot_waypoint_push (9)",
+                "bot_waypoint_push (8)",
+                "bot_waypoint_push (5)",
+                "bot_waypoint_push (3)",
+                "bot_waypoint_push (7)",
+                "bot_waypoint_push (2)"
+            ]
+        },
+        {
+            "id": "waypoints_B",
+            "nodes": [
+                "bot_waypoint_patrol (43)",
+                "bot_waypoint_patrol (42)",
+                "bot_waypoint_patrol (41)",
+                "bot_waypoint_patrol (40)",
+                "bot_waypoint_patrol (39)",
+                "bot_waypoint_patrol (38)",
+                "bot_waypoint_patrol (37)",
+                "bot_waypoint_patrol (36)",
+                "bot_waypoint_patrol (35)",
+                "bot_waypoint_patrol (34)",
+                "bot_waypoint_patrol (33)",
+                "bot_waypoint_patrol (32)",
+                "bot_waypoint_patrol (31)",
+                "bot_waypoint_patrol (30)",
+                "bot_waypoint_patrol (29)"
+            ]
+        },
+        {
+            "id": "waypoints_C",
+            "is_open_in_editor": false,
+            "nodes": [
+                "bot_waypoint_patrol (25)",
+                "bot_waypoint_patrol (26)",
+                "bot_waypoint_patrol (24)",
+                "bot_waypoint_patrol (23)",
+                "bot_waypoint_patrol (22)",
+                "bot_waypoint_patrol (21)",
+                "bot_waypoint_patrol (20)",
+                "bot_waypoint_patrol (27)",
+                "bot_waypoint_patrol (19)",
+                "bot_waypoint_patrol (18)",
+                "bot_waypoint_patrol (28)",
+                "bot_waypoint_patrol (17)"
+            ]
+        },
+        {
+            "id": "waypoints_A",
+            "nodes": [
+                "bot_waypoint_patrol (11)",
+                "bot_waypoint_patrol (10)",
+                "bot_waypoint_push (1)",
+                "bot_waypoint_push",
+                "bot_waypoint_patrol (9)",
+                "bot_waypoint_patrol (8)",
+                "bot_waypoint_patrol (7)",
+                "bot_waypoint_patrol (6)",
+                "bot_waypoint_patrol (12)",
+                "bot_waypoint_patrol (5)",
+                "bot_waypoint_patrol (4)",
+                "bot_waypoint_patrol (3)",
+                "bot_waypoint_patrol (2)",
+                "bot_waypoint_patrol (1)",
+                "bot_waypoint_patrol (16)",
+                "bot_waypoint_patrol (15)",
+                "bot_waypoint_patrol (14)",
+                "bot_waypoint_patrol (13)",
+                "bot_waypoint_patrol"
+            ]
+        },
         {
             "id": "Layer 1",
             "nodes": [
@@ -6232,7 +6313,7 @@
         {
             "id": "Violet box (3)",
             "type": "@violet_box",
-            "pos": [93.00005340576172, -4315.00048828125],
+            "pos": [101.00006103515625, -4325.00048828125],
             "rotation": -15.000000953674316
         },
         {
@@ -6255,7 +6336,7 @@
         {
             "id": "Pink box",
             "type": "@pink_box",
-            "pos": [1912.9998779296875, -4925.0]
+            "pos": [1984.0, -4928.0]
         },
         {
             "id": "Violet box (1)",
@@ -6758,8 +6839,8 @@
         {
             "id": "Metal obstacle (7)",
             "type": "@blank4",
-            "pos": [-3504.0, -1984.0],
-            "size": [672, 128]
+            "pos": [-3520.0, -1984.0],
+            "size": [640, 128]
         },
         {
             "id": "Metal obstacle (8)",
@@ -6776,8 +6857,8 @@
         {
             "id": "Metal obstacle (10)",
             "type": "@blank4",
-            "pos": [-2624.0, -1984.0],
-            "size": [768, 128]
+            "pos": [-2592.0, -1984.0],
+            "size": [704, 128]
         },
         {
             "id": "Lab wall (118)",
@@ -16974,6 +17055,386 @@
             "rotation": -90.0
         },
         {
+            "id": "bot_waypoint_patrol",
+            "type": "bot_waypoint_patrol",
+            "pos": [1871.0, -769.0],
+            "rotation": -180.0
+        },
+        {
+            "id": "bot_waypoint_patrol (1)",
+            "type": "bot_waypoint_patrol",
+            "pos": [737.0, -1384.0],
+            "rotation": -165.0
+        },
+        {
+            "id": "bot_waypoint_patrol (2)",
+            "type": "bot_waypoint_patrol",
+            "pos": [577.0, -1025.0],
+            "rotation": -105.0
+        },
+        {
+            "id": "bot_waypoint_patrol (3)",
+            "type": "bot_waypoint_patrol",
+            "faction": "METROPOLIS",
+            "pos": [607.0, -561.0],
+            "rotation": -195.0
+        },
+        {
+            "id": "bot_waypoint_patrol (4)",
+            "type": "bot_waypoint_patrol",
+            "faction": "METROPOLIS",
+            "pos": [623.0, 143.0],
+            "rotation": -180.0
+        },
+        {
+            "id": "bot_waypoint_patrol (5)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1745.0, -481.0],
+            "rotation": -90.0
+        },
+        {
+            "id": "bot_waypoint_patrol (6)",
+            "type": "bot_waypoint_patrol",
+            "pos": [2214.0, -744.0]
+        },
+        {
+            "id": "bot_waypoint_patrol (7)",
+            "type": "bot_waypoint_patrol",
+            "pos": [2639.0, -511.0],
+            "rotation": -75.0
+        },
+        {
+            "id": "bot_waypoint_patrol (8)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1919.0, -1905.0],
+            "rotation": -180.0
+        },
+        {
+            "id": "bot_waypoint_patrol (9)",
+            "type": "bot_waypoint_patrol",
+            "pos": [593.0, -1761.0],
+            "rotation": -201.9554901123047
+        },
+        {
+            "id": "bot_waypoint_patrol (10)",
+            "type": "bot_waypoint_patrol",
+            "pos": [767.0, -2289.0],
+            "rotation": -90.0
+        },
+        {
+            "id": "bot_waypoint_patrol (11)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1281.0, -2289.0],
+            "rotation": -270.0
+        },
+        {
+            "id": "bot_waypoint_patrol (12)",
+            "type": "bot_waypoint_patrol",
+            "faction": "METROPOLIS",
+            "pos": [1391.0, -1.0],
+            "rotation": -270.0
+        },
+        {
+            "id": "bot_waypoint_patrol (13)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1727.0, -1505.0],
+            "rotation": -450.0
+        },
+        {
+            "id": "bot_waypoint_patrol (14)",
+            "type": "bot_waypoint_patrol",
+            "pos": [1729.0, -1137.0],
+            "rotation": -270.0
+        },
+        {
+            "id": "bot_waypoint_patrol (15)",
+            "type": "bot_waypoint_patrol",
+            "pos": [2577.0, -1009.0],
+            "rotation": -135.35096740722656
+        },
+        {
+            "id": "bot_waypoint_patrol (16)",
+            "type": "bot_waypoint_patrol",
+            "pos": [2876.0, -1014.0],
+            "rotation": -147.00242614746094
+        },
+        {
+            "id": "bot_waypoint_push",
+            "type": "bot_waypoint_push",
+            "faction": "METROPOLIS",
+            "pos": [-1785.0, -1252.0],
+            "rotation": -237.9381561279297
+        },
+        {
+            "id": "bot_waypoint_push (1)",
+            "type": "bot_waypoint_push",
+            "faction": "METROPOLIS",
+            "pos": [-972.0, -95.0],
+            "rotation": -473.8738098144531
+        },
+        {
+            "id": "bot_waypoint_patrol (17)",
+            "type": "bot_waypoint_patrol",
+            "letter": "C",
+            "pos": [-209.0, 1537.0]
+        },
+        {
+            "id": "bot_waypoint_patrol (18)",
+            "type": "bot_waypoint_patrol",
+            "letter": "C",
+            "pos": [-81.0, 2209.0],
+            "rotation": -75.0
+        },
+        {
+            "id": "bot_waypoint_patrol (19)",
+            "type": "bot_waypoint_patrol",
+            "letter": "C",
+            "pos": [2225.0, 1791.0],
+            "rotation": -180.0
+        },
+        {
+            "id": "bot_waypoint_patrol (20)",
+            "type": "bot_waypoint_patrol",
+            "letter": "C",
+            "pos": [1073.0, 1265.0],
+            "rotation": -210.0
+        },
+        {
+            "id": "bot_waypoint_patrol (21)",
+            "type": "bot_waypoint_patrol",
+            "letter": "C",
+            "pos": [559.0, 2753.0],
+            "rotation": -150.0
+        },
+        {
+            "id": "bot_waypoint_patrol (22)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "letter": "C",
+            "pos": [879.0, 3375.0],
+            "rotation": -165.0
+        },
+        {
+            "id": "bot_waypoint_patrol (23)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "letter": "C",
+            "pos": [1057.0, 3391.0],
+            "rotation": -30.0
+        },
+        {
+            "id": "bot_waypoint_patrol (24)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "letter": "C",
+            "pos": [1857.0, 2721.0],
+            "rotation": -150.0
+        },
+        {
+            "id": "bot_waypoint_patrol (25)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "letter": "C",
+            "pos": [-145.0, 2801.0],
+            "rotation": -15.0
+        },
+        {
+            "id": "bot_waypoint_patrol (26)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "letter": "C",
+            "pos": [2575.0, 2161.0],
+            "rotation": -180.0
+        },
+        {
+            "id": "bot_waypoint_patrol (27)",
+            "type": "bot_waypoint_patrol",
+            "letter": "C",
+            "pos": [1969.0, 2385.0],
+            "rotation": -165.0
+        },
+        {
+            "id": "bot_waypoint_patrol (28)",
+            "type": "bot_waypoint_patrol",
+            "letter": "C",
+            "pos": [-225.0, 1247.0],
+            "rotation": -57.47615051269531
+        },
+        {
+            "id": "bot_waypoint_patrol (29)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [1195.0, -3891.0],
+            "rotation": -109.0538330078125
+        },
+        {
+            "id": "bot_waypoint_patrol (30)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [1555.0, -3987.0],
+            "rotation": 62.13774108886719
+        },
+        {
+            "id": "bot_waypoint_patrol (31)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [1959.0, -3972.0],
+            "rotation": 111.9512939453125
+        },
+        {
+            "id": "bot_waypoint_patrol (32)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [2876.0, -4816.0],
+            "rotation": 179.57061767578125
+        },
+        {
+            "id": "bot_waypoint_patrol (33)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [2871.0, -4501.0],
+            "rotation": 179.57061767578125
+        },
+        {
+            "id": "bot_waypoint_patrol (34)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [2880.0, -4038.0],
+            "rotation": -131.50021362304688
+        },
+        {
+            "id": "bot_waypoint_patrol (35)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [3827.0, -4237.0],
+            "rotation": 179.57061767578125
+        },
+        {
+            "id": "bot_waypoint_patrol (36)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "letter": "B",
+            "pos": [3847.0, -3209.0],
+            "rotation": -90.0
+        },
+        {
+            "id": "bot_waypoint_patrol (37)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [3324.0, -3487.0],
+            "rotation": -90.0
+        },
+        {
+            "id": "bot_waypoint_patrol (38)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [1486.0, -2913.0],
+            "rotation": -55.915985107421875
+        },
+        {
+            "id": "bot_waypoint_patrol (39)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [1976.0, -3463.0],
+            "rotation": -183.09811401367188
+        },
+        {
+            "id": "bot_waypoint_patrol (40)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [792.0, -3990.0],
+            "rotation": -183.09811401367188
+        },
+        {
+            "id": "bot_waypoint_patrol (41)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [780.0, -3710.0],
+            "rotation": -109.88195037841797
+        },
+        {
+            "id": "bot_waypoint_patrol (42)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [839.0, -4291.0],
+            "rotation": -159.90774536132813
+        },
+        {
+            "id": "bot_waypoint_patrol (43)",
+            "type": "bot_waypoint_patrol",
+            "letter": "B",
+            "pos": [425.0, -4389.0],
+            "rotation": -133.77894592285156
+        },
+        {
+            "id": "bot_waypoint_push (2)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [-699.0, -3589.0],
+            "rotation": -47.455902099609375
+        },
+        {
+            "id": "bot_waypoint_push (3)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [-340.0, -2920.0],
+            "rotation": 11.581512451171875
+        },
+        {
+            "id": "bot_waypoint_push (5)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [-416.0, -1281.0],
+            "rotation": -92.62654113769531
+        },
+        {
+            "id": "bot_waypoint_push (4)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [-664.0, -193.0],
+            "rotation": -26.577911376953125
+        },
+        {
+            "id": "bot_waypoint_push (6)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [152.0, -134.0],
+            "rotation": -57.313987731933594
+        },
+        {
+            "id": "bot_waypoint_push (7)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [-1564.0, -3480.0],
+            "rotation": -4.350494384765625
+        },
+        {
+            "id": "bot_waypoint_push (8)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [-1006.0, -1754.0],
+            "rotation": -4.814971923828125
+        },
+        {
+            "id": "bot_waypoint_push (9)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [-2001.0, -2258.0],
+            "rotation": 6.5058746337890625
+        },
+        {
+            "id": "bot_waypoint_push (10)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [-253.0, -560.0]
+        },
+        {
+            "id": "bot_waypoint_push (11)",
+            "type": "bot_waypoint_push",
+            "faction": "RESISTANCE",
+            "pos": [1057.0, 1563.0]
+        },
+        {
             "id": "Servers (8)",
             "type": "callout",
             "pos": [2688.0, -4544.0],
@@ -17169,6 +17630,7 @@
         {
             "id": "Bombsite b",
             "type": "bombsite",
+            "letter": "B",
             "pos": [2047.0, -4380.0],
             "size": [1280, 464]
         },
@@ -17187,6 +17649,7 @@
         {
             "id": "Bombsite c",
             "type": "bombsite",
+            "letter": "C",
             "pos": [832.0, 2096.0],
             "size": [896, 224]
         },

@@ -272,7 +272,7 @@ inline void ai_behavior_patrol::process(ai_behavior_process_ctx& ctx) {
 			patrol_waypoint = ai_state.source_spawn_point;
 		}
 		else {
-			AI_LOG("patrol::process: WARNING - no patrol waypoint found! patrol_letter=%x, team patrol_waypoints.size=%x",
+			LOG("patrol::process: WARNING - no patrol waypoint for letter=%x (total waypoints: %x).",
 				static_cast<int>(ai_state.patrol_letter), team_state.patrol_waypoints.size());
 		}
 	}
