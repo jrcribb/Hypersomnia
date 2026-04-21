@@ -23,6 +23,12 @@ void setup_node_defaults(N& new_node, const R& resource, const bool at_instantia
 		new_node = resource.editable.node_defaults;
 	}
 
+	if constexpr(std::is_same_v<R, editor_point_marker_resource>) {
+		if (resource.editable.type == point_marker_type::BOT_WAYPOINT_PATROL) {
+			new_node.camp = true;
+		}
+	}
+
 	if (at_instantiation) {
 		/*
 			We force write-out of the default faction which is RESISTANCE.

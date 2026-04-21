@@ -8,9 +8,12 @@ summary: That which we are brainstorming at the moment.
 
 - randomized waypoints in absence of any
 	- we have multitude of maps, it will be a bother to create waypoints for all right away
+	- chyba bedziemy forsowac to i tak, bo te waypointy chujowo beda wygladaly
 
 - boty (jeszcze)
 	- zeby sie nie obijaly o siebie - opcjonalnie omijac tile zajety przez bota
+	- shorter combat time for bomb carrier if he has the bomb
+	- sprint cooldown do halfa
 	- aggro zrandomizowac np. jak szlyszy krok do 20% szansy na aggro od metropolis i wiekszy dla resistance
 	- jak przeladowuje to do najblizszego tile z coverem
 	- jak slychac kroki gdzies to przy kampieniu celowac w najblizsza kratke z coverem albo nawet stanac jak patroluje i on jest blisko

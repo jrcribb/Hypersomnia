@@ -1,7 +1,7 @@
 {
     "meta": {
         "name": "de_cyberaqua",
-        "version_timestamp": "2026-04-21 18:54:22.993235 UTC"
+        "version_timestamp": "2026-04-21 19:01:02.232187 UTC"
     },
     "about": {
         "author": "Pythagoras",
@@ -15,7 +15,7 @@
         }
     },
     "playtesting": {
-        "mode": "bomb_defusal",
+        "mode": "quick_test",
         "spawn_bots": true,
         "spawn_only_enemy_bots": true,
         "bot_difficulty": "HARD"
@@ -2790,6 +2790,7 @@
                 "bot_waypoint_patrol (39)",
                 "bot_waypoint_patrol (38)",
                 "bot_waypoint_patrol (37)",
+                "bot_waypoint_patrol (44)",
                 "bot_waypoint_patrol (36)",
                 "bot_waypoint_patrol (35)",
                 "bot_waypoint_patrol (34)",
@@ -2802,7 +2803,6 @@
         },
         {
             "id": "waypoints_C",
-            "is_open_in_editor": false,
             "nodes": [
                 "bot_waypoint_patrol (25)",
                 "bot_waypoint_patrol (26)",
@@ -17057,6 +17057,7 @@
         {
             "id": "bot_waypoint_patrol",
             "type": "bot_waypoint_patrol",
+            "camp": true,
             "pos": [1871.0, -769.0],
             "rotation": -180.0
         },
@@ -17069,6 +17070,7 @@
         {
             "id": "bot_waypoint_patrol (2)",
             "type": "bot_waypoint_patrol",
+            "camp": true,
             "pos": [577.0, -1025.0],
             "rotation": -105.0
         },
@@ -17106,12 +17108,14 @@
         {
             "id": "bot_waypoint_patrol (8)",
             "type": "bot_waypoint_patrol",
+            "camp": true,
             "pos": [1919.0, -1905.0],
             "rotation": -180.0
         },
         {
             "id": "bot_waypoint_patrol (9)",
             "type": "bot_waypoint_patrol",
+            "camp": true,
             "pos": [593.0, -1761.0],
             "rotation": -201.9554901123047
         },
@@ -17149,12 +17153,14 @@
         {
             "id": "bot_waypoint_patrol (15)",
             "type": "bot_waypoint_patrol",
+            "camp": true,
             "pos": [2577.0, -1009.0],
             "rotation": -135.35096740722656
         },
         {
             "id": "bot_waypoint_patrol (16)",
             "type": "bot_waypoint_patrol",
+            "camp": true,
             "pos": [2876.0, -1014.0],
             "rotation": -147.00242614746094
         },
@@ -17433,6 +17439,14 @@
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
             "pos": [1057.0, 1563.0]
+        },
+        {
+            "id": "bot_waypoint_patrol (44)",
+            "type": "bot_waypoint_patrol",
+            "faction": "RESISTANCE",
+            "letter": "B",
+            "pos": [2391.0, -4924.0],
+            "rotation": 160.484130859375
         },
         {
             "id": "Servers (8)",

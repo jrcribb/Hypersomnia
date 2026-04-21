@@ -1,7 +1,7 @@
 {
     "meta": {
         "name": "de_silo",
-        "version_timestamp": "2026-04-21 18:54:06.190177 UTC"
+        "version_timestamp": "2026-04-21 20:17:46.736145 UTC"
     },
     "about": {
         "author": "lia",
@@ -20,7 +20,8 @@
         "mode": "bomb_defusal",
         "starting_faction": "RESISTANCE",
         "spawn_bots": true,
-        "spawn_only_enemy_bots": true
+        "spawn_only_enemy_bots": true,
+        "see_enemies_behind_walls": true
     },
     "game_modes": {
         "bomb_defusal": {
@@ -5012,6 +5013,7 @@
             "id": "bot_waypoint_push",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [-890.0, 3004.0],
             "rotation": -146.0443115234375
         },
@@ -5019,6 +5021,7 @@
             "id": "bot_waypoint_push (1)",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [-918.0, 967.0],
             "rotation": -212.34646606445313
         },
@@ -5026,6 +5029,7 @@
             "id": "bot_waypoint_push (2)",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [-126.0, 1651.0],
             "rotation": -182.3974609375
         },
@@ -5059,12 +5063,14 @@
             "id": "bot_waypoint_push (3)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [135.0, 387.0]
         },
         {
             "id": "bot_waypoint_push (4)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [592.0, 2326.0],
             "rotation": -33.714508056640625
         },
@@ -5072,6 +5078,7 @@
             "id": "bot_waypoint_push (5)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [179.0, 3845.0],
             "rotation": -0.5273895263671875
         },
@@ -5079,6 +5086,7 @@
             "id": "bot_waypoint_push (6)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [328.0, 2037.0]
         },
         {
