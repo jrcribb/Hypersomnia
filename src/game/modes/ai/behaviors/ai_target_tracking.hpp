@@ -13,8 +13,8 @@ namespace ai_combat_time {
 	constexpr auto BOMB_CARRIER_MIN_SECS = 2.0f;
 	constexpr auto BOMB_CARRIER_MAX_SECS = 4.0f;
 
-	constexpr auto DEFUSER_LONG_ENGAGEMENT_MIN_SECS = 8.0f;
-	constexpr auto DEFUSER_LONG_ENGAGEMENT_MAX_SECS = 12.0f;
+	constexpr auto DEFUSER_LONG_ENGAGEMENT_MIN_SECS = 0.5f;
+	constexpr auto DEFUSER_LONG_ENGAGEMENT_MAX_SECS = 0.8f;
 	constexpr auto DEFUSER_SHORT_ENGAGEMENT_MIN_SECS = 0.5f;
 	constexpr auto DEFUSER_SHORT_ENGAGEMENT_MAX_SECS = 0.8f;
 	constexpr auto DEFUSER_ENGAGEMENT_THRESHOLD_SECS = 20.0f;
@@ -106,7 +106,8 @@ struct ai_target_tracking {
 		const vec2 bot_pos,
 		const bool is_bomb_carrier = false,
 		const bool is_defuser = false,
-		const real32 bomb_time_remaining_secs = 1000.0f
+		const real32 bomb_time_remaining_secs = 1000.0f,
+		const real32 reaction_time_secs = 0.0f
 	) {
 		const auto dist_to_new = (enemy_pos - bot_pos).length();
 
@@ -142,7 +143,7 @@ struct ai_target_tracking {
 				Re-randomize combat time when switching targets.
 			*/
 			when_combat_started_secs = global_time_secs;
-			chosen_combat_time_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs);
+			chosen_combat_time_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs) + reaction_time_secs;
 			use_combat_start_time = is_defuser;
 		}
 	}
@@ -181,14 +182,15 @@ struct ai_target_tracking {
 		const vec2 enemy_pos,
 		const bool is_bomb_carrier = false,
 		const bool is_defuser = false,
-		const real32 bomb_time_remaining_secs = 1000.0f
+		const real32 bomb_time_remaining_secs = 1000.0f,
+		const real32 reaction_time_secs = 0.0f
 	) {
 		id = enemy;
 		last_seen_pos = enemy_pos;
 		last_known_pos = enemy_pos;
 		when_last_known_secs = global_time_secs;
 		when_combat_started_secs = global_time_secs;
-		chosen_combat_time_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs);
+		chosen_combat_time_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs) + reaction_time_secs;
 		use_combat_start_time = is_defuser;
 	}
 

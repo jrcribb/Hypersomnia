@@ -376,7 +376,8 @@ arena_ai_result update_arena_mode_ai(
 					character_pos,
 					bot_is_bomb_carrier,
 					bot_is_defuser,
-					bomb_time_remaining
+					bomb_time_remaining,
+					ai_state.alertness.base_rt_secs
 				);
 			}
 			else {
@@ -410,7 +411,8 @@ arena_ai_result update_arena_mode_ai(
 							alert.enemy_pos,
 							bot_is_bomb_carrier,
 							bot_is_defuser,
-							bomb_time_remaining
+							bomb_time_remaining,
+							ai_state.alertness.base_rt_secs
 						);
 						break;
 					case alert_acquire_type::SEEN:
@@ -423,7 +425,8 @@ arena_ai_result update_arena_mode_ai(
 							character_pos,
 							bot_is_bomb_carrier,
 							bot_is_defuser,
-							bomb_time_remaining
+							bomb_time_remaining,
+							ai_state.alertness.base_rt_secs
 						);
 						break;
 					case alert_acquire_type::HEARD_ONLY:
@@ -496,7 +499,8 @@ arena_ai_result update_arena_mode_ai(
 				character_pos,
 				bot_is_bomb_carrier,
 				bot_is_defuser,
-				bomb_time_remaining
+				bomb_time_remaining,
+				ai_state.alertness.base_rt_secs
 			);
 		}
 	}
