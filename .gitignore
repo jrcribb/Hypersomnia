@@ -237,3 +237,6 @@ hypersomnia/teams.json
 CLAUDE.local.md
 
 *.nav
+*.neon_map.png
+*.gif.*.png
+*.stamp
