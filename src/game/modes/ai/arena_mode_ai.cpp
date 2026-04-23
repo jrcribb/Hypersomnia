@@ -26,6 +26,7 @@
 #include "game/detail/inventory/perform_transfer.h"
 #include "game/detail/inventory/wielding_setup.hpp"
 #include "game/detail/inventory/perform_wielding.hpp"
+#include <limits>
 
 #include "game/detail/path_navigation/navigate_pathfinding.hpp"
 
@@ -59,7 +60,10 @@ void update_arena_mode_ai_team(
 	std::map<mode_player_id, arena_mode_player>& players,
 	const faction_type faction,
 	const bool bomb_planted,
-	randomization& rng
+	randomization& rng,
+	const cosmos_navmesh& navmesh,
+	const entity_id bomb_entity,
+	pathfinding_context* pathfinding_ctx
 ) {
 	/*
 		Resistance: if team has no chosen_bombsite yet, pick one randomly.
@@ -87,6 +91,97 @@ void update_arena_mode_ai_team(
 					}
 
 					break;
+				}
+			}
+		}
+	}
+
+	/*
+		Metropolis: when bomb is planted, select the bot with the shortest path to
+		the bomb as the defuser — but only if the current defuser is dead/unconscious
+		(or none assigned).  Only non-combat bots are considered, since any bot that
+		enters combat clears bot_with_defuse_mission from update_arena_mode_ai.
+	*/
+	if (faction == faction_type::METROPOLIS && bomb_planted) {
+		if (!sentient_and_conscious(cosm[team_state.bot_with_defuse_mission])) {
+			/* Collect alive conscious non-combat Metropolis bots as candidates. */
+			struct candidate_t {
+				mode_player_id player_id;
+				entity_id char_id;
+				arena_mode_player* player_ptr = nullptr;
+			};
+
+			std::vector<candidate_t> candidates;
+
+			for (auto& bot : only_bot(players)) {
+				if (bot.second.get_faction() != faction_type::METROPOLIS) {
+					continue;
+				}
+
+				const auto char_id = bot.second.controlled_character_id;
+
+				if (!sentient_and_conscious(cosm[char_id])) {
+					continue;
+				}
+
+				if (::is_behavior<ai_behavior_combat>(bot.second.ai_state.last_behavior)) {
+					continue;
+				}
+
+				candidates.push_back({ bot.first, char_id, &bot.second });
+			}
+
+			if (candidates.size() == 1) {
+				team_state.bot_with_defuse_mission = candidates[0].char_id;
+				candidates[0].player_ptr->ai_state.combat_target.use_combat_start_time = true;
+			}
+			else if (candidates.size() > 1) {
+				const auto bomb_handle = cosm[bomb_entity];
+
+				if (bomb_handle.alive()) {
+					const auto bomb_pos = bomb_handle.get_logic_transform().pos;
+
+					entity_id best_char_id;
+					arena_mode_player* best_player_ptr = nullptr;
+					real32 best_path_len = std::numeric_limits<real32>::max();
+
+					for (auto& cand : candidates) {
+						const auto char_handle = cosm[cand.char_id];
+
+						if (!char_handle.alive()) {
+							continue;
+						}
+
+						const auto bot_pos = char_handle.get_logic_transform().pos;
+						const auto paths = ::find_path_across_islands_many_full(navmesh, bot_pos, bomb_pos, nullptr, pathfinding_ctx);
+
+						if (paths.empty()) {
+							continue;
+						}
+
+						real32 path_len = 0.f;
+
+						for (const auto& path : paths) {
+							const auto& island = navmesh.islands[path.island_index];
+
+							for (std::size_t i = 1; i < path.nodes.size(); ++i) {
+								const auto a = ::cell_to_world(island, path.nodes[i - 1].cell_xy);
+								const auto b = ::cell_to_world(island, path.nodes[i].cell_xy);
+								path_len += (b - a).length();
+							}
+						}
+
+						if (path_len < best_path_len) {
+							best_path_len = path_len;
+							best_char_id = cand.char_id;
+							best_player_ptr = cand.player_ptr;
+						}
+					}
+
+					if (best_char_id.is_set()) {
+						team_state.bot_with_defuse_mission = best_char_id;
+						best_player_ptr->ai_state.combat_target.use_combat_start_time = true;
+					}
 				}
 			}
 		}
@@ -234,6 +329,35 @@ arena_ai_result update_arena_mode_ai(
 
 	ai_state.alertness.base_rt_secs = ::get_reaction_time_secs(difficulty);
 
+	bool bot_is_bomb_carrier = false;
+
+	if (!bomb_planted && bomb_entity.is_set()) {
+		if (const auto bomb_handle = cosm[bomb_entity]) {
+			bot_is_bomb_carrier = bomb_handle.get_owning_transfer_capability() == character_handle;
+		}
+	}
+
+	bool bot_is_defuser = bomb_planted && team_state.bot_with_defuse_mission == controlled_character_id;
+
+	auto get_bomb_time_remaining = [&]() -> real32 {
+		if (!bomb_planted || !bomb_entity.is_set()) {
+			return 1000.0f;
+		}
+
+		if (const auto bomb_handle = cosm[bomb_entity]) {
+			if (const auto* fuse = bomb_handle.find<components::hand_fuse>()) {
+				if (fuse->armed()) {
+					const auto& clk = cosm.get_clock();
+					return clk.get_remaining_ms(fuse->fuse_delay_ms, fuse->when_armed) / 1000.0f;
+				}
+			}
+		}
+
+		return 1000.0f;
+	};
+
+	const auto bomb_time_remaining = get_bomb_time_remaining();
+
 	/* Commit LOS change alert (dedicated slot, never evicted). */
 	if (ai_state.alertness.is_los_change_ready(global_time_secs)) {
 		const auto& alert = *ai_state.alertness.los_change_alert;
@@ -249,7 +373,10 @@ arena_ai_result update_arena_mode_ai(
 					global_time_secs,
 					alert.enemy,
 					alert.enemy_pos,
-					character_pos
+					character_pos,
+					bot_is_bomb_carrier,
+					bot_is_defuser,
+					bomb_time_remaining
 				);
 			}
 			else {
@@ -280,7 +407,10 @@ arena_ai_result update_arena_mode_ai(
 							stable_rng,
 							global_time_secs,
 							alert.enemy,
-							alert.enemy_pos
+							alert.enemy_pos,
+							bot_is_bomb_carrier,
+							bot_is_defuser,
+							bomb_time_remaining
 						);
 						break;
 					case alert_acquire_type::SEEN:
@@ -290,7 +420,10 @@ arena_ai_result update_arena_mode_ai(
 							global_time_secs,
 							alert.enemy,
 							alert.enemy_pos,
-							character_pos
+							character_pos,
+							bot_is_bomb_carrier,
+							bot_is_defuser,
+							bomb_time_remaining
 						);
 						break;
 					case alert_acquire_type::HEARD_ONLY:
@@ -360,7 +493,10 @@ arena_ai_result update_arena_mode_ai(
 				global_time_secs,
 				ai_state.confirmed_closest_enemy,
 				enemy_pos,
-				character_pos
+				character_pos,
+				bot_is_bomb_carrier,
+				bot_is_defuser,
+				bomb_time_remaining
 			);
 		}
 	}
@@ -433,6 +569,16 @@ arena_ai_result update_arena_mode_ai(
 		);
 
 		ai_state.last_behavior = desired_behavior;
+	}
+
+	/*
+		If this bot was the defuser and just transitioned into combat,
+		clear the defuse mission so the team update can assign another bot.
+	*/
+	if (bomb_planted && team_state.bot_with_defuse_mission == controlled_character_id) {
+		if (::is_behavior<ai_behavior_combat>(ai_state.last_behavior)) {
+			team_state.bot_with_defuse_mission = entity_id::dead();
+		}
 	}
 
 	/*
@@ -625,6 +771,9 @@ arena_ai_result update_arena_mode_ai(
 	if (auto* sentience = character_handle.find<components::sentience>()) {
 		auto& consciousness = sentience->get<consciousness_meter_instance>();
 
+		/*
+			Stamina cooldown: forbid sprinting when stamina is below threshold.
+		*/
 		if (ai_state.stamina_cooldown) {
 			if (consciousness.value < 10) {
 				ai_state.stamina_cooldown = true;
@@ -637,6 +786,27 @@ arena_ai_result update_arena_mode_ai(
 		}
 
 		if (ai_state.stamina_cooldown) {
+			movement.flags.sprinting = false;
+		}
+
+		/*
+			Sprint cooldown: forbid sprinting when stamina <= 1 until 1/3rd regenerates.
+		*/
+		const auto max_consciousness = consciousness.maximum;
+		const auto one_third_consciousness = max_consciousness / 3.0f;
+
+		if (ai_state.sprint_cooldown) {
+			if (consciousness.value >= one_third_consciousness) {
+				ai_state.sprint_cooldown = false;
+			}
+		}
+		else {
+			if (consciousness.value <= 1.0f) {
+				ai_state.sprint_cooldown = true;
+			}
+		}
+
+		if (ai_state.sprint_cooldown) {
 			movement.flags.sprinting = false;
 		}
 	}
@@ -825,9 +995,9 @@ void post_solve_arena_mode_ai(
 			character_handle
 		);
 
-		LOG_NVPS(raycast.hit, ::can_weapon_penetrate(shooter, character_pos));
-		if (!raycast.hit || ::can_weapon_penetrate(shooter, character_pos)) {
-			LOG("QUEUE");
+		const auto bot_can_penetrate_to_shooter = ::can_weapon_penetrate(character_handle, muzzle_pos);
+
+		if (!raycast.hit || ::can_weapon_penetrate(shooter, character_pos) || bot_can_penetrate_to_shooter) {
 			/*
 				Gunshot muzzle flash seen — queue through reaction time.
 			*/

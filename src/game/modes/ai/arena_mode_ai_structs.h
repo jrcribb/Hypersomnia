@@ -422,10 +422,13 @@ struct arena_mode_ai_state {
 	push_phase_type push_phase = push_phase_type::NOT_DECIDED;
 	bool recoil_cooldown = false;
 	bool stamina_cooldown = false;
+	bool sprint_cooldown = false;
 	bool escaping_explosion = false;
 
 	bool already_nothing_more_to_buy = false;
 	float purchase_decision_countdown = -10000.0f;
+
+	bool has_acquired_target_by_hearing_during_bomb_plant = false;
 
 	std::optional<ai_pathfinding_state> pathfinding;
 	std::optional<ai_pathfinding_request> current_pathfinding_request;
@@ -455,9 +458,13 @@ struct arena_mode_ai_state {
 		confirmed_closest_enemy = {};
 		patrol_letter = marker_letter_type::COUNT;
 		push_phase = push_phase_type::NOT_DECIDED;
+		recoil_cooldown = false;
+		stamina_cooldown = false;
+		sprint_cooldown = false;
 		escaping_explosion = false;
 		already_nothing_more_to_buy = false;
 		purchase_decision_countdown = -10000.0f;
+		has_acquired_target_by_hearing_during_bomb_plant = false;
 		pathfinding.reset();
 		current_pathfinding_request = std::nullopt;
 		source_spawn_point = {};

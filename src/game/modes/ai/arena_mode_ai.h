@@ -33,7 +33,10 @@ void update_arena_mode_ai_team(
 	std::map<mode_player_id, arena_mode_player>& players,
 	const faction_type faction,
 	const bool bomb_planted,
-	randomization& rng
+	randomization& rng,
+	const cosmos_navmesh& navmesh,
+	const entity_id bomb_entity,
+	pathfinding_context* pathfinding_ctx
 );
 
 void post_solve_arena_mode_ai(

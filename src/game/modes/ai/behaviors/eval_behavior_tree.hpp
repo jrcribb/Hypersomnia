@@ -67,17 +67,10 @@ inline ai_behavior_variant eval_behavior_tree(
 
 	/*
 		Priority 2: DEFUSE mission (Metropolis, bomb planted).
+		Defuse mission assignment is handled in update_arena_mode_ai_team.
 	*/
 	if (round_state.bomb_planted && is_metropolis) {
 		if (team_state.bot_with_defuse_mission == controlled_character_id) {
-			return ai_behavior_defuse{};
-		}
-
-		/*
-			Assign defuse mission if no bot is assigned or previous assignee is dead/unconscious.
-		*/
-		if (!sentient_and_conscious(cosm[team_state.bot_with_defuse_mission])) {
-			team_state.bot_with_defuse_mission = controlled_character_id;
 			return ai_behavior_defuse{};
 		}
 	}

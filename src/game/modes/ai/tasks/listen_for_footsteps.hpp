@@ -85,7 +85,11 @@ inline void listen_for_footsteps(
 		/*
 			Can't see and can't penetrate. Check if faction-specific hearing aggro should kick in.
 		*/
-		if (::should_acquire_target_by_hearing(bot_faction, bomb_planted)) {
+		if (::should_acquire_target_by_hearing(
+			bot_faction,
+			bomb_planted,
+			ctx.ai_state.has_acquired_target_by_hearing_during_bomb_plant
+		)) {
 			ctx.ai_state.alertness.queue_alert({
 				cue.source_entity,
 				cue.position,
@@ -93,6 +97,7 @@ inline void listen_for_footsteps(
 				1.2f,
 				alert_acquire_type::FULL
 			});
+			ctx.ai_state.has_acquired_target_by_hearing_during_bomb_plant = true;
 			continue;
 		}
 

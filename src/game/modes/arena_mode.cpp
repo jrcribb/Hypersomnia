@@ -2478,7 +2478,10 @@ void arena_mode::execute_player_commands(const input_type in, const mode_entropy
 				players,
 				faction,
 				is_bomb_planted,
-				team_rng
+				team_rng,
+				cosm.get_common_significant().navmesh,
+				current_bomb_entity,
+				&_pathfinding_ctx
 			);
 		});
 
@@ -3888,11 +3891,16 @@ void arena_mode::mode_post_solve(const input_type in, const mode_entropy& entrop
 							factions[faction_type::RESISTANCE].ai_team_state.chosen_bombsite = letter;
 
 							/*
-								Update patrol_letter for all Metropolis (defenders) bots.
+								Update patrol_letter for all Metropolis (defenders) bots and
+								reset their patrol state so they reroute to the bomb site.
 							*/
 							for (auto& bot : only_bot(players)) {
 								if (bot.second.get_faction() == faction_type::METROPOLIS) {
 									bot.second.ai_state.patrol_letter = letter;
+
+									if (auto* patrol = ::get_behavior_if<ai_behavior_patrol>(bot.second.ai_state.last_behavior)) {
+										*patrol = ai_behavior_patrol();
+									}
 								}
 							}
 						}

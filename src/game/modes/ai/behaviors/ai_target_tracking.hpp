@@ -6,6 +6,47 @@
 #include "game/cosmos/entity_handle.h"
 
 /*
+	Combat time configuration for bomb game mode AI.
+	All values in seconds.
+*/
+namespace ai_combat_time {
+	constexpr auto BOMB_CARRIER_MIN_SECS = 2.0f;
+	constexpr auto BOMB_CARRIER_MAX_SECS = 4.0f;
+
+	constexpr auto DEFUSER_LONG_ENGAGEMENT_MIN_SECS = 8.0f;
+	constexpr auto DEFUSER_LONG_ENGAGEMENT_MAX_SECS = 12.0f;
+	constexpr auto DEFUSER_SHORT_ENGAGEMENT_MIN_SECS = 0.5f;
+	constexpr auto DEFUSER_SHORT_ENGAGEMENT_MAX_SECS = 0.8f;
+	constexpr auto DEFUSER_ENGAGEMENT_THRESHOLD_SECS = 20.0f;
+
+	constexpr auto DEFAULT_MIN_SECS = 5.0f;
+	constexpr auto DEFAULT_MAX_SECS = 10.0f;
+}
+
+inline real32 pick_combat_time_secs(
+	randomization& rng,
+	const bool is_bomb_carrier,
+	const bool is_defuser,
+	const real32 bomb_time_remaining_secs
+) {
+	using namespace ai_combat_time;
+
+	if (is_bomb_carrier) {
+		return rng.randval(BOMB_CARRIER_MIN_SECS, BOMB_CARRIER_MAX_SECS);
+	}
+
+	if (is_defuser) {
+		if (bomb_time_remaining_secs >= DEFUSER_ENGAGEMENT_THRESHOLD_SECS) {
+			return rng.randval(DEFUSER_LONG_ENGAGEMENT_MIN_SECS, DEFUSER_LONG_ENGAGEMENT_MAX_SECS);
+		}
+
+		return rng.randval(DEFUSER_SHORT_ENGAGEMENT_MIN_SECS, DEFUSER_SHORT_ENGAGEMENT_MAX_SECS);
+	}
+
+	return rng.randval(DEFAULT_MIN_SECS, DEFAULT_MAX_SECS);
+}
+
+/*
 	Persistent combat target tracking.
 	
 	This struct tracks facts about a combat target independently of behavior state.
@@ -21,7 +62,16 @@ struct ai_target_tracking {
 	vec2 last_seen_pos = vec2::zero;
 	vec2 last_known_pos = vec2::zero;
 	real32 when_last_known_secs = 0.0f;
+	real32 when_combat_started_secs = 0.0f;
 	real32 chosen_combat_time_secs = 0.0f;
+	/*
+		When true, the engagement timeout is measured from when_combat_started_secs
+		(set at first acquisition) rather than when_last_known_secs (updated on every
+		footstep/sight refresh). Assigned bots use this so footstep spam cannot
+		extend their engagement indefinitely.
+		Persists after bot_with_defuse_mission is cleared so combat remains bounded.
+	*/
+	bool use_combat_start_time = false;
 	// END GEN INTROSPECTOR
 
 	/*
@@ -33,7 +83,8 @@ struct ai_target_tracking {
 	bool active(const cosmos& cosm, const real32 global_time_secs) const {
 		if (const auto handle = cosm[id]) {
 			if (sentient_and_conscious(handle)) {
-				const auto elapsed = global_time_secs - when_last_known_secs;
+				const auto reference = use_combat_start_time ? when_combat_started_secs : when_last_known_secs;
+				const auto elapsed = global_time_secs - reference;
 				return elapsed <= chosen_combat_time_secs;
 			}
 		}
@@ -52,7 +103,10 @@ struct ai_target_tracking {
 		const real32 global_time_secs,
 		const entity_id enemy,
 		const vec2 enemy_pos,
-		const vec2 bot_pos
+		const vec2 bot_pos,
+		const bool is_bomb_carrier = false,
+		const bool is_defuser = false,
+		const real32 bomb_time_remaining_secs = 1000.0f
 	) {
 		const auto dist_to_new = (enemy_pos - bot_pos).length();
 
@@ -87,7 +141,9 @@ struct ai_target_tracking {
 			/*
 				Re-randomize combat time when switching targets.
 			*/
-			chosen_combat_time_secs = rng.randval(5.0f, 10.0f);
+			when_combat_started_secs = global_time_secs;
+			chosen_combat_time_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs);
+			use_combat_start_time = is_defuser;
 		}
 	}
 
@@ -122,13 +178,18 @@ struct ai_target_tracking {
 		randomization& rng,
 		const real32 global_time_secs,
 		const entity_id enemy,
-		const vec2 enemy_pos
+		const vec2 enemy_pos,
+		const bool is_bomb_carrier = false,
+		const bool is_defuser = false,
+		const real32 bomb_time_remaining_secs = 1000.0f
 	) {
 		id = enemy;
 		last_seen_pos = enemy_pos;
 		last_known_pos = enemy_pos;
 		when_last_known_secs = global_time_secs;
-		chosen_combat_time_secs = rng.randval(5.0f, 10.0f);
+		when_combat_started_secs = global_time_secs;
+		chosen_combat_time_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs);
+		use_combat_start_time = is_defuser;
 	}
 
 	/*
@@ -139,6 +200,9 @@ struct ai_target_tracking {
 		last_seen_pos = vec2::zero;
 		last_known_pos = vec2::zero;
 		when_last_known_secs = 0.0f;
+		when_combat_started_secs = 0.0f;
 		chosen_combat_time_secs = 0.0f;
+		use_combat_start_time = false;
 	}
 };
+
