@@ -1,7 +1,7 @@
 {
     "meta": {
         "name": "de_silo",
-        "version_timestamp": "2026-04-21 20:17:46.736145 UTC"
+        "version_timestamp": "2026-04-23 11:43:27.762261 UTC"
     },
     "about": {
         "author": "lia",
@@ -21,7 +21,7 @@
         "starting_faction": "RESISTANCE",
         "spawn_bots": true,
         "spawn_only_enemy_bots": true,
-        "see_enemies_behind_walls": true
+        "bot_difficulty": "HARD"
     },
     "game_modes": {
         "bomb_defusal": {

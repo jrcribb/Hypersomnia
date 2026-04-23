@@ -2,7 +2,7 @@
     "meta": {
         "game_version": "1.1.7967",
         "name": "fy_minilab",
-        "version_timestamp": "2026-04-21 18:54:11.460724 UTC"
+        "version_timestamp": "2026-04-23 11:43:34.700738 UTC"
     },
     "about": {
         "author": "Pythagoras",
@@ -1831,14 +1831,12 @@
         {
             "id": "bot_waypoint_patrol",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [1354.0, 364.0],
             "rotation": -153.42958068847656
         },
         {
             "id": "bot_waypoint_patrol (1)",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [1072.0, -473.0],
             "rotation": -152.9151611328125
         },
@@ -1857,14 +1855,12 @@
         {
             "id": "bot_waypoint_patrol (4)",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [697.0, 465.0],
             "rotation": -163.5802459716797
         },
         {
             "id": "bot_waypoint_patrol (5)",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [493.0, 517.0],
             "rotation": -255.0
         },
@@ -1949,7 +1945,6 @@
             "type": "bot_waypoint_patrol",
             "faction": "METROPOLIS",
             "letter": "B",
-            "camp": true,
             "pos": [2119.0, 173.0],
             "rotation": -180.0
         },
@@ -1958,7 +1953,6 @@
             "type": "bot_waypoint_patrol",
             "faction": "METROPOLIS",
             "letter": "B",
-            "camp": true,
             "pos": [2203.0, -174.0],
             "rotation": -180.0
         },
@@ -1974,24 +1968,28 @@
             "id": "bot_waypoint_push",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-502.0, 132.0]
         },
         {
             "id": "bot_waypoint_push (1)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-691.0, -554.0]
         },
         {
             "id": "bot_waypoint_push (2)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [319.0, 703.0]
         },
         {
             "id": "bot_waypoint_push (3)",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [90.0, 485.0],
             "rotation": -180.0
         },
@@ -1999,6 +1997,7 @@
             "id": "bot_waypoint_push (4)",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [130.0, -55.0],
             "rotation": -180.0
         },
@@ -2006,6 +2005,7 @@
             "id": "bot_waypoint_push (5)",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [-1050.0, -530.0],
             "rotation": -235.6085662841797
         },
@@ -2013,6 +2013,7 @@
             "id": "bot_waypoint_push (6)",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [-1050.0, 552.0],
             "rotation": -150.35812377929688
         },
@@ -2020,12 +2021,14 @@
             "id": "bot_waypoint_push (7)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [548.0, 1339.0]
         },
         {
             "id": "bot_waypoint_push (8)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [342.0, -1322.0]
         },
         {

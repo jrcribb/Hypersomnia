@@ -1,7 +1,7 @@
 {
     "meta": {
         "name": "de_cyberaqua",
-        "version_timestamp": "2026-04-21 19:01:02.232187 UTC"
+        "version_timestamp": "2026-04-23 11:43:31.383154 UTC"
     },
     "about": {
         "author": "Pythagoras",
@@ -15,7 +15,8 @@
         }
     },
     "playtesting": {
-        "mode": "quick_test",
+        "mode": "bomb_defusal",
+        "starting_faction": "RESISTANCE",
         "spawn_bots": true,
         "spawn_only_enemy_bots": true,
         "bot_difficulty": "HARD"
@@ -17057,7 +17058,6 @@
         {
             "id": "bot_waypoint_patrol",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [1871.0, -769.0],
             "rotation": -180.0
         },
@@ -17070,7 +17070,6 @@
         {
             "id": "bot_waypoint_patrol (2)",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [577.0, -1025.0],
             "rotation": -105.0
         },
@@ -17108,14 +17107,12 @@
         {
             "id": "bot_waypoint_patrol (8)",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [1919.0, -1905.0],
             "rotation": -180.0
         },
         {
             "id": "bot_waypoint_patrol (9)",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [593.0, -1761.0],
             "rotation": -201.9554901123047
         },
@@ -17153,14 +17150,12 @@
         {
             "id": "bot_waypoint_patrol (15)",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [2577.0, -1009.0],
             "rotation": -135.35096740722656
         },
         {
             "id": "bot_waypoint_patrol (16)",
             "type": "bot_waypoint_patrol",
-            "camp": true,
             "pos": [2876.0, -1014.0],
             "rotation": -147.00242614746094
         },
@@ -17168,6 +17163,7 @@
             "id": "bot_waypoint_push",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [-1785.0, -1252.0],
             "rotation": -237.9381561279297
         },
@@ -17175,6 +17171,7 @@
             "id": "bot_waypoint_push (1)",
             "type": "bot_waypoint_push",
             "faction": "METROPOLIS",
+            "camp": false,
             "pos": [-972.0, -95.0],
             "rotation": -473.8738098144531
         },
@@ -17376,6 +17373,7 @@
             "id": "bot_waypoint_push (2)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-699.0, -3589.0],
             "rotation": -47.455902099609375
         },
@@ -17383,6 +17381,7 @@
             "id": "bot_waypoint_push (3)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-340.0, -2920.0],
             "rotation": 11.581512451171875
         },
@@ -17390,6 +17389,7 @@
             "id": "bot_waypoint_push (5)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-416.0, -1281.0],
             "rotation": -92.62654113769531
         },
@@ -17397,6 +17397,7 @@
             "id": "bot_waypoint_push (4)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-664.0, -193.0],
             "rotation": -26.577911376953125
         },
@@ -17404,6 +17405,7 @@
             "id": "bot_waypoint_push (6)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [152.0, -134.0],
             "rotation": -57.313987731933594
         },
@@ -17411,6 +17413,7 @@
             "id": "bot_waypoint_push (7)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-1564.0, -3480.0],
             "rotation": -4.350494384765625
         },
@@ -17418,6 +17421,7 @@
             "id": "bot_waypoint_push (8)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-1006.0, -1754.0],
             "rotation": -4.814971923828125
         },
@@ -17425,6 +17429,7 @@
             "id": "bot_waypoint_push (9)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-2001.0, -2258.0],
             "rotation": 6.5058746337890625
         },
@@ -17432,12 +17437,14 @@
             "id": "bot_waypoint_push (10)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [-253.0, -560.0]
         },
         {
             "id": "bot_waypoint_push (11)",
             "type": "bot_waypoint_push",
             "faction": "RESISTANCE",
+            "camp": false,
             "pos": [1057.0, 1563.0]
         },
         {
