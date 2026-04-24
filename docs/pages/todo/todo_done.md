@@ -7421,3 +7421,6 @@ This will discard your redo history."
 - low effort - gory sprity dla idle stojacych rozjebanych bo z nich kapie krew to musi byc widac
 	- dla głów też
 
+
+- boty (jeszcze)
+	- rebalance defenderow tych ktorzy nie sa w combacie a nie wszystkich

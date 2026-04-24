@@ -6,12 +6,14 @@ permalink: brainstorm_now
 summary: That which we are brainstorming at the moment.
 ---
 
-- randomized waypoints in absence of any
-	- we have multitude of maps, it will be a bother to create waypoints for all right away
-	- chyba bedziemy forsowac to i tak, bo te waypointy chujowo beda wygladaly
+# Prompt
+# Immediate avoidance layer for bots
+
+I need bots to, once every 200 ms + 
+- tutaj ten akumulator ale on performance wise ma byc a nie interval wise tbh czyli x na klatke
+
 
 - boty (jeszcze)
-	- rebalance defenderow tych ktorzy nie sa w combacie a nie wszystkich
 	- pathfinding to uslyszanego kroku i celowanie tam gdzie tracimy los
 	- when planting, all bots on that site engage
 	- zeby sie nie obijaly o siebie - opcjonalnie omijac tile zajety przez bota
