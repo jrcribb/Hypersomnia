@@ -12,7 +12,6 @@
 #include "game/components/driver_component.h"
 #include "game/components/force_joint_component.h"
 #include "game/components/sentience_component.h"
-#include "game/components/attitude_component.h"
 #include "game/components/flags_component.h"
 #include "game/components/shape_polygon_component.h"
 #include "game/stateless_systems/particles_existence_system.h"
@@ -415,6 +414,8 @@ namespace test_flavours {
 			sentience.arm_detach_sound.modifier.max_distance = 3500.f;
 			sentience.arm_detach_sound.modifier.reference_distance = 800.f;
 
+			sentience_inst.official_faction = faction_type::METROPOLIS;
+
 			meta.set(sentience);
 			meta.set(sentience_inst);
 
@@ -452,12 +453,6 @@ namespace test_flavours {
 				components::crosshair crosshair;
 				crosshair.base_offset.set(-20, 0);
 				meta.set(crosshair);
-			}
-
-			{
-				components::attitude attitude;
-				attitude.official_faction = faction_type::METROPOLIS;
-				meta.set(attitude);
 			}
 
 			{
@@ -610,11 +605,7 @@ namespace test_flavours {
 				meta.set(head_def);
 			}
 
-			{
-				components::attitude attitude;
-				attitude.official_faction = faction_type::RESISTANCE;
-				meta.set(attitude);
-			}
+			meta.get<components::sentience>().official_faction = faction_type::RESISTANCE;
 		}
 	}
 }

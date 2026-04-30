@@ -26,7 +26,6 @@
 #include "game/components/transform_component.h"
 #include "game/components/item_component.h"
 #include "game/components/sentience_component.h"
-#include "game/components/attitude_component.h"
 
 #include "game/messages/visibility_information.h"
 

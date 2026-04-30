@@ -17,7 +17,6 @@
 #include "game/components/fixtures_component.h"
 #include "game/detail/view_input/sound_effect_input.h"
 #include "game/components/sentience_component.h"
-#include "game/components/attitude_component.h"
 #include "game/components/sender_component.h"
 #include "game/components/explosive_component.h"
 
@@ -697,7 +696,7 @@ void missile_system::detonate_expired_missiles(const logic_step step) {
 			if (maybe_sender != nullptr && missile_def.homing_towards_hostile_strength > 0.f) {
 				const auto sender_capability = cosm[maybe_sender->capability_of_sender];
 				const auto sender_attitude = 
-					sender_capability && sender_capability.template has<components::attitude>() ? sender_capability : entity_handle::dead_handle(cosm)
+					sender_capability && sender_capability.template has<components::sentience>() ? sender_capability : entity_handle::dead_handle(cosm)
 				;
 
 				const auto particular_homing_target = cosm[missile.particular_homing_target];

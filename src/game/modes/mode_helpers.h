@@ -1,7 +1,6 @@
 #pragma once
 #include <cstddef>
 #include "game/organization/all_entity_types.h"
-#include "game/components/attitude_component.h"
 #include "game/common_state/entity_flavours.h"
 #include "game/cosmos/cosmos.h"
 #include "game/cosmos/entity_handle.h"
@@ -112,9 +111,9 @@ inline auto find_faction_character_flavour(const cosmos& cosm, const faction_typ
 
 	cosm.for_each_id_and_flavour<E>(
 		[&](const flavour_id_type& id, const flavour_type& flavour) {
-			const auto& attitude = flavour.get<components::attitude>();
+			const auto& sentience = flavour.get<components::sentience>();
 
-			if (attitude.official_faction == faction) {
+			if (sentience.official_faction == faction) {
 				result = id;
 			}
 		}

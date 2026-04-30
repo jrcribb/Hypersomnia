@@ -44,7 +44,6 @@ struct controlled_character {
 		components::sentience,
 
 		components::driver,
-		components::attitude,
 		components::head
 	>;
 

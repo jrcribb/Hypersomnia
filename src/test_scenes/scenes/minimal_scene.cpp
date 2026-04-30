@@ -70,12 +70,12 @@ namespace test_scenes {
 				if (i == 0) {
 					new_character.get<components::sentience>().get<health_meter_instance>().set_value(100);
 					new_character.get<components::sentience>().get<health_meter_instance>().set_maximum_value(100);
-					new_character.get<components::attitude>().official_faction = faction_type::RESISTANCE;
+					new_character.get<components::sentience>().official_faction = faction_type::RESISTANCE;
 				}
 				else if (i == 1) {
 					new_character.get<components::sentience>().get<health_meter_instance>().set_value(100);
 					new_character.get<components::sentience>().get<health_meter_instance>().set_maximum_value(100);
-					new_character.get<components::attitude>().official_faction = faction_type::METROPOLIS;
+					new_character.get<components::sentience>().official_faction = faction_type::METROPOLIS;
 				}
 
 				auto& sentience = new_character.get<components::sentience>();

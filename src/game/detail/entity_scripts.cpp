@@ -10,7 +10,6 @@
 #include "game/components/car_component.h"
 #include "game/components/sentience_component.h"
 #include "game/components/missile_component.h"
-#include "game/components/attitude_component.h"
 #include "game/components/container_component.h"
 #include "game/components/sender_component.h"
 #include "game/detail/inventory/inventory_slot.h"
@@ -93,9 +92,9 @@ identified_danger assess_danger(
 	result.danger = danger;
 
 	const auto* const missile = danger.find<invariants::missile>();
-	const auto* const attitude = danger.find<components::attitude>();
+	const auto* const danger_sentience = danger.find<components::sentience>();
 
-	if ((!missile && !attitude) || (missile && danger.get<components::sender>().is_sender_subject(victim))) {
+	if ((!missile && !danger_sentience) || (missile && danger.get<components::sender>().is_sender_subject(victim))) {
 		return result;
 	}
 
@@ -116,7 +115,7 @@ identified_danger assess_danger(
 		result.amount += comfort_zone_disturbance_ratio * missile->damage.base*4;
 	}
 
-	if (attitude) {
+	if (danger_sentience) {
 		const auto att = calc_attitude(danger, victim);
 		
 		if (is_hostile(att)) {
@@ -128,11 +127,11 @@ identified_danger assess_danger(
 }
 
 attitude_type calc_attitude(const const_entity_handle targeter, const const_entity_handle target) {
-	const auto& targeter_attitude = targeter.get<components::attitude>();
-	const auto* const target_attitude = target.find<components::attitude>();
+	const auto& targeter_sentience = targeter.get<components::sentience>();
+	const auto* const target_sentience = target.find<components::sentience>();
 
-	if (target_attitude) {
-		if (targeter_attitude.official_faction != target_attitude->official_faction) {
+	if (target_sentience != nullptr) {
+		if (targeter_sentience.official_faction != target_sentience->official_faction) {
 			return attitude_type::WANTS_TO_KILL;
 		}
 		else {
@@ -188,7 +187,7 @@ entity_id get_closest_hostile(
 					}
 				}
 
-				if (s != subject && s.has<components::attitude>() && !sentient_and_unconscious(s)) {
+				if (s != subject && s.has<components::sentience>() && !sentient_and_unconscious(s)) {
 					const auto calculated_attitude = calc_attitude(s, subject_attitude);
 
 					if (is_hostile(calculated_attitude)) {
@@ -251,7 +250,7 @@ std::vector<entity_id> get_closest_hostiles(
 			[&](const b2Fixture& fix) {
 				const const_entity_handle s = cosm[get_body_entity_that_owns(fix)];
 
-				if (s != subject && s.has<components::attitude>()) {
+				if (s != subject && s.has<components::sentience>()) {
 					const auto calculated_attitude = calc_attitude(s, subject_attitude);
 
 					if (is_hostile(calculated_attitude)) {

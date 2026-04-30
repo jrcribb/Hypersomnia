@@ -68,7 +68,6 @@ namespace components {
 	struct trace;
 	struct melee;
 	struct sentience;
-	struct attitude;
 	struct processing;
 	struct interpolation;
 	struct light;
@@ -155,7 +154,6 @@ using component_list_t = List<
 	components::melee,
 	components::melee_fighter,
 	components::sentience,
-	components::attitude,
 	components::interpolation,
 	components::light,
 	components::wandering_pixels,

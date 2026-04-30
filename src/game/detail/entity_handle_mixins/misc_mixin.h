@@ -199,8 +199,8 @@ public:
 	faction_type get_official_faction() const {
 		const auto self = *static_cast<const E*>(this);
 
-		if (const auto attitude = self.template find<components::attitude>()) {
-			return attitude->official_faction;
+		if (const auto sentience = self.template find<components::sentience>()) {
+			return sentience->official_faction;
 		}
 
 		if (const auto sender = self.template find<components::sender>()) {

@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "augs/graphics/rgba.h"
+#include "game/enums/faction_type.h"
 
 #include "augs/misc/timing/stepped_timing.h"
 #include "augs/misc/enum/enum_map.h"
@@ -137,6 +138,8 @@ namespace components {
 		int pending_lying_gore_center = 0;
 		augs::stepped_timestamp when_lying_corpse_settled;
 		augs::stepped_timestamp when_lying_corpse_replaced;
+
+		faction_type official_faction = faction_type::SPECTATOR;
 		// END GEN INTROSPECTOR
 
 		bool is_requesting_any_interaction() const {
