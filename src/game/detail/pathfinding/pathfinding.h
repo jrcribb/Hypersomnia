@@ -262,18 +262,21 @@ std::optional<bomb_pathfinding_target> find_bomb_pathfinding_target(
 );
 
 /*
-	BFS from start_pos to find the closest walkable cell that has no line
-	of sight to danger_pos, using predefined_queries::pathfinding() — the
-	same filter used by explosions.
+	BFS from start_pos to find the closest walkable cell (by distance from
+	the character) that is either:
+	  - behind cover (wall blocks LoS to danger_pos), or
+	  - beyond COVER_SEARCH_RADIUS from danger_pos.
 
-	Only cells within COVER_SEARCH_RADIUS of danger_pos are evaluated as
-	cover candidates. Traversal uses 8-directional movement so diagonal
-	paths through open space are explored.
+	Viability check uses predefined_queries::pathfinding() — the same
+	filter used by explosions.  Traversal uses 8-directional movement.
 
-	If no cover cell is found within the radius, returns the furthest
-	walkable cell from danger_pos within the radius (fallback cover).
-	Returns nullopt if start_pos is not on any navmesh island or if the
-	island is empty.
+	Because BFS explores cells nearest to the character first, the first
+	viable cell found is also the closest safe destination — preventing
+	the bot from running through the blast zone toward a far-side cell.
+
+	Returns nullopt if start_pos is not on any navmesh island, the island
+	is empty, or no viable cell exists (fully enclosed within the radius
+	with no cover and no exit).
 */
 std::optional<vec2> find_closest_cover(
 	const cosmos_navmesh& navmesh,

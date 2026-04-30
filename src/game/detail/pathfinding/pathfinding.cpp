@@ -992,8 +992,6 @@ std::optional<vec2> find_closest_cover(
 	graph.set_visited(start_cell);
 	bfs_queue.push(start_cell);
 
-	std::optional<vec2> furthest_from_danger;
-	float furthest_dist_sq = -1.0f;
 	const auto radius_sq = COVER_SEARCH_RADIUS * COVER_SEARCH_RADIUS;
 
 	while (!bfs_queue.empty()) {
@@ -1001,17 +999,19 @@ std::optional<vec2> find_closest_cover(
 		bfs_queue.pop();
 
 		const auto current_world = ::cell_to_world(island, current);
-		const auto dist_to_danger = (current_world - danger_pos).length_sq();
+		const auto dist_to_danger_sq = (current_world - danger_pos).length_sq();
 
-		if (dist_to_danger <= radius_sq) {
-			if (has_cover_from_danger(current_world)) {
-				return current_world;
-			}
+		/*
+			A cell is viable if it either has cover (wall blocks LoS to danger)
+			or is beyond the explosion radius.  BFS from the character explores
+			the closest cells first, so the first viable cell is also the
+			closest safe option — no need to run through the blast zone.
+		*/
+		const bool beyond_radius = dist_to_danger_sq > radius_sq;
+		const bool has_cover = !beyond_radius && has_cover_from_danger(current_world);
 
-			if (dist_to_danger > furthest_dist_sq) {
-				furthest_dist_sq = dist_to_danger;
-				furthest_from_danger = current_world;
-			}
+		if (beyond_radius || has_cover) {
+			return current_world;
 		}
 
 		for_each_neighbor(current, [&](const vec2u n, const float) {
@@ -1024,5 +1024,5 @@ std::optional<vec2> find_closest_cover(
 		});
 	}
 
-	return furthest_from_danger;
+	return std::nullopt;
 }
