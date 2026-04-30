@@ -9,28 +9,10 @@
 
 #include "augs/pad_bytes.h"
 
-using specific_hostile_entities_vector = 
-	augs::constant_size_vector<signi_entity_id, SPECIFIC_HOSTILE_ENTITIES_COUNT>
-;
-
 namespace components {
 	struct attitude {
 		// GEN INTROSPECTOR struct components::attitude
-		real32 maximum_divergence_angle_before_shooting = 10.0;
-
 		faction_type official_faction;
-
-		specific_hostile_entities_vector specific_hostile_entities = {};
-		
-		signi_entity_id currently_attacked_visible_entity;
-		attitude_type target_attitude = attitude_type::NEUTRAL;
-
-		bool is_alert = false;
-		bool last_seen_target_position_inspected = false;
-		pad_bytes<2> pad;
-
-		vec2 last_seen_target_position;
-		vec2 last_seen_target_velocity;
 		// END GEN INTROSPECTOR
 	};
 }

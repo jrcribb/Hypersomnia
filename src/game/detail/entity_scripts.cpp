@@ -140,10 +140,6 @@ attitude_type calc_attitude(const const_entity_handle targeter, const const_enti
 		}
 	}
 
-	if (found_in(targeter_attitude.specific_hostile_entities, target)) {
-		return attitude_type::WANTS_TO_KILL;
-	}
-
 	return attitude_type::NEUTRAL;
 }
 

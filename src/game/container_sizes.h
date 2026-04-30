@@ -3,7 +3,6 @@
 
 constexpr std::size_t ANIMATION_FRAME_COUNT = 50;
 
-constexpr std::size_t SPECIFIC_HOSTILE_ENTITIES_COUNT = 5;
 constexpr std::size_t CONCURRENT_TREES_COUNT = 5;
 
 constexpr std::size_t DESTRUCTION_SCARS_COUNT = 6;
