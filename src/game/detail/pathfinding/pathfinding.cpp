@@ -956,7 +956,8 @@ std::optional<vec2> find_closest_cover(
 	const vec2 start_pos,
 	const vec2 danger_pos,
 	const physics_world_cache& physics,
-	const si_scaling si
+	const si_scaling si,
+	const float cover_search_radius
 ) {
 	const auto island_idx = ::find_island_for_position(navmesh, start_pos);
 
@@ -992,7 +993,7 @@ std::optional<vec2> find_closest_cover(
 	graph.set_visited(start_cell);
 	bfs_queue.push(start_cell);
 
-	const auto radius_sq = COVER_SEARCH_RADIUS * COVER_SEARCH_RADIUS;
+	const auto radius_sq = cover_search_radius * cover_search_radius;
 
 	while (!bfs_queue.empty()) {
 		const auto current = bfs_queue.front();

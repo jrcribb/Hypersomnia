@@ -127,7 +127,40 @@ inline float estimate_danger_duration(
 	return 0.0f;
 }
 
-inline void update_danger_avoidance(
+/*
+	Estimates the blast radius in pixels that a danger entity can affect.
+	For a thrown explosive this is the maximum of the direct explosion radius
+	and all cascade explosion radii.  For a running cascade explosion entity
+	it is the cascade flavour's explosion radius.
+	Returns 0 if no explosive data is found.
+*/
+template <class E>
+inline float estimate_danger_radius(const cosmos& cosm, const E& entity) {
+	float result = 0.0f;
+
+	if (const auto* explosive = entity.template find<invariants::explosive>()) {
+		result = std::max(result, explosive->explosion.effective_radius);
+
+		for (const auto& ci : explosive->cascade) {
+			if (!ci.flavour_id.is_set()) {
+				continue;
+			}
+
+			ci.flavour_id.dispatch([&](const auto typed_id) {
+				const auto& cascade_def = cosm.get_flavour(typed_id).template get<invariants::cascade_explosion>();
+				result = std::max(result, cascade_def.explosion.effective_radius);
+			});
+		}
+	}
+
+	if (const auto* cascade_def = entity.template find<invariants::cascade_explosion>()) {
+		result = std::max(result, cascade_def->explosion.effective_radius);
+	}
+
+	return result;
+}
+
+inline bool update_danger_avoidance(
 	const ai_character_context& ctx,
 	components::movement& movement,
 	const cosmos_navmesh& navmesh,
@@ -137,7 +170,7 @@ inline void update_danger_avoidance(
 	const bool is_freeze_time
 ) {
 	if (is_freeze_time) {
-		return;
+		return false;
 	}
 
 	auto& ai_state = ctx.ai_state;
@@ -181,14 +214,16 @@ inline void update_danger_avoidance(
 			vec2 pos;
 			float remaining_secs;
 			float dist_sq;
+			float cover_radius;
 		};
 
 		std::optional<danger_candidate> closest;
 
-		auto consider_candidate = [&](const vec2 pos, const float remaining_secs) {
+		auto consider_candidate = [&](const vec2 pos, const float remaining_secs, const float raw_radius) {
+			const auto cover_radius = std::clamp(raw_radius, 700.0f, 1100.0f);
 			const auto dist_sq = (pos - character_pos).length_sq();
 
-			if (dist_sq > COVER_SEARCH_RADIUS * COVER_SEARCH_RADIUS) {
+			if (dist_sq > cover_radius * cover_radius) {
 				return;
 			}
 
@@ -200,7 +235,7 @@ inline void update_danger_avoidance(
 			}
 
 			if (!closest.has_value() || dist_sq < closest->dist_sq) {
-				closest = danger_candidate{ pos, remaining_secs, dist_sq };
+				closest = danger_candidate{ pos, remaining_secs, dist_sq, cover_radius };
 			}
 		};
 
@@ -212,7 +247,8 @@ inline void update_danger_avoidance(
 
 				consider_candidate(
 					grenade_handle.get_logic_transform().pos,
-					::estimate_danger_duration(cosm, clk, grenade_handle)
+					::estimate_danger_duration(cosm, clk, grenade_handle),
+					::estimate_danger_radius(cosm, grenade_handle)
 				);
 			}
 		);
@@ -221,13 +257,14 @@ inline void update_danger_avoidance(
 			[&](const auto& cascade_handle) {
 				consider_candidate(
 					cascade_handle.get_logic_transform().pos,
-					::estimate_danger_duration(cosm, clk, cascade_handle)
+					::estimate_danger_duration(cosm, clk, cascade_handle),
+					::estimate_danger_radius(cosm, cascade_handle)
 				);
 			}
 		);
 
 		if (closest.has_value()) {
-			const auto cover_pos = ::find_closest_cover(navmesh, character_pos, closest->pos, physics, si);
+			const auto cover_pos = ::find_closest_cover(navmesh, character_pos, closest->pos, physics, si, closest->cover_radius);
 
 			if (cover_pos.has_value()) {
 				auto req = ai_pathfinding_request::to_position(*cover_pos);
@@ -241,17 +278,16 @@ inline void update_danger_avoidance(
 	const bool danger_active = ai_state.danger_pathfinding_time_left >= 0.0f;
 
 	if (!danger_active) {
-		return;
+		return false;
 	}
 
 	if (ai_state.danger_pathfinding_request.has_value()) {
-		/* Navigating to cover — sprint, dash, and follow the pathfinding direction */
-		movement.flags.sprinting = move_result.can_sprint;
-		movement.flags.dashing = move_result.can_sprint;
-
 		if (move_result.movement_direction.has_value()
 			&& ai_state.current_pathfinding_request == ai_state.danger_pathfinding_request
 		) {
+			/* Navigating to cover — sprint, dash, and follow the pathfinding direction */
+			movement.flags.sprinting = move_result.can_sprint;
+			movement.flags.dashing = move_result.can_sprint;
 			movement.flags.set_from_closest_direction(*move_result.movement_direction);
 		}
 	}
@@ -259,4 +295,6 @@ inline void update_danger_avoidance(
 		/* In cover — stand completely still until the timer expires */
 		movement.reset_movement_flags();
 	}
+
+	return danger_active;
 }

@@ -10,12 +10,6 @@ struct physics_path_hints;
 class physics_world_cache;
 
 /*
-	Radius from the danger position within which cover cells are searched.
-	Used by find_closest_cover and grenade detection range checks.
-*/
-constexpr float COVER_SEARCH_RADIUS = 700.0f;
-
-/*
 	Pathfinding algorithms using A* for navmesh.
 */
 
@@ -265,7 +259,7 @@ std::optional<bomb_pathfinding_target> find_bomb_pathfinding_target(
 	BFS from start_pos to find the closest walkable cell (by distance from
 	the character) that is either:
 	  - behind cover (wall blocks LoS to danger_pos), or
-	  - beyond COVER_SEARCH_RADIUS from danger_pos.
+	  - beyond cover_search_radius from danger_pos.
 
 	Viability check uses predefined_queries::pathfinding() — the same
 	filter used by explosions.  Traversal uses 8-directional movement.
@@ -273,6 +267,8 @@ std::optional<bomb_pathfinding_target> find_bomb_pathfinding_target(
 	Because BFS explores cells nearest to the character first, the first
 	viable cell found is also the closest safe destination — preventing
 	the bot from running through the blast zone toward a far-side cell.
+
+	cover_search_radius is the clamped effective blast radius of the danger.
 
 	Returns nullopt if start_pos is not on any navmesh island, the island
 	is empty, or no viable cell exists (fully enclosed within the radius
@@ -283,5 +279,6 @@ std::optional<vec2> find_closest_cover(
 	const vec2 start_pos,
 	const vec2 danger_pos,
 	const physics_world_cache& physics,
-	const si_scaling si
+	const si_scaling si,
+	float cover_search_radius
 );

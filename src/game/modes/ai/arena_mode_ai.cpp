@@ -873,9 +873,9 @@ arena_ai_result update_arena_mode_ai(
 		return (bot_index / AVOIDANCE_BOTS_PER_FRAME) == current_group;
 	}();
 
-	::update_bot_avoidance(ctx, movement, should_run_avoidance_update, is_freeze_time, is_thinking_what_to_buy);
+	const bool avoidance_overrode = ::update_bot_avoidance(ctx, movement, should_run_avoidance_update, is_freeze_time, is_thinking_what_to_buy);
 
-	::update_danger_avoidance(
+	const bool danger_overrode = ::update_danger_avoidance(
 		ctx,
 		movement,
 		navmesh,
@@ -884,6 +884,15 @@ arena_ai_result update_arena_mode_ai(
 		should_run_avoidance_update,
 		is_freeze_time
 	);
+
+	if (avoidance_overrode || danger_overrode) {
+		if (auto* patrol = ::get_behavior_if<ai_behavior_patrol>(ai_state.last_behavior)) {
+			if (patrol->is_camping()) {
+				patrol->camp_timer = 0.0f;
+				patrol->twitch_direction = std::nullopt;
+			}
+		}
+	}
 
 	/*
 		Calculate and apply hand_flags (triggers, planting).
