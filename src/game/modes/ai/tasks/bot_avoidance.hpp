@@ -21,7 +21,7 @@
 	until the next recompute for this bot.
 */
 
-inline void update_bot_avoidance(
+inline bool update_bot_avoidance(
 	const ai_character_context& ctx,
 	components::movement& movement,
 	const bool should_run_avoidance_update,
@@ -47,22 +47,6 @@ inline void update_bot_avoidance(
 		if (my_vel.length_sq() > AVOIDANCE_MIN_VELOCITY_SQ) {
 			const auto si = cosm.get_si();
 			const auto my_vel_norm = vec2(my_vel).normalize();
-
-			auto cancel_camping = [&]() {
-				if (auto* patrol = ::get_behavior_if<ai_behavior_patrol>(ai_state.last_behavior)) {
-					if (patrol->is_camping()) {
-						/*
-							Zero the timer but leave patrol_waypoint and camp_duration
-							intact. The patrol process will trigger its "timer expired"
-							branch next tick with current_waypoint_id still set to the
-							old camp spot, so find_random_unassigned_patrol_waypoint
-							receives it as the ignore parameter and will never re-pick it.
-						*/
-						patrol->camp_timer = 0.0f;
-						patrol->twitch_direction = std::nullopt;
-					}
-				}
-			};
 
 			cosm.for_each_having<components::sentience>(
 				[&](const auto& other) {
@@ -111,12 +95,6 @@ inline void update_bot_avoidance(
 						return;
 					}
 
-					/*
-						Collision course confirmed — always cancel camping regardless of
-						relative velocity direction or whether the other character is a bot.
-					*/
-					cancel_camping();
-
 					/* Only steer away from other bots, not human players */
 					if (const auto* s = other.template find<components::sentience>()) {
 						if (!s->is_bot) {
@@ -153,5 +131,8 @@ inline void update_bot_avoidance(
 
 	if (ai_state.avoidance_dir.has_value() && !is_thinking_what_to_buy && !is_freeze_time && !is_actively_defusing) {
 		movement.flags.set_from_closest_direction(*ai_state.avoidance_dir);
+		return true;
 	}
+
+	return false;
 }

@@ -974,9 +974,27 @@ std::optional<vec2> find_closest_cover(
 	}
 
 	const auto filter_q = predefined_queries::pathfinding();
+	const auto half = static_cast<float>(island.cell_size) / 2.0f;
 
-	auto has_cover_from_danger = [&](const vec2 cell_world_pos) {
-		return physics.ray_cast_px(si, cell_world_pos, danger_pos, filter_q).hit;
+	/*
+		A cell is fully behind cover only if all four corners have no LoS to
+		the danger.  Exit as soon as one corner is exposed.
+	*/
+	auto has_cover_from_danger = [&](const vec2 cell_center) {
+		const vec2 corners[4] = {
+			cell_center + vec2(-half, -half),
+			cell_center + vec2( half, -half),
+			cell_center + vec2(-half,  half),
+			cell_center + vec2( half,  half)
+		};
+
+		for (const auto& corner : corners) {
+			if (!physics.ray_cast_px(si, corner, danger_pos, filter_q).hit) {
+				return false;
+			}
+		}
+
+		return true;
 	};
 
 	pathfinding_context local_ctx;
