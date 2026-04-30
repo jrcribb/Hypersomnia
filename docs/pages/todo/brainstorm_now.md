@@ -6,12 +6,6 @@ permalink: brainstorm_now
 summary: That which we are brainstorming at the moment.
 ---
 
-# Prompt
-# Immediate avoidance layer for bots
-
-I need bots to, once every 200 ms + 
-- tutaj ten akumulator ale on performance wise ma byc a nie interval wise tbh czyli x na klatke
-
 
 - boty (jeszcze)
 	- pathfinding to uslyszanego kroku i celowanie tam gdzie tracimy los

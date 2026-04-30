@@ -23,7 +23,9 @@ arena_ai_result update_arena_mode_ai(
 	const entity_id bomb_entity,
 	pathfinding_context* pathfinding_ctx,
 	const bool in_buy_area,
-	const bool is_freeze_time
+	const bool is_freeze_time,
+	const std::size_t bot_index,
+	const std::size_t num_bots
 );
 
 void update_arena_mode_ai_team(

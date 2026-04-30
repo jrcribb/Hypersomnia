@@ -35,7 +35,9 @@
 #include "game/modes/ai/tasks/interpolate_crosshair.hpp"
 #include "game/modes/ai/tasks/handle_purchases.hpp"
 #include "game/modes/ai/tasks/listen_for_footsteps.hpp"
-#include "game/modes/ai/tasks/ai_behavior_tree.hpp"
+#include "game/modes/ai/tasks/find_best_weapon.hpp"
+#include "game/modes/ai/tasks/line_of_sight.hpp"
+#include "game/modes/ai/intents/calc_movement_flags.hpp"
 #include "game/modes/ai/tasks/ai_waypoint_helpers.hpp"
 #include "game/modes/ai/behaviors/eval_behavior_tree.hpp"
 #include "game/modes/ai/behaviors/ai_behavior_process_ctx.hpp"
@@ -52,6 +54,7 @@
 #include "game/modes/ai/intents/calc_hand_flags.hpp"
 #include "game/modes/ai/tasks/can_weapon_penetrate.hpp"
 #include "game/cosmos/make_physics_path_hints.h"
+#include "game/modes/ai/tasks/immediate_avoidance.hpp"
 
 void update_arena_mode_ai_team(
 	cosmos& cosm,
@@ -206,7 +209,9 @@ arena_ai_result update_arena_mode_ai(
 	const entity_id bomb_entity,
 	pathfinding_context* pathfinding_ctx,
 	bool in_buy_area,
-	const bool is_freeze_time
+	const bool is_freeze_time,
+	const std::size_t bot_index,
+	const std::size_t num_bots
 ) {
 	auto stable_rng = randomization(stable_round_rng);
 
@@ -826,6 +831,14 @@ arena_ai_result update_arena_mode_ai(
 	}
 
 	AI_LOG_NVPS(movement.flags.walking, movement.flags.sprinting, movement.flags.dashing);
+
+	/*
+		===========================================================================
+		PHASE 8: Immediate avoidance layer.
+		===========================================================================
+	*/
+
+	::update_immediate_avoidance(ctx, movement, bot_index, num_bots, is_freeze_time, is_thinking_what_to_buy);
 
 	/*
 		Calculate and apply hand_flags (triggers, planting).

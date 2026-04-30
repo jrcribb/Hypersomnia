@@ -983,6 +983,8 @@ void arena_mode::create_character_for_player(
 				else {
 					sentience->last_assigned_color = in.rules.default_player_color;
 				}
+
+				sentience->is_bot = p.is_bot;
 			}
 
 			const auto old_id = p.controlled_character_id;
@@ -2488,6 +2490,9 @@ void arena_mode::execute_player_commands(const input_type in, const mode_entropy
 		stable_round_rng = team_rng.generator;
 	}
 
+	const auto num_bots = static_cast<std::size_t>(std::ranges::distance(only_bot(players)));
+	std::size_t bot_index = 0;
+
 	for (auto& it : only_bot(players)) {
 		auto& player = it.second;
 		const auto player_faction = player.get_faction();
@@ -2537,12 +2542,16 @@ void arena_mode::execute_player_commands(const input_type in, const mode_entropy
 			current_bomb_entity,
 			&_pathfinding_ctx,
 			in_buy_area,
-			is_freeze_time
+			is_freeze_time,
+			bot_index,
+			num_bots
 		);
 		
 		if (ai_result.item_purchase.has_value()) {
 			entropy.players[it.first] = mode_commands::item_purchase(*ai_result.item_purchase);
 		}
+
+		++bot_index;
 	}
 
 	for (const auto& p : entropy.players) {

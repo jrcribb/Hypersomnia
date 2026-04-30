@@ -128,7 +128,8 @@ namespace components {
 		vec2 last_corpse_damage_direction;
 		bool first_arm_queued_as_upper = false;
 		bool corpse_fall_sound_played = false;
-		pad_bytes<2> pad3;
+		bool is_bot = false;
+		pad_bytes<1> pad3;
 
 		int pending_lying_gore_head = 0;
 		int pending_lying_gore_shoulder = 0;

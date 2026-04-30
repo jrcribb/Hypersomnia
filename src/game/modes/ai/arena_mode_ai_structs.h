@@ -434,6 +434,7 @@ struct arena_mode_ai_state {
 	std::optional<ai_pathfinding_request> current_pathfinding_request;
 
 	entity_id source_spawn_point;
+	std::optional<vec2> avoidance_dir;
 	// END GEN INTROSPECTOR
 
 	bool is_pathfinding_active() const {
@@ -468,5 +469,6 @@ struct arena_mode_ai_state {
 		pathfinding.reset();
 		current_pathfinding_request = std::nullopt;
 		source_spawn_point = {};
+		avoidance_dir = std::nullopt;
 	}
 };
