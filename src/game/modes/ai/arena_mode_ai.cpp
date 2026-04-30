@@ -54,7 +54,8 @@
 #include "game/modes/ai/intents/calc_hand_flags.hpp"
 #include "game/modes/ai/tasks/can_weapon_penetrate.hpp"
 #include "game/cosmos/make_physics_path_hints.h"
-#include "game/modes/ai/tasks/immediate_avoidance.hpp"
+#include "game/modes/ai/tasks/bot_avoidance.hpp"
+#include "game/modes/ai/tasks/danger_avoidance.hpp"
 
 void update_arena_mode_ai_team(
 	cosmos& cosm,
@@ -674,23 +675,36 @@ arena_ai_result update_arena_mode_ai(
 	);
 
 	/* Check if request changed - reinitialize pathfinding. */
-	if (new_request != ai_state.current_pathfinding_request) {
+
+	/*
+		Danger avoidance can override the effective pathfinding request.
+		If a danger is active, navigate to cover instead of the normal target.
+	*/
+	const auto effective_request = [&]() -> std::optional<ai_pathfinding_request> {
+		if (ai_state.danger_pathfinding_request.has_value()) {
+			return ai_state.danger_pathfinding_request;
+		}
+
+		return new_request;
+	}();
+
+	if (effective_request != ai_state.current_pathfinding_request) {
 		AI_LOG("Pathfinding request changed - reinitializing");
 
-		ai_state.current_pathfinding_request = new_request;
+		ai_state.current_pathfinding_request = effective_request;
 		ai_state.clear_pathfinding();
 
-		if (new_request != std::nullopt) {
+		if (effective_request != std::nullopt) {
 			const auto physics_hints = make_physics_path_hints(cosm);
-			ai_state.pathfinding = ::start_pathfinding_to(character_pos, new_request->target, navmesh, &physics_hints, pathfinding_ctx);
+			ai_state.pathfinding = ::start_pathfinding_to(character_pos, effective_request->target, navmesh, &physics_hints, pathfinding_ctx);
 
 			if (ai_state.is_pathfinding_active()) {
-				ai_state.pathfinding->exact_destination = new_request->exact;
+				ai_state.pathfinding->exact_destination = effective_request->exact;
 			}
 			else {
 				/* Unconditional LOG (not AI_LOG) — always visible even with LOG_AI=0. */
 				LOG("AI ERROR: start_pathfinding_to FAILED for bot at (%x,%x) -> target (%x,%x). Waypoint unreachable?",
-					character_pos.x, character_pos.y, new_request->target.pos.x, new_request->target.pos.y);
+					character_pos.x, character_pos.y, effective_request->target.pos.x, effective_request->target.pos.y);
 			}
 		}
 	}
@@ -834,11 +848,42 @@ arena_ai_result update_arena_mode_ai(
 
 	/*
 		===========================================================================
-		PHASE 8: Immediate avoidance layer.
+		PHASE 8: Emergency avoidance layer (bot avoidance + danger avoidance).
+
+		should_run_avoidance_update throttles computation to a subset of bots
+		per frame and is shared between both avoidance functions.
+		Danger avoidance is applied last so it has higher priority.
 		===========================================================================
 	*/
 
-	::update_immediate_avoidance(ctx, movement, bot_index, num_bots, is_freeze_time, is_thinking_what_to_buy);
+	constexpr std::size_t AVOIDANCE_BOTS_PER_FRAME = 4;
+
+	const bool should_run_avoidance_update = [&]() {
+		if (num_bots == 0 || is_freeze_time) {
+			return false;
+		}
+
+		const auto num_groups = (num_bots + AVOIDANCE_BOTS_PER_FRAME - 1) / AVOIDANCE_BOTS_PER_FRAME;
+
+		if (num_groups <= 1) {
+			return true;
+		}
+
+		const auto current_group = static_cast<std::size_t>(cosm.get_total_steps_passed()) % num_groups;
+		return (bot_index / AVOIDANCE_BOTS_PER_FRAME) == current_group;
+	}();
+
+	::update_bot_avoidance(ctx, movement, should_run_avoidance_update, is_freeze_time, is_thinking_what_to_buy);
+
+	::update_danger_avoidance(
+		ctx,
+		movement,
+		navmesh,
+		move_result,
+		dt_secs,
+		should_run_avoidance_update,
+		is_freeze_time
+	);
 
 	/*
 		Calculate and apply hand_flags (triggers, planting).

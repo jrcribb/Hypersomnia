@@ -4,8 +4,16 @@
 #include "game/common_state/cosmos_navmesh.h"
 #include "augs/enums/callback_result.h"
 #include "augs/math/transform.h"
+#include "augs/math/si_scaling.h"
 
 struct physics_path_hints;
+class physics_world_cache;
+
+/*
+	Radius from the danger position within which cover cells are searched.
+	Used by find_closest_cover and grenade detection range checks.
+*/
+constexpr float COVER_SEARCH_RADIUS = 700.0f;
 
 /*
 	Pathfinding algorithms using A* for navmesh.
@@ -251,4 +259,26 @@ std::optional<bomb_pathfinding_target> find_bomb_pathfinding_target(
 	const E& bomb_entity,
 	const cosmos_navmesh& navmesh,
 	const vec2 source_pos
+);
+
+/*
+	BFS from start_pos to find the closest walkable cell that has no line
+	of sight to danger_pos, using predefined_queries::pathfinding() — the
+	same filter used by explosions.
+
+	Only cells within COVER_SEARCH_RADIUS of danger_pos are evaluated as
+	cover candidates. Traversal uses 8-directional movement so diagonal
+	paths through open space are explored.
+
+	If no cover cell is found within the radius, returns the furthest
+	walkable cell from danger_pos within the radius (fallback cover).
+	Returns nullopt if start_pos is not on any navmesh island or if the
+	island is empty.
+*/
+std::optional<vec2> find_closest_cover(
+	const cosmos_navmesh& navmesh,
+	const vec2 start_pos,
+	const vec2 danger_pos,
+	const physics_world_cache& physics,
+	const si_scaling si
 );

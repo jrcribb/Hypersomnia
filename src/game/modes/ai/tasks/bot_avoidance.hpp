@@ -11,30 +11,26 @@
 #include "game/modes/ai/tasks/line_of_sight.hpp"
 
 /*
-	PHASE 8: Immediate avoidance layer.
+	Emergency avoidance layer — bot-to-bot collision avoidance component.
 
-	Limits computation to AVOIDANCE_BOTS_PER_FRAME bots per frame via modular
-	arithmetic on cosm.get_total_steps_passed(). The result is cached in
-	ai_state.avoidance_dir and applied every frame until the next recompute
-	for this bot.
+	Called from the emergency avoidance layer (PHASE 8) alongside
+	update_danger_avoidance. should_run_avoidance_update must be computed
+	by the caller and shared between both avoidance functions.
 
-	Call this once per bot per step, after all other movement flags are set.
-	Applies the cached avoidance direction (overriding pathfinding) every call,
-	but only recomputes the direction for the throttled subset of bots.
+	The result is cached in ai_state.avoidance_dir and applied every frame
+	until the next recompute for this bot.
 */
 
-inline void update_immediate_avoidance(
+inline void update_bot_avoidance(
 	const ai_character_context& ctx,
 	components::movement& movement,
-	const std::size_t bot_index,
-	const std::size_t num_bots,
+	const bool should_run_avoidance_update,
 	const bool is_freeze_time,
 	const bool is_thinking_what_to_buy
 ) {
 	constexpr float AVOIDANCE_QUERY_HALF_SIDE = 250.0f;
 	constexpr float AVOIDANCE_LOOKAHEAD_SECS = 0.2f;
 	constexpr float AVOIDANCE_CHARACTER_HALF_SIZE = 14.0f;
-	constexpr std::size_t AVOIDANCE_BOTS_PER_FRAME = 4;
 	constexpr float AVOIDANCE_MIN_VELOCITY_SQ = 1.0f;
 
 	auto& ai_state = ctx.ai_state;
@@ -42,21 +38,6 @@ inline void update_immediate_avoidance(
 	const auto& character_handle = ctx.character_handle;
 	const auto character_pos = ctx.character_pos;
 	const auto& physics = ctx.physics;
-
-	const bool should_run_avoidance_update = [&]() {
-		if (num_bots == 0 || is_freeze_time) {
-			return false;
-		}
-
-		const auto num_groups = (num_bots + AVOIDANCE_BOTS_PER_FRAME - 1) / AVOIDANCE_BOTS_PER_FRAME;
-
-		if (num_groups <= 1) {
-			return true;
-		}
-
-		const auto current_group = static_cast<std::size_t>(cosm.get_total_steps_passed()) % num_groups;
-		return (bot_index / AVOIDANCE_BOTS_PER_FRAME) == current_group;
-	}();
 
 	if (should_run_avoidance_update) {
 		ai_state.avoidance_dir = std::nullopt;

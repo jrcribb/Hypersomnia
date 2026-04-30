@@ -950,3 +950,79 @@ std::optional<vec2> find_random_unoccupied_cell_within_rect(
 	const auto random_index = rng.randval(0u, static_cast<unsigned>(candidate_cells.size() - 1));
 	return candidate_cells[random_index];
 }
+
+std::optional<vec2> find_closest_cover(
+	const cosmos_navmesh& navmesh,
+	const vec2 start_pos,
+	const vec2 danger_pos,
+	const physics_world_cache& physics,
+	const si_scaling si
+) {
+	const auto island_idx = ::find_island_for_position(navmesh, start_pos);
+
+	if (!island_idx.has_value()) {
+		return std::nullopt;
+	}
+
+	const auto& island = navmesh.islands[*island_idx];
+	const auto start_cell = ::world_to_cell(island, start_pos);
+	const auto size = island.get_size_in_cells();
+
+	if (size.x == 0 || size.y == 0 || !island.is_within_bounds(start_cell)) {
+		return std::nullopt;
+	}
+
+	const auto filter_q = predefined_queries::pathfinding();
+
+	auto has_cover_from_danger = [&](const vec2 cell_world_pos) {
+		return physics.ray_cast_px(si, cell_world_pos, danger_pos, filter_q).hit;
+	};
+
+	pathfinding_context local_ctx;
+	pathfinding_graph_view graph(local_ctx, island);
+	graph.init_visited();
+
+	auto is_walkable = [&](const vec2u c) {
+		return island.is_within_bounds(c) && island.get_cell(c) == 0;
+	};
+
+	const auto for_each_neighbor = graph.make_for_each_neighbor_8_with_weight(is_walkable);
+
+	std::queue<vec2u> bfs_queue;
+	graph.set_visited(start_cell);
+	bfs_queue.push(start_cell);
+
+	std::optional<vec2> furthest_from_danger;
+	float furthest_dist_sq = -1.0f;
+	const auto radius_sq = COVER_SEARCH_RADIUS * COVER_SEARCH_RADIUS;
+
+	while (!bfs_queue.empty()) {
+		const auto current = bfs_queue.front();
+		bfs_queue.pop();
+
+		const auto current_world = ::cell_to_world(island, current);
+		const auto dist_to_danger = (current_world - danger_pos).length_sq();
+
+		if (dist_to_danger <= radius_sq) {
+			if (has_cover_from_danger(current_world)) {
+				return current_world;
+			}
+
+			if (dist_to_danger > furthest_dist_sq) {
+				furthest_dist_sq = dist_to_danger;
+				furthest_from_danger = current_world;
+			}
+		}
+
+		for_each_neighbor(current, [&](const vec2u n, const float) {
+			if (!graph.get_visited(n)) {
+				graph.set_visited(n);
+				bfs_queue.push(n);
+			}
+
+			return callback_result::CONTINUE;
+		});
+	}
+
+	return furthest_from_danger;
+}

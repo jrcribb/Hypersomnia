@@ -19,6 +19,7 @@ summary: That which we are brainstorming at the moment.
 	- jak przeladowuje to do najblizszego tile z coverem
 	- jak slychac kroki gdzies to przy kampieniu celowac w najblizsza kratke z coverem albo nawet stanac jak patroluje i on jest blisko
 	- unikanie nejdow tez najblizszy cover
+	- flashbang amount > 50% - nie widzi nic
 
 
 - przed releasem
