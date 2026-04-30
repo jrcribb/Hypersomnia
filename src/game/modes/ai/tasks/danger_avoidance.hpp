@@ -286,8 +286,18 @@ inline bool update_danger_avoidance(
 			&& ai_state.current_pathfinding_request == ai_state.danger_pathfinding_request
 		) {
 			/* Navigating to cover — sprint, dash, and follow the pathfinding direction */
-			movement.flags.sprinting = move_result.can_sprint;
-			movement.flags.dashing = move_result.can_sprint;
+			movement.flags.sprinting = move_result.can_sprint || move_result.nearing_end;
+
+			const auto& character_handle = ctx.character_handle;
+			const auto speed = [&]() {
+				if (const auto body = character_handle.find<components::rigid_body>()) {
+					return body.get_velocity().length();
+				}
+
+				return 0.0f;
+			}();
+
+			movement.flags.dashing = move_result.can_sprint && speed > 500.0f;
 			movement.flags.set_from_closest_direction(*move_result.movement_direction);
 		}
 	}
