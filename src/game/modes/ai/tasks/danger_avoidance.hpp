@@ -1,4 +1,5 @@
 #pragma once
+#include <Box2D/Collision/Shapes/b2PolygonShape.h>
 #include "game/components/cascade_explosion_component.h"
 #include "game/components/explosive_component.h"
 #include "game/components/hand_fuse_component.h"
@@ -8,6 +9,7 @@
 #include "game/detail/path_navigation/navigate_pathfinding.hpp"
 #include "game/detail/pathfinding/pathfinding.h"
 #include "game/enums/filters.h"
+#include "game/inferred_caches/find_physics_cache.h"
 #include "game/modes/ai/ai_character_context.h"
 #include "game/modes/ai/intents/calc_pathfinding_request.hpp"
 
@@ -227,10 +229,48 @@ inline bool update_danger_avoidance(
 				return;
 			}
 
-			const auto los_check = physics.ray_cast_px(si, character_pos, pos, filter);
+			/*
+				Character is safe only when EVERY polygon vertex of its hitbox is
+				shielded from the danger. Check all vertices and exit as soon as
+				one is exposed (no wall between it and the danger).
+			*/
+			bool any_vertex_exposed = false;
 
-			if (los_check.hit) {
-				/* Wall between character and danger — already safe */
+			const auto* cc = ::find_colliders_cache(ctx.character_handle);
+
+			if (cc != nullptr) {
+				for (const auto& fp : cc->constructed_fixtures) {
+					if (any_vertex_exposed) {
+						break;
+					}
+
+					const auto* f = fp.get();
+					const auto* shape = f->GetShape();
+
+					if (shape->GetType() != b2Shape::e_polygon) {
+						continue;
+					}
+
+					const auto& poly = static_cast<const b2PolygonShape&>(*shape);
+					const auto& xf = f->GetBody()->GetTransform();
+
+					for (int v = 0; v < poly.GetVertexCount(); ++v) {
+						const auto world_px = si.get_pixels(static_cast<vec2>(b2Mul(xf, poly.GetVertex(v))));
+
+						if (!physics.ray_cast_px(si, world_px, pos, filter).hit) {
+							any_vertex_exposed = true;
+							break;
+						}
+					}
+				}
+			}
+			else {
+				/* No fixture data — fall back to character centre */
+				any_vertex_exposed = !physics.ray_cast_px(si, character_pos, pos, filter).hit;
+			}
+
+			if (!any_vertex_exposed) {
+				/* Every vertex is shielded — character is already safe from this danger */
 				return;
 			}
 
@@ -289,13 +329,7 @@ inline bool update_danger_avoidance(
 			movement.flags.sprinting = move_result.can_sprint || move_result.nearing_end;
 
 			const auto& character_handle = ctx.character_handle;
-			const auto speed = [&]() {
-				if (const auto body = character_handle.find<components::rigid_body>()) {
-					return body.get_velocity().length();
-				}
-
-				return 0.0f;
-			}();
+			const auto speed = character_handle.get_effective_velocity().length();
 
 			movement.flags.dashing = move_result.can_sprint && speed > 500.0f;
 			movement.flags.set_from_closest_direction(*move_result.movement_direction);
