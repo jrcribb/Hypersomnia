@@ -1058,6 +1058,14 @@ arena_ai_result update_arena_mode_ai(
 	const bool fully_stunned = is_blinded && is_deafened;
 	const bool can_sense_anything = !fully_stunned;
 
+	const bool is_currently_defusing = [&]() {
+		if (const auto* defuse = ::get_behavior_if<ai_behavior_defuse>(ai_state.last_behavior)) {
+			return defuse->is_defusing;
+		}
+
+		return false;
+	}();
+
 	const bool danger_overrode = can_sense_anything && ::update_danger_avoidance(
 		ctx,
 		movement,
@@ -1069,7 +1077,7 @@ arena_ai_result update_arena_mode_ai(
 	);
 
 	/* Bullet avoidance — applied last, overrides all other avoidance layers. */
-	const bool bullet_overrode = can_sense_anything && ::update_bullet_avoidance(
+	const bool bullet_overrode = !is_currently_defusing && can_sense_anything && ::update_bullet_avoidance(
 		ctx,
 		movement,
 		dt_secs,
