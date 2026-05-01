@@ -138,7 +138,7 @@ void update_arena_mode_ai_team(
 
 			if (candidates.size() == 1) {
 				team_state.bot_with_defuse_mission = candidates[0].char_id;
-				candidates[0].player_ptr->ai_state.combat_target.use_combat_start_time = true;
+				candidates[0].player_ptr->ai_state.combat_target.timeout_from_engagement_start = true;
 			}
 			else if (candidates.size() > 1) {
 				const auto bomb_handle = cosm[bomb_entity];
@@ -185,7 +185,7 @@ void update_arena_mode_ai_team(
 
 					if (best_char_id.is_set()) {
 						team_state.bot_with_defuse_mission = best_char_id;
-						best_player_ptr->ai_state.combat_target.use_combat_start_time = true;
+						best_player_ptr->ai_state.combat_target.timeout_from_engagement_start = true;
 					}
 				}
 			}
@@ -373,9 +373,9 @@ arena_ai_result update_arena_mode_ai(
 			const auto enemy_handle = cosm[alert.enemy];
 
 			if (enemy_handle.alive() && sentient_and_conscious(enemy_handle)) {
-				ai_state.confirmed_closest_enemy = alert.enemy;
+				ai_state.perceived_enemy = alert.enemy;
 
-				ai_state.combat_target.acquire_target_seen(
+				ai_state.combat_target.on_visual_contact(
 					stable_rng,
 					global_time_secs,
 					alert.enemy,
@@ -388,11 +388,11 @@ arena_ai_result update_arena_mode_ai(
 				);
 			}
 			else {
-				ai_state.confirmed_closest_enemy = {};
+				ai_state.perceived_enemy = {};
 			}
 		}
 		else {
-			ai_state.confirmed_closest_enemy = {};
+			ai_state.perceived_enemy = {};
 		}
 
 		ai_state.alertness.los_change_alert.reset();
@@ -411,7 +411,7 @@ arena_ai_result update_arena_mode_ai(
 			if (enemy_handle.alive() && sentient_and_conscious(enemy_handle)) {
 				switch (alert.acquire_type) {
 					case alert_acquire_type::FULL:
-						ai_state.combat_target.full_acquire(
+						ai_state.combat_target.force_engage(
 							stable_rng,
 							global_time_secs,
 							alert.enemy,
@@ -424,7 +424,7 @@ arena_ai_result update_arena_mode_ai(
 						break;
 					case alert_acquire_type::SEEN:
 					case alert_acquire_type::CLOSEST_LOS_CHANGE:
-						ai_state.combat_target.acquire_target_seen(
+						ai_state.combat_target.on_visual_contact(
 							stable_rng,
 							global_time_secs,
 							alert.enemy,
@@ -437,7 +437,7 @@ arena_ai_result update_arena_mode_ai(
 						);
 						break;
 					case alert_acquire_type::HEARD_ONLY:
-						ai_state.combat_target.acquire_target_heard(
+						ai_state.combat_target.on_heard_footstep(
 							global_time_secs,
 							alert.enemy,
 							alert.enemy_pos
@@ -487,25 +487,25 @@ arena_ai_result update_arena_mode_ai(
 		return ::is_behavior<ai_behavior_combat>(ai_state.last_behavior);
 	};
 
-	const auto now_closest_enemy = ::find_closest_enemy(ctx, is_ffa, is_camping, is_in_combat());
+	const auto detected_enemy = ::find_closest_enemy(ctx, is_ffa, is_camping, is_in_combat());
 
-	if (now_closest_enemy != ai_state.confirmed_closest_enemy) {
+	if (detected_enemy != ai_state.perceived_enemy) {
 		/* World state differs from bot's perception — queue/update LOS change. */
-		const auto enemy_pos = now_closest_enemy.is_set()
-			? cosm[now_closest_enemy].get_logic_transform().pos
+		const auto enemy_pos = detected_enemy.is_set()
+			? cosm[detected_enemy].get_logic_transform().pos
 			: vec2::zero;
 
-		ai_state.alertness.queue_los_change(now_closest_enemy, enemy_pos, global_time_secs);
+		ai_state.alertness.queue_los_change(detected_enemy, enemy_pos, global_time_secs);
 	}
 	else {
-		if (const auto enemy_handle = cosm[ai_state.confirmed_closest_enemy]) {
+		if (const auto enemy_handle = cosm[ai_state.perceived_enemy]) {
 			/* Confirmed visual contact with same target — immediate position update. */
 			const auto enemy_pos = enemy_handle.get_logic_transform().pos;
 
-			ai_state.combat_target.acquire_target_seen(
+			ai_state.combat_target.on_visual_contact(
 				stable_rng,
 				global_time_secs,
-				ai_state.confirmed_closest_enemy,
+				ai_state.perceived_enemy,
 				enemy_pos,
 				character_pos,
 				bot_is_bomb_carrier,
@@ -520,9 +520,9 @@ arena_ai_result update_arena_mode_ai(
 		All downstream logic uses the confirmed (reaction-time-delayed) state,
 		never the raw find_closest_enemy result.
 	*/
-	const bool sees_target = ai_state.confirmed_closest_enemy.is_set();
+	const bool has_visual = ai_state.perceived_enemy.is_set();
 
-	if (sees_target) {
+	if (has_visual) {
 		/*
 			Could happen at the beginning of the round,
 			prevent any buying logic in that case.
@@ -536,7 +536,7 @@ arena_ai_result update_arena_mode_ai(
 			enemy is gone. Clear the combat target.
 		*/
 		if (auto* combat = ::get_behavior_if<ai_behavior_combat>(ai_state.last_behavior)) {
-			if (combat->has_dashed_for_known_position(ai_state.combat_target.last_known_pos)) {
+			if (combat->has_dashed_to_known_pos(ai_state.combat_target.last_known_pos)) {
 				ai_state.combat_target.clear();
 			}
 		}
@@ -604,22 +604,22 @@ arena_ai_result update_arena_mode_ai(
 	*/
 
 	bool target_acquired = false;
-	std::optional<vec2> target_enemy_velocity = std::nullopt;
+	std::optional<vec2> aim_velocity = std::nullopt;
 
 	if (::is_behavior<ai_behavior_combat>(ai_state.last_behavior)) {
-		if (ai_state.combat_target.active(cosm, global_time_secs)) {
-			if (ai_state.confirmed_closest_enemy.is_set()) {
+		if (ai_state.combat_target.within_engagement_window(cosm, global_time_secs)) {
+			if (ai_state.perceived_enemy.is_set()) {
 				/* Confirmed visual contact — direct engagement. */
 				target_acquired = ::can_weapon_penetrate(character_handle, ai_state.combat_target.last_known_pos);
 
-				if (const auto enemy_handle = cosm[ai_state.confirmed_closest_enemy]) {
-					target_enemy_velocity = enemy_handle.get_effective_velocity();
+				if (const auto enemy_handle = cosm[ai_state.perceived_enemy]) {
+					aim_velocity = enemy_handle.get_effective_velocity();
 				}
 			}
 			else {
 				/* Not confirmed seeing target — wall penetration at last known position. */
-				const auto time_since_known = global_time_secs - ai_state.combat_target.when_last_known_secs;
-				const auto shoot_wall_time_limit = ai_state.combat_target.chosen_combat_time_secs / 20.0f;
+				const auto time_since_known = global_time_secs - ai_state.combat_target.last_known_time_secs;
+				const auto shoot_wall_time_limit = ai_state.combat_target.engagement_timeout_secs / 20.0f;
 
 				if (time_since_known < shoot_wall_time_limit + ai_state.alertness.base_rt_secs) {
 					const bool has_wall_between = !::los_to_any_vertices_of(
@@ -642,7 +642,7 @@ arena_ai_result update_arena_mode_ai(
 		The target position is always last_known_pos from combat_target.
 		This works for both seen (updated each frame) and wall penetration cases.
 	*/
-	const auto target_enemy_pos = ai_state.combat_target.last_known_pos;
+	const auto aim_pos = ai_state.combat_target.last_known_pos;
 
 	/*
 		===========================================================================
@@ -664,8 +664,8 @@ arena_ai_result update_arena_mode_ai(
 		cosm,
 		bomb_entity,
 		target_acquired,
-		target_enemy_pos,
-		target_enemy_velocity
+		aim_pos,
+		aim_velocity
 	);
 
 	/*
@@ -677,11 +677,11 @@ arena_ai_result update_arena_mode_ai(
 	const auto aim_radius_to_shoot = ::calc_aim_radius_to_shoot(character_handle);
 
 	const bool has_direct_los_to_enemy = [&]() {
-		if (!is_in_combat() || !ai_state.confirmed_closest_enemy.is_set()) {
+		if (!is_in_combat() || !ai_state.perceived_enemy.is_set()) {
 			return false;
 		}
 
-		const auto enemy_handle = cosm[ai_state.confirmed_closest_enemy];
+		const auto enemy_handle = cosm[ai_state.perceived_enemy];
 
 		if (!enemy_handle.alive()) {
 			return false;
@@ -950,7 +950,7 @@ arena_ai_result update_arena_mode_ai(
 		const auto hand_flags = ::calc_hand_flags(
 			ai_state.last_behavior,
 			target_acquired,
-			target_enemy_pos,
+			aim_pos,
 			character_handle
 		);
 

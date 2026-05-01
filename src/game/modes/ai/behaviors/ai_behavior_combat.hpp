@@ -16,34 +16,34 @@
 
 struct ai_behavior_combat {
 	// GEN INTROSPECTOR struct ai_behavior_combat
-	std::optional<vec2> last_dashed_seen_target_pos;
-	std::optional<vec2> last_dashed_known_target_pos;
+	std::optional<vec2> dashed_to_visual_pos;
+	std::optional<vec2> dashed_to_known_pos;
 	// END GEN INTROSPECTOR
 
-	bool has_dashed_for_seen_position(const vec2 pos) const {
-		if (!last_dashed_seen_target_pos.has_value()) {
+	bool has_dashed_to_visual_pos(const vec2 pos) const {
+		if (!dashed_to_visual_pos.has_value()) {
 			return false;
 		}
 
 		constexpr float EPSILON = 10.0f;
-		return (*last_dashed_seen_target_pos - pos).length() < EPSILON;
+		return (*dashed_to_visual_pos - pos).length() < EPSILON;
 	}
 
-	bool has_dashed_for_known_position(const vec2 pos) const {
-		if (!last_dashed_known_target_pos.has_value()) {
+	bool has_dashed_to_known_pos(const vec2 pos) const {
+		if (!dashed_to_known_pos.has_value()) {
 			return false;
 		}
 
 		constexpr float EPSILON = 10.0f;
-		return (*last_dashed_known_target_pos - pos).length() < EPSILON;
+		return (*dashed_to_known_pos - pos).length() < EPSILON;
 	}
 
-	void mark_dashed_for_seen_position(const vec2 pos) {
-		last_dashed_seen_target_pos = pos;
+	void mark_dashed_to_visual_pos(const vec2 pos) {
+		dashed_to_visual_pos = pos;
 	}
 
-	void mark_dashed_for_known_position(const vec2 pos) {
-		last_dashed_known_target_pos = pos;
+	void mark_dashed_to_known_pos(const vec2 pos) {
+		dashed_to_known_pos = pos;
 	}
 
 	bool operator==(const ai_behavior_combat&) const = default;

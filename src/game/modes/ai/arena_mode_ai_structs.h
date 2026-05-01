@@ -243,9 +243,9 @@ enum class push_phase_type : uint8_t {
 
 enum class alert_acquire_type {
 	// GEN INTROSPECTOR enum class alert_acquire_type
-	HEARD_ONLY,          /* just update last_known_pos (acquire_target_heard) */
-	SEEN,                /* visual acquisition (acquire_target_seen) */
-	FULL,                /* forced acquisition — damage, wall penetration (full_acquire) */
+	HEARD_ONLY,          /* just update last_known_pos (on_heard_footstep) */
+	SEEN,                /* visual acquisition (on_visual_contact) */
+	FULL,                /* forced acquisition — damage, wall penetration (force_engage) */
 	CLOSEST_LOS_CHANGE   /* dedicated: closest visible enemy changed (separate slot) */
 	// END GEN INTROSPECTOR
 };
@@ -416,7 +416,7 @@ struct arena_mode_ai_state {
 	ai_behavior_variant last_behavior = ai_behavior_idle();
 	ai_target_tracking combat_target;
 	ai_alertness_state alertness;
-	entity_id confirmed_closest_enemy;
+	entity_id perceived_enemy;
 
 	marker_letter_type patrol_letter = marker_letter_type::COUNT;
 	push_phase_type push_phase = push_phase_type::NOT_DECIDED;
@@ -461,7 +461,7 @@ struct arena_mode_ai_state {
 		last_behavior = ai_behavior_idle();
 		combat_target.clear();
 		alertness.clear();
-		confirmed_closest_enemy = {};
+		perceived_enemy = {};
 		patrol_letter = marker_letter_type::COUNT;
 		push_phase = push_phase_type::NOT_DECIDED;
 		recoil_cooldown = false;

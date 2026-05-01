@@ -33,7 +33,7 @@ real32 calc_aim_radius_to_shoot(const CharacterHandle& character_handle) {
 	
 	Always returns an up-to-date state for the hands.
 	
-	target_enemy_pos: The position to aim at (last known or current enemy position).
+	aim_pos: The position to aim at (last known or current enemy position).
 */
 
 struct hand_flags_result {
@@ -45,7 +45,7 @@ template <typename CharacterHandle>
 inline hand_flags_result calc_hand_flags(
 	const ai_behavior_variant& behavior,
 	const bool target_acquired,
-	const vec2 target_enemy_pos,
+	const vec2 aim_pos,
 	CharacterHandle character_handle
 ) {
 	hand_flags_result result;
@@ -87,7 +87,7 @@ inline hand_flags_result calc_hand_flags(
 					the same way draw_crosshair_lasers.cpp does it for the laser sight.
 				*/
 				const auto ray_dir = vec2(muzzle - barrel_center).normalize();
-				const auto to_enemy = target_enemy_pos - muzzle;
+				const auto to_enemy = aim_pos - muzzle;
 
 				/*
 					Project the enemy vector onto the aim ray and compute the

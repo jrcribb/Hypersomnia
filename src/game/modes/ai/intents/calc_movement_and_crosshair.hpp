@@ -39,8 +39,8 @@
 	- movement_direction: direction to move
 	- crosshair_offset: where to aim
 	
-	target_enemy_pos: The position to aim at (last known or current enemy position).
-	target_enemy_velocity: Optional velocity for aim prediction. If set, predict enemy
+	aim_pos: The position to aim at (last known or current enemy position).
+	aim_velocity: Optional velocity for aim prediction. If set, predict enemy
 	movement; if not set (wall penetration), aim at position directly.
 */
 
@@ -55,8 +55,8 @@ inline navigate_pathfinding_result calc_movement_and_crosshair(
 	const cosmos& cosm,
 	const entity_id bomb_entity,
 	const bool target_acquired,
-	const vec2 target_enemy_pos,
-	const std::optional<vec2> target_enemy_velocity = std::nullopt
+	const vec2 aim_pos,
+	const std::optional<vec2> aim_velocity = std::nullopt
 ) {
 	navigate_pathfinding_result result;
 
@@ -141,18 +141,18 @@ inline navigate_pathfinding_result calc_movement_and_crosshair(
 		Otherwise (wall penetration), aim at the position directly.
 	*/
 	if (target_acquired && !::must_take_cover(character)) {
-		if (target_enemy_velocity.has_value()) {
+		if (aim_velocity.has_value()) {
 			/*
 				We see the enemy - predict their position based on velocity.
 			*/
-			const auto predicted_pos = ::estimate_aiming_target(character, target_enemy_pos, *target_enemy_velocity);
+			const auto predicted_pos = ::estimate_aiming_target(character, aim_pos, *aim_velocity);
 			result.crosshair_offset = predicted_pos - character_pos;
 		}
 		else {
 			/*
 				Wall penetration case: aim at last known position directly.
 			*/
-			result.crosshair_offset = target_enemy_pos - character_pos;
+			result.crosshair_offset = aim_pos - character_pos;
 		}
 	}
 

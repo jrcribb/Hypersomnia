@@ -14,8 +14,8 @@
 	Uses the new ai_target_tracking system instead of the old fields.
 	
 	Now includes:
-	- LoS check: if we have line of sight to the heard enemy (regardless of angle), full_acquire
-	- Penetration check: if we can shoot through obstacles to the target, full_acquire
+	- LoS check: if we have line of sight to the heard enemy (regardless of angle), force_engage
+	- Penetration check: if we can shoot through obstacles to the target, force_engage
 	- should_acquire_target_by_hearing: faction-specific logic for aggressive acquisition
 */
 

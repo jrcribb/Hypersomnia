@@ -59,19 +59,19 @@ inline real32 pick_combat_time_secs(
 struct ai_target_tracking {
 	// GEN INTROSPECTOR struct ai_target_tracking
 	entity_id id = entity_id::dead();
-	vec2 last_seen_pos = vec2::zero;
+	vec2 last_visual_pos = vec2::zero;
 	vec2 last_known_pos = vec2::zero;
-	real32 when_last_known_secs = 0.0f;
-	real32 when_combat_started_secs = 0.0f;
-	real32 chosen_combat_time_secs = 0.0f;
+	real32 last_known_time_secs = 0.0f;
+	real32 engagement_started_secs = 0.0f;
+	real32 engagement_timeout_secs = 0.0f;
 	/*
-		When true, the engagement timeout is measured from when_combat_started_secs
-		(set at first acquisition) rather than when_last_known_secs (updated on every
+		When true, the engagement timeout is measured from engagement_started_secs
+		(set at first acquisition) rather than last_known_time_secs (updated on every
 		footstep/sight refresh). Assigned bots use this so footstep spam cannot
 		extend their engagement indefinitely.
 		Persists after bot_with_defuse_mission is cleared so combat remains bounded.
 	*/
-	bool use_combat_start_time = false;
+	bool timeout_from_engagement_start = false;
 	// END GEN INTROSPECTOR
 
 	/*
@@ -80,12 +80,12 @@ struct ai_target_tracking {
 		- We have a valid entity id
 		- We've seen or heard them within the chosen combat timeout
 	*/
-	bool active(const cosmos& cosm, const real32 global_time_secs) const {
+	bool within_engagement_window(const cosmos& cosm, const real32 global_time_secs) const {
 		if (const auto handle = cosm[id]) {
 			if (sentient_and_conscious(handle)) {
-				const auto reference = use_combat_start_time ? when_combat_started_secs : when_last_known_secs;
+				const auto reference = timeout_from_engagement_start ? engagement_started_secs : last_known_time_secs;
 				const auto elapsed = global_time_secs - reference;
-				return elapsed <= chosen_combat_time_secs;
+				return elapsed <= engagement_timeout_secs;
 			}
 		}
 
@@ -98,7 +98,7 @@ struct ai_target_tracking {
 		
 		If the new target is different and closer, switch to it.
 	*/
-	void acquire_target_seen(
+	void on_visual_contact(
 		randomization& rng,
 		const real32 global_time_secs,
 		const entity_id enemy,
@@ -134,17 +134,17 @@ struct ai_target_tracking {
 		const bool switching_target = (id != enemy);
 
 		id = enemy;
-		last_seen_pos = enemy_pos;
+		last_visual_pos = enemy_pos;
 		last_known_pos = enemy_pos;
-		when_last_known_secs = global_time_secs;
+		last_known_time_secs = global_time_secs;
 
 		if (switching_target) {
 			/*
 				Re-randomize combat time when switching targets.
 			*/
-			when_combat_started_secs = global_time_secs;
-			chosen_combat_time_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs) + reaction_time_secs;
-			use_combat_start_time = is_defuser;
+			engagement_started_secs = global_time_secs;
+			engagement_timeout_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs) + reaction_time_secs;
+			timeout_from_engagement_start = is_defuser;
 		}
 	}
 
@@ -153,14 +153,14 @@ struct ai_target_tracking {
 		Only updates last_known_pos if the target matches,
 		does not change target or reset combat time.
 	*/
-	void acquire_target_heard(
+	void on_heard_footstep(
 		const real32 global_time_secs,
 		const entity_id enemy,
 		const vec2 heard_pos
 	) {
 		if (id == enemy) {
 			last_known_pos = heard_pos;
-			when_last_known_secs = global_time_secs;
+			last_known_time_secs = global_time_secs;
 		}
 		else if (!id.is_set()) {
 			/*
@@ -175,7 +175,7 @@ struct ai_target_tracking {
 		Force acquire a target (e.g., from damage).
 		Always acquires regardless of distance.
 	*/
-	void full_acquire(
+	void force_engage(
 		randomization& rng,
 		const real32 global_time_secs,
 		const entity_id enemy,
@@ -186,12 +186,12 @@ struct ai_target_tracking {
 		const real32 reaction_time_secs = 0.0f
 	) {
 		id = enemy;
-		last_seen_pos = enemy_pos;
+		last_visual_pos = enemy_pos;
 		last_known_pos = enemy_pos;
-		when_last_known_secs = global_time_secs;
-		when_combat_started_secs = global_time_secs;
-		chosen_combat_time_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs) + reaction_time_secs;
-		use_combat_start_time = is_defuser;
+		last_known_time_secs = global_time_secs;
+		engagement_started_secs = global_time_secs;
+		engagement_timeout_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs) + reaction_time_secs;
+		timeout_from_engagement_start = is_defuser;
 	}
 
 	/*
@@ -199,12 +199,12 @@ struct ai_target_tracking {
 	*/
 	void clear() {
 		id = entity_id::dead();
-		last_seen_pos = vec2::zero;
+		last_visual_pos = vec2::zero;
 		last_known_pos = vec2::zero;
-		when_last_known_secs = 0.0f;
-		when_combat_started_secs = 0.0f;
-		chosen_combat_time_secs = 0.0f;
-		use_combat_start_time = false;
+		last_known_time_secs = 0.0f;
+		engagement_started_secs = 0.0f;
+		engagement_timeout_secs = 0.0f;
+		timeout_from_engagement_start = false;
 	}
 };
 

@@ -101,7 +101,7 @@ inline bool update_take_cover(
 		if (need_calc || need_recalc) {
 			const auto global_time_secs = static_cast<real32>(cosm.get_total_seconds_passed());
 
-			if (ai_state.combat_target.active(cosm, global_time_secs)) {
+			if (ai_state.combat_target.within_engagement_window(cosm, global_time_secs)) {
 				const auto enemy_pos = ai_state.combat_target.last_known_pos;
 
 				const auto filter = predefined_queries::pathfinding();
