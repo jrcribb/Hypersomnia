@@ -438,6 +438,8 @@ struct arena_mode_ai_state {
 
 	std::optional<ai_pathfinding_request> danger_pathfinding_request;
 	float danger_pathfinding_time_left = -1.0f;
+	std::optional<ai_pathfinding_request> take_cover_pathfinding_request;
+	bool take_cover_reached_once = false;
 	// END GEN INTROSPECTOR
 
 	bool is_pathfinding_active() const {
@@ -475,5 +477,7 @@ struct arena_mode_ai_state {
 		avoidance_dir = std::nullopt;
 		danger_pathfinding_request = std::nullopt;
 		danger_pathfinding_time_left = -1.0f;
+		take_cover_pathfinding_request = std::nullopt;
+		take_cover_reached_once = false;
 	}
 };

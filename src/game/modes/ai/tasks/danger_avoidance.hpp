@@ -35,6 +35,7 @@
 	  - When the bot reaches cover (path_completed on the danger path) the
 	    request is cleared and the bot stands still until the timer expires or
 	    a new visible threat is detected on the next scan tick.
+	  - Reload-based cover-seeking is handled separately by take_cover.hpp.
 */
 
 /*
@@ -303,8 +304,12 @@ inline bool update_danger_avoidance(
 			}
 		);
 
+		/*
+			Reload-based cover-seeking is handled separately by take_cover.hpp.
+		*/
+
 		if (closest.has_value()) {
-			const auto cover_pos = ::find_closest_cover(navmesh, character_pos, closest->pos, physics, si, closest->cover_radius);
+			const auto cover_pos = ::find_closest_cover(navmesh, character_pos, closest->pos, std::nullopt, physics, si, closest->cover_radius);
 
 			if (cover_pos.has_value()) {
 				auto req = ai_pathfinding_request::to_position(*cover_pos);

@@ -6,6 +6,7 @@ permalink: brainstorm_now
 summary: That which we are brainstorming at the moment.
 ---
 
+- odpinka nejda/rzut nozem powinny byc oznaczone jako heard
 
 - boty (jeszcze)
 	- pathfinding to uslyszanego kroku i celowanie tam gdzie tracimy los

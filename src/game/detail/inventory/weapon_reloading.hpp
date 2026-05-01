@@ -3,6 +3,7 @@
 #include "game/detail/entity_handle_mixins/inventory_mixin.hpp"
 #include "game/detail/inventory/inventory_utils.h"
 #include "game/detail/gun/gun_cooldowns.h"
+#include "game/detail/gun/gun_getters.h"
 
 inline bool reloading_context::significantly_different_from(const reloading_context& b) const {
 	return 
@@ -205,4 +206,17 @@ bool is_currently_reloading(
 	const E& typed_handle
 ) {
 	return is_currently_reloading(typed_handle.get_cosmos(), typed_handle.get_wielded_items());
+}
+
+template <class E>
+bool must_chamber_weapon(const E& character_handle) {
+	const auto& cosm = character_handle.get_cosmos();
+
+	for (const auto& item_id : character_handle.get_wielded_items()) {
+		if (::chambering_in_order(cosm[item_id])) {
+			return true;
+		}
+	}
+
+	return false;
 }

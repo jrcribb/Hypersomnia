@@ -955,6 +955,7 @@ std::optional<vec2> find_closest_cover(
 	const cosmos_navmesh& navmesh,
 	const vec2 start_pos,
 	const vec2 danger_pos,
+	const std::optional<vec2> secondary_danger_pos,
 	const physics_world_cache& physics,
 	const si_scaling si,
 	const float cover_search_radius
@@ -977,10 +978,11 @@ std::optional<vec2> find_closest_cover(
 	const auto half = static_cast<float>(island.cell_size) / 2.0f;
 
 	/*
-		A cell is fully behind cover only if all four corners have no LoS to
-		the danger.  Exit as soon as one corner is exposed.
+		A cell is fully behind cover only when every corner of the cell is
+		obstructed from EVERY danger point.  Check each corner against all
+		dangers; exit as soon as one corner is exposed to any danger.
 	*/
-	auto has_cover_from_danger = [&](const vec2 cell_center) {
+	auto has_cover_from_all_dangers = [&](const vec2 cell_center) {
 		const vec2 corners[4] = {
 			cell_center + vec2(-half, -half),
 			cell_center + vec2( half, -half),
@@ -991,6 +993,12 @@ std::optional<vec2> find_closest_cover(
 		for (const auto& corner : corners) {
 			if (!physics.ray_cast_px(si, corner, danger_pos, filter_q).hit) {
 				return false;
+			}
+
+			if (secondary_danger_pos.has_value()) {
+				if (!physics.ray_cast_px(si, corner, *secondary_danger_pos, filter_q).hit) {
+					return false;
+				}
 			}
 		}
 
@@ -1021,13 +1029,21 @@ std::optional<vec2> find_closest_cover(
 		const auto dist_to_danger_sq = (current_world - danger_pos).length_sq();
 
 		/*
-			A cell is viable if it either has cover (wall blocks LoS to danger)
-			or is beyond the explosion radius.  BFS from the character explores
-			the closest cells first, so the first viable cell is also the
-			closest safe option — no need to run through the blast zone.
+			A cell is viable if it either has cover from ALL dangers (wall blocks
+			LoS from every danger point to every corner) or is beyond the explosion
+			radius from ALL dangers.  BFS from the character explores the closest
+			cells first, so the first viable cell is also the closest safe option.
 		*/
-		const bool beyond_radius = dist_to_danger_sq > radius_sq;
-		const bool has_cover = !beyond_radius && has_cover_from_danger(current_world);
+		const bool beyond_primary = dist_to_danger_sq > radius_sq;
+		const bool beyond_radius = beyond_primary && [&]() {
+			if (!secondary_danger_pos.has_value()) {
+				return true;
+			}
+
+			return (current_world - *secondary_danger_pos).length_sq() > radius_sq;
+		}();
+
+		const bool has_cover = !beyond_radius && has_cover_from_all_dangers(current_world);
 
 		if (beyond_radius || has_cover) {
 			return current_world;

@@ -56,6 +56,7 @@
 #include "game/cosmos/make_physics_path_hints.h"
 #include "game/modes/ai/tasks/bot_avoidance.hpp"
 #include "game/modes/ai/tasks/danger_avoidance.hpp"
+#include "game/modes/ai/tasks/take_cover.hpp"
 
 void update_arena_mode_ai_team(
 	cosmos& cosm,
@@ -677,12 +678,16 @@ arena_ai_result update_arena_mode_ai(
 	/* Check if request changed - reinitialize pathfinding. */
 
 	/*
-		Danger avoidance can override the effective pathfinding request.
-		If a danger is active, navigate to cover instead of the normal target.
+		Danger avoidance and take-cover avoidance can override the effective
+		pathfinding request. Priority: danger > take cover > normal target.
 	*/
 	const auto effective_request = [&]() -> std::optional<ai_pathfinding_request> {
 		if (ai_state.danger_pathfinding_request.has_value()) {
 			return ai_state.danger_pathfinding_request;
+		}
+
+		if (ai_state.take_cover_pathfinding_request.has_value()) {
+			return ai_state.take_cover_pathfinding_request;
 		}
 
 		return new_request;
@@ -875,6 +880,16 @@ arena_ai_result update_arena_mode_ai(
 
 	const bool avoidance_overrode = ::update_bot_avoidance(ctx, movement, should_run_avoidance_update, is_freeze_time, is_thinking_what_to_buy);
 
+	const bool take_cover_overrode = ::update_take_cover(
+		ctx,
+		movement,
+		navmesh,
+		move_result,
+		should_run_avoidance_update,
+		is_freeze_time,
+		target_acquired
+	);
+
 	const bool danger_overrode = ::update_danger_avoidance(
 		ctx,
 		movement,
@@ -885,7 +900,7 @@ arena_ai_result update_arena_mode_ai(
 		is_freeze_time
 	);
 
-	if (avoidance_overrode || danger_overrode) {
+	if (avoidance_overrode || take_cover_overrode || danger_overrode) {
 		if (auto* patrol = ::get_behavior_if<ai_behavior_patrol>(ai_state.last_behavior)) {
 			if (patrol->is_camping()) {
 				patrol->camp_timer = 0.0f;

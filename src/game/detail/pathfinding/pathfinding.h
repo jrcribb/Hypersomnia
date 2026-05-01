@@ -278,6 +278,7 @@ std::optional<vec2> find_closest_cover(
 	const cosmos_navmesh& navmesh,
 	const vec2 start_pos,
 	const vec2 danger_pos,
+	std::optional<vec2> secondary_danger_pos,
 	const physics_world_cache& physics,
 	const si_scaling si,
 	float cover_search_radius

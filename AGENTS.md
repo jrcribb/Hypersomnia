@@ -14,6 +14,8 @@ Prefer `build_file` to verify edits to a specific file before running a full `bu
 
 - **Do not change formatting style like tabs or other spacing conventions in the files you are editing.**
 
+- Don't automatically commit unless I ask to.
+
 - Include order
 	- Standard libraries first
 	- Then in the order of basic to specific: augs -> game -> view -> application, e.g.:
