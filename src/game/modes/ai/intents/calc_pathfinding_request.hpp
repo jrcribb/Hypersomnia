@@ -78,7 +78,7 @@ inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
 	const real32 global_time_secs,
 	const cosmos_navmesh& navmesh,
 	randomization& rng,
-	const real32 angle_to_shoot,
+	const real32 aim_radius_to_shoot,
 	const bool has_direct_los_to_enemy
 ) {
 	(void)bot_player_id;
@@ -90,10 +90,10 @@ inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
 		if constexpr (std::is_same_v<T, ai_behavior_combat>) {
 			/*
 				COMBAT - pathfind to last known target position.
-				Exception: if bot_angle_to_shoot <= 1.0f and the enemy is directly
-				visible, stand still to hold the precise aiming angle.
+				Exception: if bot_aim_radius_to_shoot <= 10.0f and the enemy is directly
+				visible, stand still to hold the precise aim.
 			*/
-			if (angle_to_shoot <= 1.0f && has_direct_los_to_enemy) {
+			if (aim_radius_to_shoot <= 10.0f && has_direct_los_to_enemy) {
 				return std::nullopt;
 			}
 

@@ -6,20 +6,20 @@
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
 
 /*
-	Returns the bot_angle_to_shoot for the first wielded gun found on the
-	character, falling back to 5.0f when no gun is wielded.
+	Returns the bot_aim_radius_to_shoot for the first wielded gun found on the
+	character, falling back to 25.0f when no gun is wielded.
 */
 template <class CharacterHandle>
-real32 calc_angle_to_shoot(const CharacterHandle& character_handle) {
+real32 calc_aim_radius_to_shoot(const CharacterHandle& character_handle) {
 	const auto& cosm = character_handle.get_cosmos();
 
 	for (const auto& item_id : character_handle.get_wielded_items()) {
 		if (const auto gun_def = cosm[item_id].template find<invariants::gun>()) {
-			return gun_def->bot_angle_to_shoot;
+			return gun_def->bot_aim_radius_to_shoot;
 		}
 	}
 
-	return 5.0f;
+	return 25.0f;
 }
 
 /*
@@ -63,17 +63,25 @@ inline hand_flags_result calc_hand_flags(
 
 	/*
 		Combat target: trigger if aiming correctly.
+		Instead of comparing angles, project the enemy position onto the bullet
+		trajectory and check if the perpendicular (lateral) distance from the
+		enemy to the aimed ray is within the threshold.
 	*/
 	if (const auto* combat = ::get_behavior_if<ai_behavior_combat>(behavior)) {
 		if (target_acquired) {
-			const auto aim_direction = target_enemy_pos - character_pos;
+			const auto to_enemy = target_enemy_pos - character_pos;
 
 			if (auto crosshair = character_handle.find_crosshair()) {
 				const auto current_aim = vec2(crosshair->base_offset).normalize();
-				const auto target_aim = vec2(aim_direction).normalize();
-				const auto angle_diff = current_aim.degrees_between(target_aim);
 
-				if (angle_diff <= ::calc_angle_to_shoot(character_handle)) {
+				/*
+					Project the enemy vector onto the aim ray and compute the
+					perpendicular (lateral) offset from that ray.
+				*/
+				const auto proj_len = to_enemy.dot(current_aim);
+				const auto lateral_dist = (to_enemy - current_aim * proj_len).length();
+
+				if (proj_len > 0.0f && lateral_dist <= ::calc_aim_radius_to_shoot(character_handle)) {
 					result.hand_flag_0 = true;
 					result.hand_flag_1 = true;
 				}

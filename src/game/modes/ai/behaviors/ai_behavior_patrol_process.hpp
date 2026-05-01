@@ -218,8 +218,8 @@ inline void ai_behavior_patrol::process(ai_behavior_process_ctx& ctx) {
 						If we were loud coming here,
 						stay only a moment.
 					*/
-					camp_timer /= 5.0f;
-					camp_timer = std::min(camp_timer, 2.0f);
+					//camp_timer /= 5.0f;
+					//camp_timer = std::min(camp_timer, 2.0f);
 				}
 
 				camp_duration = camp_timer;
