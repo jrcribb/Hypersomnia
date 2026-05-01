@@ -163,6 +163,51 @@ inline float estimate_danger_radius(const cosmos& cosm, const E& entity) {
 	return result;
 }
 
+/*
+	Returns true if ANY polygon vertex of entity_handle has a clear line of sight
+	to target_pos (i.e., the raycast hits nothing between the vertex and the target).
+	Falls back to the entity's logical position when no polygon fixture is found.
+*/
+template <class E, class Physics>
+bool ray_cast_px_against_vertices_of(
+	const E& entity_handle,
+	const vec2 target_pos,
+	const Physics& physics,
+	const si_scaling si,
+	const b2Filter filter
+) {
+	if (const auto* cc = ::find_colliders_cache(entity_handle)) {
+		for (const auto& fp : cc->constructed_fixtures) {
+			const auto* f = fp.get();
+			const auto* shape = f->GetShape();
+
+			if (shape->GetType() != b2Shape::e_polygon) {
+				continue;
+			}
+
+			const auto& poly = static_cast<const b2PolygonShape&>(*shape);
+			const auto& xf = f->GetBody()->GetTransform();
+
+			for (int v = 0; v < poly.GetVertexCount(); ++v) {
+				const auto world_px = si.get_pixels(static_cast<vec2>(b2Mul(xf, poly.GetVertex(v))));
+
+				if (!physics.ray_cast_px(si, world_px, target_pos, filter).hit) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/* No fixture data — fall back to entity centre */
+	if (const auto transform = entity_handle.find_logic_transform()) {
+		return !physics.ray_cast_px(si, transform->pos, target_pos, filter).hit;
+	}
+
+	return false;
+}
+
 inline bool update_danger_avoidance(
 	const ai_character_context& ctx,
 	components::movement& movement,
@@ -235,40 +280,7 @@ inline bool update_danger_avoidance(
 				shielded from the danger. Check all vertices and exit as soon as
 				one is exposed (no wall between it and the danger).
 			*/
-			bool any_vertex_exposed = false;
-
-			const auto* cc = ::find_colliders_cache(ctx.character_handle);
-
-			if (cc != nullptr) {
-				for (const auto& fp : cc->constructed_fixtures) {
-					if (any_vertex_exposed) {
-						break;
-					}
-
-					const auto* f = fp.get();
-					const auto* shape = f->GetShape();
-
-					if (shape->GetType() != b2Shape::e_polygon) {
-						continue;
-					}
-
-					const auto& poly = static_cast<const b2PolygonShape&>(*shape);
-					const auto& xf = f->GetBody()->GetTransform();
-
-					for (int v = 0; v < poly.GetVertexCount(); ++v) {
-						const auto world_px = si.get_pixels(static_cast<vec2>(b2Mul(xf, poly.GetVertex(v))));
-
-						if (!physics.ray_cast_px(si, world_px, pos, filter).hit) {
-							any_vertex_exposed = true;
-							break;
-						}
-					}
-				}
-			}
-			else {
-				/* No fixture data — fall back to character centre */
-				any_vertex_exposed = !physics.ray_cast_px(si, character_pos, pos, filter).hit;
-			}
+			const bool any_vertex_exposed = ::ray_cast_px_against_vertices_of(ctx.character_handle, pos, physics, si, filter);
 
 			if (!any_vertex_exposed) {
 				/* Every vertex is shielded — character is already safe from this danger */

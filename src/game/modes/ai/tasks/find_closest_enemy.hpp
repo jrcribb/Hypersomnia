@@ -15,7 +15,7 @@
 inline entity_id find_closest_enemy(
 	const ai_character_context& ctx,
 	const bool is_ffa,
-	const bool is_camping = false
+	bool is_camping = false
 ) {
 	entity_id closest_enemy = entity_id::dead();
 	float closest_distance = std::numeric_limits<float>::max();

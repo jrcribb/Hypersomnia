@@ -6,6 +6,7 @@
 #include "game/modes/ai/ai_character_context.h"
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
 #include "game/modes/ai/intents/calc_pathfinding_request.hpp"
+#include "game/modes/ai/tasks/danger_avoidance.hpp"
 
 /*
 	Take-cover layer — seeks cover when reloading in active combat.
@@ -52,10 +53,11 @@ inline bool update_take_cover(
 	const auto si = cosm.get_si();
 
 	const bool in_combat = ::get_behavior_if<ai_behavior_combat>(ai_state.last_behavior) != nullptr;
-	const bool chambering = ::must_chamber_weapon(ctx.character_handle);
-	const bool reloading = in_combat && (::is_currently_reloading(ctx.character_handle) || chambering);
+	const bool currently_reloading = ::is_currently_reloading(ctx.character_handle);
+	const bool chambering = ::must_chamber_weapon(ctx.character_handle) && !currently_reloading;
+	const bool must_take_cover = in_combat && (currently_reloading || chambering);
 
-	if (!reloading) {
+	if (!must_take_cover) {
 		if (ai_state.take_cover_pathfinding_request.has_value()) {
 			ai_state.take_cover_pathfinding_request = std::nullopt;
 			ai_state.current_pathfinding_request = std::nullopt;
@@ -102,14 +104,24 @@ inline bool update_take_cover(
 			if (ai_state.combat_target.active(cosm, global_time_secs)) {
 				const auto enemy_pos = ai_state.combat_target.last_known_pos;
 
+				const auto filter = predefined_queries::pathfinding();
+				const auto enemy_handle = cosm[ai_state.combat_target.id];
+				const bool enemy_occluded = ::ray_cast_px_against_vertices_of(enemy_handle, character_pos, physics, si, filter);
+
+				const auto secondary_danger = 
+					(chambering && enemy_occluded) ?
+					std::optional<vec2>() :
+					std::optional<vec2>(character_pos)
+				;
+
 				const auto cover_pos = ::find_closest_cover(
 					navmesh,
 					character_pos,
 					enemy_pos,
-					character_pos,
+					secondary_danger,
 					physics,
 					si,
-					1100.0f
+					4000.0f
 				);
 
 				if (cover_pos.has_value()) {
