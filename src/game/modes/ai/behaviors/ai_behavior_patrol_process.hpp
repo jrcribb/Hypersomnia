@@ -189,7 +189,7 @@ inline void ai_behavior_patrol::process(ai_behavior_process_ctx& ctx) {
 			next frame (bot is already at old position) and falsely trigger
 			pathfinding_just_completed on whatever new waypoint we pick below.
 		*/
-		ai_state.clear_pathfinding();
+		ai_state.clear_navigation();
 		ai_state.current_pathfinding_request = std::nullopt;
 	}
 

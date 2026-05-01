@@ -28,7 +28,7 @@
 #include "game/detail/inventory/perform_wielding.hpp"
 #include <limits>
 
-#include "game/detail/path_navigation/navigate_pathfinding.hpp"
+#include "game/detail/path_navigation/navigate_path.hpp"
 
 #include "game/modes/ai/ai_character_context.h"
 #include "game/modes/ai/tasks/find_closest_enemy.hpp"
@@ -656,7 +656,7 @@ arena_ai_result update_arena_mode_ai(
 
 	const auto move_result = ::calc_movement_and_crosshair(
 		ai_state.last_behavior,
-		ai_state.pathfinding,
+		ai_state.navigation,
 		character_pos,
 		navmesh,
 		character_handle,
@@ -731,18 +731,18 @@ arena_ai_result update_arena_mode_ai(
 		AI_LOG("Pathfinding request changed - reinitializing");
 
 		ai_state.current_pathfinding_request = effective_request;
-		ai_state.clear_pathfinding();
+		ai_state.clear_navigation();
 
 		if (effective_request != std::nullopt) {
 			const auto physics_hints = make_physics_path_hints(cosm);
-			ai_state.pathfinding = ::start_pathfinding_to(character_pos, effective_request->target, navmesh, &physics_hints, pathfinding_ctx);
+			ai_state.navigation = ::start_navigating_to(character_pos, effective_request->target, navmesh, &physics_hints, pathfinding_ctx);
 
-			if (ai_state.is_pathfinding_active()) {
-				ai_state.pathfinding->exact_destination = effective_request->exact;
+			if (ai_state.is_navigating()) {
+				ai_state.navigation->exact_destination = effective_request->exact;
 			}
 			else {
 				/* Unconditional LOG (not AI_LOG) — always visible even with LOG_AI=0. */
-				LOG("AI ERROR: start_pathfinding_to FAILED for bot at (%x,%x) -> target (%x,%x). Waypoint unreachable?",
+				LOG("AI ERROR: start_navigating_to FAILED for bot at (%x,%x) -> target (%x,%x). Waypoint unreachable?",
 					character_pos.x, character_pos.y, effective_request->target.pos.x, effective_request->target.pos.y);
 			}
 		}
@@ -996,7 +996,7 @@ arena_ai_result update_arena_mode_ai(
 
 	if (move_result.path_completed) {
 		ai_state.current_pathfinding_request = std::nullopt;
-		ai_state.clear_pathfinding();
+		ai_state.clear_navigation();
 	}
 
 	return result;
@@ -1046,7 +1046,7 @@ void post_solve_arena_mode_ai(
 					Bot was teleported - clear pathfinding state.
 					New pathfinding will be initiated on next update.
 				*/
-				ai_state.clear_pathfinding();
+				ai_state.clear_navigation();
 				break;
 			}
 		}

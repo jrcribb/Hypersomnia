@@ -5,7 +5,7 @@
 #include "game/components/movement_component.h"
 #include "game/cosmos/for_each_entity.h"
 #include "game/detail/explosive/like_explosive.h"
-#include "game/detail/path_navigation/navigate_pathfinding.hpp"
+#include "game/detail/path_navigation/navigate_path.hpp"
 #include "game/detail/pathfinding/pathfinding.h"
 #include "game/enums/filters.h"
 #include "game/modes/ai/ai_character_context.h"
@@ -167,7 +167,7 @@ inline bool update_danger_avoidance(
 	const ai_character_context& ctx,
 	components::movement& movement,
 	const cosmos_navmesh& navmesh,
-	const navigate_pathfinding_result& move_result,
+	const navigate_path_result& move_result,
 	const float dt_secs,
 	const bool should_run_avoidance_update,
 	const bool is_freeze_time

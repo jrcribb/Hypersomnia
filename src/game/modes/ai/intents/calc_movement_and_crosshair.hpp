@@ -4,7 +4,7 @@
 #include "game/cosmos/entity_handle.h"
 #include "game/cosmos/make_physics_path_hints.h"
 #include "game/detail/inventory/weapon_reloading.hpp"
-#include "game/detail/path_navigation/navigate_pathfinding.hpp"
+#include "game/detail/path_navigation/navigate_path.hpp"
 #include "game/modes/ai/arena_mode_ai_structs.h"
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
 #include "game/modes/ai/intents/calc_movement_flags.hpp"
@@ -31,7 +31,7 @@
 	NOTE: Camp twitch updates are now handled in ai_behavior_patrol::process().
 	This function just reads the twitch_direction result.
 	
-	Returns navigate_pathfinding_result which contains:
+	Returns navigate_path_result which contains:
 	- is_navigating: currently following a path
 	- path_completed: destination reached
 	- can_sprint: movement mostly parallel to path
@@ -45,9 +45,9 @@
 */
 
 template <typename CharacterHandle>
-inline navigate_pathfinding_result calc_movement_and_crosshair(
+inline navigate_path_result calc_movement_and_crosshair(
 	const ai_behavior_variant& behavior,
-	std::optional<ai_pathfinding_state>& pathfinding,
+	std::optional<ai_path_navigation_state>& pathfinding,
 	const vec2 character_pos,
 	const cosmos_navmesh& navmesh,
 	CharacterHandle character,
@@ -58,7 +58,7 @@ inline navigate_pathfinding_result calc_movement_and_crosshair(
 	const vec2 aim_pos,
 	const std::optional<vec2> aim_velocity = std::nullopt
 ) {
-	navigate_pathfinding_result result;
+	navigate_path_result result;
 
 	/*
 		Check if defusing - don't move, but aim at the bomb statelessly.
@@ -119,11 +119,11 @@ inline navigate_pathfinding_result calc_movement_and_crosshair(
 	}
 
 	/*
-		If pathfinding is active, use navigate_pathfinding for proper path following.
+		If navigation is active, use navigate_path for proper path following.
 	*/
 	if (pathfinding.has_value()) {
 		const auto physics_hints = make_physics_path_hints(cosm);
-		result = ::navigate_pathfinding(
+		result = ::navigate_path(
 			pathfinding,
 			character_pos,
 			navmesh,

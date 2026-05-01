@@ -17,7 +17,7 @@
 */
 
 inline void check_path_deviation(
-	ai_pathfinding_state& pathfinding,
+	ai_path_navigation_state& pathfinding,
 	const vec2 bot_pos,
 	const cosmos_navmesh& navmesh,
 	const physics_path_hints* physics_hints = nullptr,
@@ -29,7 +29,7 @@ inline void check_path_deviation(
 		Returns false if we need to recalculate rerouting.
 	*/
 	auto check_path_out_of_bounds = [&](
-		pathfinding_progress& progress,
+		path_navigation_progress& progress,
 		const cosmos_navmesh_island& island
 	) -> bool {
 		const auto& nodes = progress.path.nodes;
@@ -140,7 +140,7 @@ inline void check_path_deviation(
 		After calculating the rerouting path, trims it if any of its nodes
 		coincide with unoccupied cells on the main path within deviation range.
 	*/
-	auto calculate_rerouting = [&](const pathfinding_progress& main_progress) {
+	auto calculate_rerouting = [&](const path_navigation_progress& main_progress) {
 		const auto& nodes = main_progress.path.nodes;
 		const auto current_idx = main_progress.node_index;
 
@@ -249,7 +249,7 @@ inline void check_path_deviation(
 			return;
 		}
 
-		pathfinding.rerouting = pathfinding_progress{
+		pathfinding.rerouting = path_navigation_progress{
 			std::move(*rerouting_path),
 			0
 		};

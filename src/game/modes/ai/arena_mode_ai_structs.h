@@ -44,9 +44,9 @@ struct arena_ai_result {
 };
 
 /*
-	State for pathfinding navigation.
-	Uses pathfinding_progress for main path and optional rerouting path.
-	Existence of this object implies an active pathfinding session.
+	State for path navigation.
+	Uses path_navigation_progress for main path and optional rerouting path.
+	Existence of this object implies an active navigation session.
 */
 
 /*
@@ -54,10 +54,10 @@ struct arena_ai_result {
 	When stuck on a cell for 2+ seconds, rotate crosshair offset by 90 degrees.
 */
 
-struct ai_pathfinding_state {
-	// GEN INTROSPECTOR struct ai_pathfinding_state
-	pathfinding_progress main;
-	std::optional<pathfinding_progress> rerouting;
+struct ai_path_navigation_state {
+	// GEN INTROSPECTOR struct ai_path_navigation_state
+	path_navigation_progress main;
+	std::optional<path_navigation_progress> rerouting;
 
 	transformr target_transform;
 	cell_on_navmesh target_cell_id;
@@ -430,7 +430,7 @@ struct arena_mode_ai_state {
 
 	bool has_acquired_target_by_hearing_during_bomb_plant = false;
 
-	std::optional<ai_pathfinding_state> pathfinding;
+	std::optional<ai_path_navigation_state> navigation;
 	std::optional<ai_pathfinding_request> current_pathfinding_request;
 
 	entity_id source_spawn_point;
@@ -442,12 +442,12 @@ struct arena_mode_ai_state {
 	bool take_cover_reached_once = false;
 	// END GEN INTROSPECTOR
 
-	bool is_pathfinding_active() const {
-		return pathfinding.has_value();
+	bool is_navigating() const {
+		return navigation.has_value();
 	}
 
-	void clear_pathfinding() {
-		pathfinding.reset();
+	void clear_navigation() {
+		navigation.reset();
 	}
 
 	/*
@@ -471,7 +471,7 @@ struct arena_mode_ai_state {
 		already_nothing_more_to_buy = false;
 		purchase_decision_countdown = -10000.0f;
 		has_acquired_target_by_hearing_during_bomb_plant = false;
-		pathfinding.reset();
+		navigation.reset();
 		current_pathfinding_request = std::nullopt;
 		source_spawn_point = {};
 		avoidance_dir = std::nullopt;

@@ -39,7 +39,7 @@ inline bool is_within_cell(
 */
 
 inline std::optional<vec2> get_current_path_target(
-	const ai_pathfinding_state& pathfinding,
+	const ai_path_navigation_state& pathfinding,
 	const cosmos_navmesh& navmesh
 ) {
 	/*

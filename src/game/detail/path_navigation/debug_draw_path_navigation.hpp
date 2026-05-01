@@ -5,21 +5,21 @@
 #include "game/debug_drawing_settings.h"
 
 /*
-	Debug draw the current pathfinding state.
+	Debug draw the current path navigation state.
 */
 
-inline void debug_draw_pathfinding(
-	const std::optional<ai_pathfinding_state>& pathfinding_opt,
+inline void debug_draw_path_navigation(
+	const std::optional<ai_path_navigation_state>& navigation_opt,
 	const vec2 bot_pos,
 	const cosmos_navmesh& navmesh
 ) {
-	if (!DEBUG_DRAWING.draw_ai_info || !pathfinding_opt.has_value()) {
+	if (!DEBUG_DRAWING.draw_ai_info || !navigation_opt.has_value()) {
 		return;
 	}
 
-	const auto& pathfinding = *pathfinding_opt;
+	const auto& pathfinding = *navigation_opt;
 
-	auto draw_path = [&](const pathfinding_progress& progress, bool rerouting) {
+	auto draw_path = [&](const path_navigation_progress& progress, bool rerouting) {
 		const auto& path = progress.path;
 
 		if (path.island_index >= navmesh.islands.size()) {

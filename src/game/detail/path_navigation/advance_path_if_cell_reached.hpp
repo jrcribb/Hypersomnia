@@ -17,14 +17,14 @@
 */
 
 inline void advance_path_if_cell_reached(
-	ai_pathfinding_state& pathfinding,
+	ai_path_navigation_state& pathfinding,
 	const vec2 bot_pos,
 	const cosmos_navmesh& navmesh,
 	bool& cell_path_completed
 ) {
 	cell_path_completed = false;
 
-	auto try_advance = [&](pathfinding_progress& progress) -> bool {
+	auto try_advance = [&](path_navigation_progress& progress) -> bool {
 		const auto& path = progress.path;
 
 		if (path.island_index >= navmesh.islands.size()) {

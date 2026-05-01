@@ -1,7 +1,7 @@
 #pragma once
 #include "game/components/movement_component.h"
 #include "game/detail/inventory/weapon_reloading.hpp"
-#include "game/detail/path_navigation/navigate_pathfinding.hpp"
+#include "game/detail/path_navigation/navigate_path.hpp"
 #include "game/detail/pathfinding/pathfinding.h"
 #include "game/modes/ai/ai_character_context.h"
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
@@ -37,7 +37,7 @@ inline bool update_take_cover(
 	const ai_character_context& ctx,
 	components::movement& movement,
 	const cosmos_navmesh& navmesh,
-	const navigate_pathfinding_result& move_result,
+	const navigate_path_result& move_result,
 	const bool should_run_avoidance_update,
 	const bool is_freeze_time,
 	const bool target_acquired
@@ -61,7 +61,7 @@ inline bool update_take_cover(
 		if (ai_state.take_cover_pathfinding_request.has_value()) {
 			ai_state.take_cover_pathfinding_request = std::nullopt;
 			ai_state.current_pathfinding_request = std::nullopt;
-			ai_state.clear_pathfinding();
+			ai_state.clear_navigation();
 		}
 
 		ai_state.take_cover_reached_once = false;

@@ -52,11 +52,11 @@ struct pathfinding_path {
 	Progress through a single pathfinding_path.
 	Consolidates path + current node index into one struct.
 	
-	Use with std::optional<pathfinding_progress> to determine if pathfinding is active.
+	Use with std::optional<path_navigation_progress> to determine if navigation is active.
 */
 
-struct pathfinding_progress {
-	// GEN INTROSPECTOR struct pathfinding_progress
+struct path_navigation_progress {
+	// GEN INTROSPECTOR struct path_navigation_progress
 	pathfinding_path path;
 	uint32_t node_index = 0;
 	// END GEN INTROSPECTOR

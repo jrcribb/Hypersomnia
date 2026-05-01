@@ -4,15 +4,15 @@
 #include "game/detail/path_navigation/path_helpers.hpp"
 
 /*
-	Start pathfinding to a target position.
-	Updates the ai_state's optional pathfinding field.
-	Returns true if pathfinding was initiated.
+	Start navigating to a target position.
+	Updates the ai_state's optional navigation field.
+	Returns the new navigation state if navigation was initiated.
 	
-	Note: Does not initiate pathfinding if bot is standing on a portal cell
+	Note: Does not initiate navigation if bot is standing on a portal cell
 	(to allow portal teleportation to complete first).
 */
 
-inline std::optional<ai_pathfinding_state> start_pathfinding_to(
+inline std::optional<ai_path_navigation_state> start_navigating_to(
 	const vec2 bot_pos,
 	const transformr target_transform,
 	const cosmos_navmesh& navmesh,
@@ -20,12 +20,12 @@ inline std::optional<ai_pathfinding_state> start_pathfinding_to(
 	pathfinding_context* ctx = nullptr
 ) {
 	/*
-		Don't initiate new pathfinding while standing on a portal cell.
-		Existing pathfinding sessions can continue, but new ones should wait
+		Don't initiate new navigation while standing on a portal cell.
+		Existing navigation sessions can continue, but new ones should wait
 		until the bot has teleported through the portal.
 	*/
 	if (::is_on_portal_cell(bot_pos, navmesh)) {
-		AI_LOG("start_pathfinding_to: portal");
+		AI_LOG("start_navigating_to: portal");
 		return std::nullopt;
 	}
 
@@ -33,7 +33,7 @@ inline std::optional<ai_pathfinding_state> start_pathfinding_to(
 	const auto target_island_opt = ::find_island_for_position(navmesh, target_pos);
 
 	if (!target_island_opt.has_value()) {
-		AI_LOG("start_pathfinding_to: no island");
+		AI_LOG("start_navigating_to: no island");
 		return std::nullopt;
 	}
 
@@ -49,14 +49,14 @@ inline std::optional<ai_pathfinding_state> start_pathfinding_to(
 	auto path = ::find_path_across_islands_many(navmesh, bot_pos, target_pos, physics_hints, ctx);
 
 	if (!path.has_value()) {
-		AI_LOG("start_pathfinding_to: no path");
+		AI_LOG("start_navigating_to: no path");
 		return std::nullopt;
 	}
 
-	AI_LOG("start_pathfinding_to: ok");
+	AI_LOG("start_navigating_to: ok");
 
-	return ai_pathfinding_state {
-		pathfinding_progress{ std::move(*path), 0 },
+	return ai_path_navigation_state {
+		path_navigation_progress{ std::move(*path), 0 },
 		std::nullopt,
 		target_transform,
 		new_target_cell_id

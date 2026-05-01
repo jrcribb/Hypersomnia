@@ -4,14 +4,14 @@
 #include "game/detail/path_navigation/path_helpers.hpp"
 #include "game/detail/path_navigation/advance_path_if_cell_reached.hpp"
 #include "game/detail/path_navigation/check_path_deviation.hpp"
-#include "game/detail/path_navigation/get_pathfinding_movement_direction.hpp"
-#include "game/detail/path_navigation/start_pathfinding_to.hpp"
-#include "game/detail/path_navigation/debug_draw_pathfinding.hpp"
+#include "game/detail/path_navigation/get_navigation_movement_direction.hpp"
+#include "game/detail/path_navigation/start_navigating_to.hpp"
+#include "game/detail/path_navigation/debug_draw_path_navigation.hpp"
 #include "game/components/movement_component.h"
 #include "game/components/crosshair_component.h"
 
 /*
-	Unified AI pathfinding navigation task.
+	Unified AI path navigation task.
 	
 	Handles all path following logic in one reusable function:
 	- Advances path when bot reaches cell centers
@@ -24,9 +24,9 @@
 	The caller is responsible for applying the movement direction.
 */
 
-struct navigate_pathfinding_result {
+struct navigate_path_result {
 	bool is_navigating = false;
-	bool path_completed = false;  /* True when destination was reached and pathfinding was cleared. */
+	bool path_completed = false;  /* True when destination was reached and navigation was cleared. */
 	bool can_sprint = false;      /* True when movement direction is mostly parallel to path direction (within ~15 degrees). */
 	bool nearing_end = false;     /* Will holster in some situations like during defuse. */
 	std::optional<vec2> movement_direction;
@@ -34,21 +34,21 @@ struct navigate_pathfinding_result {
 };
 
 template <typename CharacterHandle>
-inline navigate_pathfinding_result navigate_pathfinding(
-	std::optional<ai_pathfinding_state>& pathfinding_opt,
+inline navigate_path_result navigate_path(
+	std::optional<ai_path_navigation_state>& navigation_opt,
 	const vec2 bot_pos,
 	const cosmos_navmesh& navmesh,
 	CharacterHandle character,
 	const real32 dt,
 	const physics_path_hints* physics_hints = nullptr
 ) {
-	navigate_pathfinding_result result;
+	navigate_path_result result;
 
-	if (!pathfinding_opt.has_value()) {
+	if (!navigation_opt.has_value()) {
 		return result;
 	}
 
-	auto& pathfinding = *pathfinding_opt;
+	auto& pathfinding = *navigation_opt;
 
 	/*
 		Advance along path and check for deviation.
@@ -86,10 +86,10 @@ inline navigate_pathfinding_result navigate_pathfinding(
 				/*
 					Not at exact position yet - continue navigating directly to target.
 					
-					NOTE: We delegate crosshair easing to get_pathfinding_movement_direction
+					NOTE: We delegate crosshair easing to get_navigation_movement_direction
 					which handles it continuously from the final cell center to the exact destination.
 				*/
-				const auto dir_result = ::get_pathfinding_movement_direction(
+				const auto dir_result = ::get_navigation_movement_direction(
 					pathfinding,
 					bot_pos,
 					navmesh,
@@ -100,21 +100,21 @@ inline navigate_pathfinding_result navigate_pathfinding(
 				result.crosshair_offset = dir_result.crosshair_offset;
 				result.is_navigating = true;
 
-				::debug_draw_pathfinding(pathfinding_opt, bot_pos, navmesh);
+				::debug_draw_path_navigation(navigation_opt, bot_pos, navmesh);
 				return result;
 			}
 			else {
 				/* Reached exact destination - mark as completed. */
 				result.path_completed = true;
 				result.crosshair_offset = pathfinding.target_transform.get_direction() * 200.0f;
-				pathfinding_opt.reset();
+				navigation_opt.reset();
 				return result;
 			}
 		}
 		else {
 			/* Non-exact mode - path completed at cell center. */
 			result.path_completed = true;
-			pathfinding_opt.reset();
+			navigation_opt.reset();
 			return result;
 		}
 	}
@@ -142,7 +142,7 @@ inline navigate_pathfinding_result navigate_pathfinding(
 			/* Reached exact destination - mark as completed. */
 			result.path_completed = true;
 			result.crosshair_offset = pathfinding.target_transform.get_direction() * 200.0f;
-			pathfinding_opt.reset();
+			navigation_opt.reset();
 			return result;
 		}
 		
@@ -150,10 +150,10 @@ inline navigate_pathfinding_result navigate_pathfinding(
 	}
 
 	/*
-		Get movement direction from pathfinding.
+		Get movement direction from navigation state.
 		Also calculates crosshair offset (un-normalized).
 	*/
-	const auto dir_result = ::get_pathfinding_movement_direction(
+	const auto dir_result = ::get_navigation_movement_direction(
 		pathfinding,
 		bot_pos,
 		navmesh,
@@ -166,13 +166,13 @@ inline navigate_pathfinding_result navigate_pathfinding(
 	/*
 		Debug draw the path.
 	*/
-	::debug_draw_pathfinding(pathfinding_opt, bot_pos, navmesh);
+	::debug_draw_path_navigation(navigation_opt, bot_pos, navmesh);
 
 	result.is_navigating = true;
 	
 	/*
 		Calculate can_sprint: movement direction should be mostly parallel
-		to the pathfinding direction (within ~15 degrees in the same direction).
+		to the navigation direction (within ~15 degrees in the same direction).
 		
 		We check:
 		1. Movement direction exists

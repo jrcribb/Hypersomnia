@@ -22,7 +22,7 @@
 #include "game/components/movement_component.h"
 #include "game/components/crosshair_component.h"
 #include "game/detail/pathfinding/pathfinding.h"
-#include "game/detail/path_navigation/navigate_pathfinding.hpp"
+#include "game/detail/path_navigation/navigate_path.hpp"
 #include "game/modes/ai/tasks/interpolate_crosshair.hpp"
 #include "game/detail/pathfinding/pathfinding_bomb.hpp"
 #include "game/messages/game_notification.h"
@@ -378,8 +378,8 @@ void test_mode::mode_pre_solve(input_type in, const mode_entropy& entropy, logic
 				if (has_pathfinding_target) {
 					const auto physics_hints = make_physics_path_hints(cosm);
 
-					if (first_player.debug_pathfinding == std::nullopt) {
-						first_player.debug_pathfinding = ::start_pathfinding_to(
+					if (first_player.debug_navigation == std::nullopt) {
+						first_player.debug_navigation = ::start_navigating_to(
 							character_pos,
 							target_transform,
 							navmesh,
@@ -390,8 +390,8 @@ void test_mode::mode_pre_solve(input_type in, const mode_entropy& entropy, logic
 					/*
 						Set exact_destination for DEBUG_PATHFINDING_END markers.
 					*/
-					if (use_exact_destination && first_player.debug_pathfinding.has_value()) {
-						first_player.debug_pathfinding->exact_destination = true;
+					if (use_exact_destination && first_player.debug_navigation.has_value()) {
+						first_player.debug_navigation->exact_destination = true;
 					}
 
 					/*
@@ -400,8 +400,8 @@ void test_mode::mode_pre_solve(input_type in, const mode_entropy& entropy, logic
 					*/
 					const real32 dt_secs = in.cosm.get_fixed_delta().in_seconds();
 
-					const auto nav_result = ::navigate_pathfinding(
-						first_player.debug_pathfinding,
+					const auto nav_result = ::navigate_path(
+						first_player.debug_navigation,
 						character_pos,
 						navmesh,
 						character,
@@ -423,7 +423,7 @@ void test_mode::mode_pre_solve(input_type in, const mode_entropy& entropy, logic
 						/*
 							Pathfinding completed - stop movement.
 						*/
-						first_player.debug_pathfinding = std::nullopt;
+						first_player.debug_navigation = std::nullopt;
 
 						if (auto* movement = character.find<components::movement>()) {
 							movement->flags.set_from_closest_direction(vec2::zero);
@@ -431,7 +431,7 @@ void test_mode::mode_pre_solve(input_type in, const mode_entropy& entropy, logic
 						}
 					}
 
-					const bool is_navigating = first_player.debug_pathfinding.has_value();
+					const bool is_navigating = first_player.debug_navigation.has_value();
 
 					::interpolate_crosshair(
 						character.find_crosshair(),
@@ -532,7 +532,7 @@ void test_mode::mode_post_solve(const input_type, const mode_entropy&, const log
 				*/
 				for (auto& [player_id, player] : players) {
 					if (player.controlled_character_id == teleport.teleported) {
-						player.debug_pathfinding.reset();
+						player.debug_navigation.reset();
 						break;
 					}
 				}

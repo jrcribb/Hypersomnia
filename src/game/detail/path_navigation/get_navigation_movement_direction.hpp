@@ -14,17 +14,17 @@
 static constexpr float STUCK_ROTATION_INTERVAL_SECS = 1.0f;
 
 /*
-	Result of get_pathfinding_movement_direction.
+	Result of get_navigation_movement_direction.
 	Contains both movement direction and crosshair offset.
 */
 
-struct pathfinding_direction_result {
+struct navigation_direction_result {
 	vec2 movement_direction = vec2::zero;
 	vec2 crosshair_offset = vec2::zero;
 };
 
 /*
-	Calculate movement direction from pathfinding state.
+	Calculate movement direction from navigation state.
 	Also handles crosshair smoothing toward the next cell.
 	
 	Returns struct containing:
@@ -45,13 +45,13 @@ struct pathfinding_direction_result {
 	exactly (due to epsilon-based path completion).
 */
 
-inline pathfinding_direction_result get_pathfinding_movement_direction(
-	ai_pathfinding_state& pathfinding,
+inline navigation_direction_result get_navigation_movement_direction(
+	ai_path_navigation_state& pathfinding,
 	const vec2 bot_pos,
 	const cosmos_navmesh& navmesh,
 	const float dt
 ) {
-	pathfinding_direction_result result;
+	navigation_direction_result result;
 	
 	const auto current_target_opt = ::get_current_path_target(pathfinding, navmesh);
 	const auto target_pos = pathfinding.target_position();
@@ -103,7 +103,7 @@ inline pathfinding_direction_result get_pathfinding_movement_direction(
 
 	const bool is_rerouting = pathfinding.rerouting.has_value();
 
-	const pathfinding_progress* active_progress_ptr = nullptr;
+	const path_navigation_progress* active_progress_ptr = nullptr;
 
 	if (is_rerouting) {
 		active_progress_ptr = &*pathfinding.rerouting;
