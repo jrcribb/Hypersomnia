@@ -432,6 +432,7 @@ namespace test_flavours {
 			auto& meta = get_test_flavour(flavours, test_explosion_bodies::BLUNAZ_MISSILE_CASCADE);
 			auto& c = meta.get<invariants::cascade_explosion>();
 			c.explosion = e;
+			c.explosion.bother_avoiding = false;
 			c.explosion_interval_ms = { 240.f, 0.5f };
 			c.circle_collider_radius = 50.f;
 			c.max_explosion_angle_displacement = 10.f;
@@ -452,6 +453,7 @@ namespace test_flavours {
 			auto& meta = get_test_flavour(flavours, test_explosion_bodies::BLUNAZ_MISSILE_CASCADE_SMALLER);
 			auto& c = meta.get<invariants::cascade_explosion>();
 			c.explosion = e;
+			c.explosion.bother_avoiding = false;
 			c.explosion_interval_ms = { 220.f, 0.5f };
 			c.circle_collider_radius = 50.f;
 			c.max_explosion_angle_displacement = 10.f;

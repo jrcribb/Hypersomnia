@@ -35,7 +35,8 @@ struct standard_explosion_input {
 	adverse_element_type type = adverse_element_type::FORCE;
 	bool create_thunders_effect = false;
 	bool hit_friendlies = true;
-	pad_bytes<2> pad;
+	bool bother_avoiding = true;
+	pad_bytes<1> pad;
 	// END GEN INTROSPECTOR
 
 	auto& operator*=(const real32 scalar) {

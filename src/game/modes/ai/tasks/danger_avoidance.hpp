@@ -247,10 +247,34 @@ inline bool update_danger_avoidance(
 			}
 		};
 
+		const bool is_defusing = ::is_behavior<ai_behavior_defuse>(ai_state.last_behavior);
+
+		const auto should_avoid_explosion = [&](const standard_explosion_input& explosion) {
+			if (!explosion.bother_avoiding) {
+				return false;
+			}
+
+			if (explosion.damage.base < 0.f) {
+				return false;
+			}
+
+			if (is_defusing && explosion.type != adverse_element_type::FORCE) {
+				return false;
+			}
+
+			return true;
+		};
+
 		cosm.for_each_having<components::hand_fuse>(
 			[&](const auto& grenade_handle) {
 				if (!::is_like_thrown_explosive(grenade_handle)) {
 					return;
+				}
+
+				if (const auto* explosive = grenade_handle.template find<invariants::explosive>()) {
+					if (!should_avoid_explosion(explosive->explosion)) {
+						return;
+					}
 				}
 
 				consider_candidate(
@@ -263,6 +287,12 @@ inline bool update_danger_avoidance(
 
 		cosm.for_each_having<components::cascade_explosion>(
 			[&](const auto& cascade_handle) {
+				if (const auto* cascade_def = cascade_handle.template find<invariants::cascade_explosion>()) {
+					if (!should_avoid_explosion(cascade_def->explosion)) {
+						return;
+					}
+				}
+
 				consider_candidate(
 					cascade_handle.get_logic_transform().pos,
 					::estimate_danger_duration(cosm, clk, cascade_handle),

@@ -67,9 +67,9 @@ struct ai_target_tracking {
 	/*
 		When true, the engagement timeout is measured from engagement_started_secs
 		(set at first acquisition) rather than last_known_time_secs (updated on every
-		footstep/sight refresh). Assigned bots use this so footstep spam cannot
-		extend their engagement indefinitely.
-		Persists after bot_with_defuse_mission is cleared so combat remains bounded.
+		footstep/sight refresh). All Metropolis bots use this while the bomb is planted
+		so footstep spam cannot extend their engagement indefinitely and they prioritise
+		reaching the bomb over prolonged combat.
 	*/
 	bool timeout_from_engagement_start = false;
 	// END GEN INTROSPECTOR

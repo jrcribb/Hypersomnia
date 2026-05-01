@@ -9,14 +9,14 @@ summary: That which we are brainstorming at the moment.
 - odpinka nejda/rzut nozem powinny byc oznaczone jako heard
 
 - boty (jeszcze)
-	- pathfinding -> path navigation struct nomenclature
-	- pathfinding to uslyszanego kroku i celowanie tam gdzie tracimy los
-	- when planting, all bots on that site engage
 	- aggro zrandomizowac np. jak szlyszy krok do 20% szansy na aggro od metropolis i wiekszy dla resistance
 	- jak slychac kroki gdzies to przy kampieniu celowac w najblizsza kratke z coverem albo nawet stanac jak patroluje i on jest blisko
+		- i flaga na waypoint ze obracanie co jakis czas o x stopni domyslnie 180 ale mozna 90 lub -90 np
 	- jak nie ma nic to melee i jazda
 
 - boty (done)
+	- pathfinding -> path navigation struct nomenclature
+	- when planting, all bots on that site engage
 	- avoidance of bullets
 	- unikanie nejdow tez najblizszy cover
 	- zeby sie nie obijaly o siebie - opcjonalnie omijac tile zajety przez bota

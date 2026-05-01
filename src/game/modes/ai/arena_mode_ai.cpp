@@ -105,41 +105,71 @@ void update_arena_mode_ai_team(
 	/*
 		Metropolis: when bomb is planted, select the bot with the shortest path to
 		the bomb as the defuser — but only if the current defuser is dead/unconscious
-		(or none assigned).  Only non-combat bots are considered, since any bot that
-		enters combat clears bot_with_defuse_mission from update_arena_mode_ai.
+		(or none assigned).  Non-combat bots are preferred candidates; if all alive
+		conscious bots are in combat, all of them are considered so the closest one
+		can still take the mission.
 	*/
 	if (faction == faction_type::METROPOLIS && bomb_planted) {
 		if (!sentient_and_conscious(cosm[team_state.bot_with_defuse_mission])) {
-			/* Collect alive conscious non-combat Metropolis bots as candidates. */
 			struct candidate_t {
-				mode_player_id player_id;
 				entity_id char_id;
 				arena_mode_player* player_ptr = nullptr;
 			};
 
-			std::vector<candidate_t> candidates;
+			const auto gather_alive_conscious_bots = [&](const bool include_combat) {
+				std::vector<candidate_t> result;
 
-			for (auto& bot : only_bot(players)) {
-				if (bot.second.get_faction() != faction_type::METROPOLIS) {
-					continue;
+				for (auto& bot : only_bot(players)) {
+					if (bot.second.get_faction() != faction_type::METROPOLIS) {
+						continue;
+					}
+
+					const auto char_id = bot.second.controlled_character_id;
+
+					if (!sentient_and_conscious(cosm[char_id])) {
+						continue;
+					}
+
+					if (!include_combat && ::is_behavior<ai_behavior_combat>(bot.second.ai_state.last_behavior)) {
+						continue;
+					}
+
+					result.push_back({ char_id, &bot.second });
 				}
 
-				const auto char_id = bot.second.controlled_character_id;
+				return result;
+			};
 
-				if (!sentient_and_conscious(cosm[char_id])) {
-					continue;
-				}
+			/* Preferred: alive conscious non-combat bots. */
+			auto candidates = gather_alive_conscious_bots(false);
 
-				if (::is_behavior<ai_behavior_combat>(bot.second.ai_state.last_behavior)) {
-					continue;
-				}
-
-				candidates.push_back({ bot.first, char_id, &bot.second });
+			/*
+				Fallback: if every alive conscious bot is in combat, consider all of them
+				so the closest one to the bomb can still take the defuse mission.
+			*/
+			if (candidates.empty()) {
+				candidates = gather_alive_conscious_bots(true);
 			}
 
+			/*
+				After assigning the defuse mission, clear the bot's combat target if it is
+				currently in combat — otherwise update_arena_mode_ai will see ai_behavior_combat
+				as last_behavior in the same tick and immediately unassign the mission.
+			*/
+			auto assign_defuser = [&](entity_id char_id, arena_mode_player* player_ptr) {
+				team_state.bot_with_defuse_mission = char_id;
+
+				if (::is_behavior<ai_behavior_combat>(player_ptr->ai_state.last_behavior)) {
+					player_ptr->ai_state.combat_target.clear();
+				}
+			};
+
 			if (candidates.size() == 1) {
-				team_state.bot_with_defuse_mission = candidates[0].char_id;
-				candidates[0].player_ptr->ai_state.combat_target.timeout_from_engagement_start = true;
+				const bool is_in_combat = ::is_behavior<ai_behavior_combat>(candidates[0].player_ptr->ai_state.last_behavior);
+
+				if (!is_in_combat) {
+					assign_defuser(candidates[0].char_id, candidates[0].player_ptr);
+				}
 			}
 			else if (candidates.size() > 1) {
 				const auto bomb_handle = cosm[bomb_entity];
@@ -185,8 +215,7 @@ void update_arena_mode_ai_team(
 					}
 
 					if (best_char_id.is_set()) {
-						team_state.bot_with_defuse_mission = best_char_id;
-						best_player_ptr->ai_state.combat_target.timeout_from_engagement_start = true;
+						assign_defuser(best_char_id, best_player_ptr);
 					}
 				}
 			}
@@ -384,7 +413,17 @@ arena_ai_result update_arena_mode_ai(
 		}
 	}
 
-	bool bot_is_defuser = bomb_planted && team_state.bot_with_defuse_mission == controlled_character_id;
+	/*
+		When the bomb is planted, all Metropolis bots get defuser-style combat timing:
+		engagement timeout measured from first contact so footstep spam cannot extend
+		it indefinitely. This avoids ugly state transitions when the defuse mission
+		changes hands mid-round.
+	*/
+	const bool bot_is_defuser = bomb_planted && bot_faction == faction_type::METROPOLIS;
+
+	if (bot_is_defuser) {
+		ai_state.combat_target.timeout_from_engagement_start = true;
+	}
 
 	auto get_bomb_time_remaining = [&]() -> real32 {
 		if (!bomb_planted || !bomb_entity.is_set()) {
