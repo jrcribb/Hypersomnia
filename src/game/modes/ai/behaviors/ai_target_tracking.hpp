@@ -13,8 +13,8 @@ namespace ai_combat_time {
 	constexpr auto BOMB_CARRIER_MIN_SECS = 2.0f;
 	constexpr auto BOMB_CARRIER_MAX_SECS = 4.0f;
 
-	constexpr auto DEFUSER_LONG_ENGAGEMENT_MIN_SECS = 8.0f;
-	constexpr auto DEFUSER_LONG_ENGAGEMENT_MAX_SECS = 12.0f;
+	constexpr auto DEFUSER_LONG_ENGAGEMENT_MIN_SECS = 3.0f;
+	constexpr auto DEFUSER_LONG_ENGAGEMENT_MAX_SECS = 8.0f;
 	constexpr auto DEFUSER_SHORT_ENGAGEMENT_MIN_SECS = 0.5f;
 	constexpr auto DEFUSER_SHORT_ENGAGEMENT_MAX_SECS = 0.8f;
 	constexpr auto DEFUSER_ENGAGEMENT_THRESHOLD_SECS = 20.0f;
