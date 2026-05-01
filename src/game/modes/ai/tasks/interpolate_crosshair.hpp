@@ -25,9 +25,9 @@ static constexpr float CROSSHAIR_SPEED_MID_DIST = 500.0f;
 /* Difficulty multipliers for crosshair movement speed. */
 inline float get_crosshair_speed_mult(const difficulty_type difficulty) {
 	switch (difficulty) {
-		case difficulty_type::EASY:   return 0.4f;
-		case difficulty_type::MEDIUM: return 0.7f;
-		case difficulty_type::HARD:   return 1.2f;
+		case difficulty_type::EASY:   return 1.0f;
+		case difficulty_type::MEDIUM: return 1.8f;
+		case difficulty_type::HARD:   return 3.0f;
 		default:                      return 1.0f;
 	}
 }

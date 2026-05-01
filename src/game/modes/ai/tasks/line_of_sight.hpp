@@ -1,6 +1,8 @@
 #pragma once
+#include <Box2D/Collision/Shapes/b2PolygonShape.h>
 #include "game/cosmos/cosmos.h"
 #include "game/inferred_caches/physics_world_cache.h"
+#include "game/inferred_caches/find_physics_cache.h"
 #include "game/enums/filters.h"
 #include "augs/math/repro_math.h"
 
@@ -37,6 +39,51 @@ inline bool is_in_line_of_sight(
 	);
 
 	return !raycast.hit;
+}
+
+/*
+	Returns true if ANY polygon vertex of entity_handle has a clear line of sight
+	to target_pos (i.e., the raycast hits nothing between the vertex and the target).
+	Falls back to the entity's logical position when no polygon fixture is found.
+*/
+template <class E, class Physics>
+bool los_to_any_vertices_of(
+	const E& entity_handle,
+	const vec2 target_pos,
+	const Physics& physics,
+	const si_scaling si,
+	const b2Filter filter
+) {
+	if (const auto* cc = ::find_colliders_cache(entity_handle)) {
+		for (const auto& fp : cc->constructed_fixtures) {
+			const auto* f = fp.get();
+			const auto* shape = f->GetShape();
+
+			if (shape->GetType() != b2Shape::e_polygon) {
+				continue;
+			}
+
+			const auto& poly = static_cast<const b2PolygonShape&>(*shape);
+			const auto& xf = f->GetBody()->GetTransform();
+
+			for (int v = 0; v < poly.GetVertexCount(); ++v) {
+				const auto world_px = si.get_pixels(static_cast<vec2>(b2Mul(xf, poly.GetVertex(v))));
+
+				if (!physics.ray_cast_px(si, world_px, target_pos, filter).hit) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/* No fixture data — fall back to entity centre */
+	if (const auto transform = entity_handle.find_logic_transform()) {
+		return !physics.ray_cast_px(si, transform->pos, target_pos, filter).hit;
+	}
+
+	return false;
 }
 
 /*

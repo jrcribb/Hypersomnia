@@ -30,6 +30,9 @@ inline entity_id find_closest_enemy(
 		return vec2::zero;
 	}();
 
+	const auto si = ctx.cosm.get_si();
+	const auto filter = predefined_queries::line_of_sight();
+
 	ctx.cosm.for_each_having<components::sentience>(
 		[&](const auto& entity) {
 			if (entity == ctx.character_handle || !entity.alive() || !::sentient_and_conscious(entity)) {
@@ -65,7 +68,7 @@ inline entity_id find_closest_enemy(
 					/*
 						Check line of sight using the helper function.
 					*/
-					if (::is_in_line_of_sight(ctx.character_pos, target_pos, ctx.physics, ctx.cosm, ctx.character_handle)) {
+					if (::los_to_any_vertices_of(entity, ctx.character_pos, ctx.physics, si, filter)) {
 						closest_enemy = entity;
 						closest_distance = distance;
 					}

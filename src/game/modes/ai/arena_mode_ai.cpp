@@ -622,7 +622,17 @@ arena_ai_result update_arena_mode_ai(
 				const auto shoot_wall_time_limit = ai_state.combat_target.chosen_combat_time_secs / 20.0f;
 
 				if (time_since_known < shoot_wall_time_limit + ai_state.alertness.base_rt_secs) {
-					target_acquired = ::can_weapon_penetrate(character_handle, ai_state.combat_target.last_known_pos);
+					const bool has_wall_between = !::los_to_any_vertices_of(
+						character_handle,
+						ai_state.combat_target.last_known_pos,
+						physics,
+						cosm.get_si(),
+						predefined_queries::pathfinding()
+					);
+
+					if (has_wall_between) {
+						target_acquired = ::can_weapon_penetrate(character_handle, ai_state.combat_target.last_known_pos);
+					}
 				}
 			}
 		}
