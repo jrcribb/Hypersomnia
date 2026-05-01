@@ -4139,6 +4139,7 @@ namespace test_flavours {
 			gun_def.muzzle_shot_sound.id = to_sound_id(test_scene_sound_id::HPSR_MUZZLE);
 			gun_def.muzzle_shot_sound.modifier.max_distance = 8000.f;
 			gun_def.muzzle_shot_sound.modifier.reference_distance = 2000.f;
+			gun_def.bot_angle_to_shoot = 1.0f;
 
 			gun_def.action_mode = gun_action_type::BOLT_ACTION;
 			gun_def.muzzle_velocity = {16000.f, 16000.f};
@@ -4195,6 +4196,7 @@ namespace test_flavours {
 			gun_def.muzzle_shot_sound.id = to_sound_id(test_scene_sound_id::HUNTER_MUZZLE);
 			gun_def.muzzle_shot_sound.modifier.max_distance = 8000.f;
 			gun_def.muzzle_shot_sound.modifier.reference_distance = 2000.f;
+			gun_def.bot_angle_to_shoot = 1.0f;
 
 			gun_def.action_mode = gun_action_type::BOLT_ACTION;
 			gun_def.muzzle_velocity = {12000.f, 12000.f};
@@ -4310,6 +4312,7 @@ namespace test_flavours {
 			gun_def.muzzle_shot_sound.id = to_sound_id(test_scene_sound_id::ELON_HRL_MUZZLE);
 			gun_def.muzzle_shot_sound.modifier.max_distance = 6000.f;
 			gun_def.muzzle_shot_sound.modifier.reference_distance = 2000.f;
+			gun_def.bot_angle_to_shoot = 1.0f;
 
 			gun_def.action_mode = gun_action_type::BOLT_ACTION;
 			gun_def.muzzle_velocity = {5200.f, 5200.f};

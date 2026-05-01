@@ -127,6 +127,8 @@ namespace invariants {
 		bool delay_shell_spawn_until_chambering = false;
 		bool bots_ban = false;
 
+		real32 bot_angle_to_shoot = 5.0f;
+
 		constrained_entity_flavour_id<invariants::missile, components::sender> magic_missile_flavour;
 		recoil_player_instance_def recoil;
 

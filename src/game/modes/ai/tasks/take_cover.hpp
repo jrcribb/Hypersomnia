@@ -89,7 +89,7 @@ inline bool update_take_cover(
 		from making forward progress.
 	*/
 	if (should_run_avoidance_update) {
-		const bool need_calc = !ai_state.take_cover_pathfinding_request.has_value();
+		const bool need_calc = !ai_state.take_cover_pathfinding_request.has_value() && target_acquired;
 		const bool need_recalc =
 			ai_state.take_cover_pathfinding_request.has_value()
 			&& ai_state.take_cover_reached_once

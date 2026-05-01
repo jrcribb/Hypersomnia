@@ -2,6 +2,7 @@
 #include "game/cosmos/cosmos.h"
 #include "game/cosmos/entity_handle.h"
 #include "game/components/sentience_component.h"
+#include "game/components/gun_component.h"
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
 
 /*
@@ -55,7 +56,18 @@ inline hand_flags_result calc_hand_flags(
 				const auto target_aim = vec2(aim_direction).normalize();
 				const auto angle_diff = current_aim.degrees_between(target_aim);
 
-				if (angle_diff <= 25.0f) {
+				auto angle_threshold = 5.0f;
+
+				const auto& cosm = character_handle.get_cosmos();
+
+				for (const auto& item_id : character_handle.get_wielded_items()) {
+					if (const auto gun_def = cosm[item_id].template find<invariants::gun>()) {
+						angle_threshold = gun_def->bot_angle_to_shoot;
+						break;
+					}
+				}
+
+				if (angle_diff <= angle_threshold) {
 					result.hand_flag_0 = true;
 					result.hand_flag_1 = true;
 				}
