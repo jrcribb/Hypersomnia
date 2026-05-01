@@ -10,12 +10,14 @@
 	
 	is_camping: When true, uses extended FOV (40% larger). Set this when the bot
 	is camping on a waypoint to give them better vision while stationary.
+	in_combat: When true, also uses extended FOV (same extension as camping).
 */
 
 inline entity_id find_closest_enemy(
 	const ai_character_context& ctx,
 	const bool is_ffa,
-	bool is_camping = false
+	const bool is_camping = false,
+	const bool in_combat = false
 ) {
 	entity_id closest_enemy = entity_id::dead();
 	float closest_distance = std::numeric_limits<float>::max();
@@ -48,7 +50,7 @@ inline entity_id find_closest_enemy(
 			/*
 				Check if target is within field of view first (early exit for efficiency).
 			*/
-			if (!::is_within_fov(ctx.character_pos, target_pos, is_camping)) {
+			if (!::is_within_fov(ctx.character_pos, target_pos, is_camping || in_combat)) {
 				return;
 			}
 

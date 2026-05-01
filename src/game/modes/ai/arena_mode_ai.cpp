@@ -483,7 +483,8 @@ arena_ai_result update_arena_mode_ai(
 	*/
 
 	const bool is_camping = ::is_camping_on_waypoint(ai_state.last_behavior);
-	const auto now_closest_enemy = ::find_closest_enemy(ctx, is_ffa, is_camping);
+	const bool is_in_combat = ::is_behavior<ai_behavior_combat>(ai_state.last_behavior);
+	const auto now_closest_enemy = ::find_closest_enemy(ctx, is_ffa, is_camping, is_in_combat);
 
 	if (now_closest_enemy != ai_state.confirmed_closest_enemy) {
 		/* World state differs from bot's perception — queue/update LOS change. */
@@ -660,6 +661,23 @@ arena_ai_result update_arena_mode_ai(
 		===========================================================================
 	*/
 
+	const auto angle_to_shoot = ::calc_angle_to_shoot(character_handle);
+
+	const bool has_direct_los_to_enemy = [&]() {
+		if (!is_in_combat || !ai_state.confirmed_closest_enemy.is_set()) {
+			return false;
+		}
+
+		const auto enemy_handle = cosm[ai_state.confirmed_closest_enemy];
+
+		if (!enemy_handle.alive()) {
+			return false;
+		}
+
+		const auto filter = predefined_queries::pathfinding();
+		return ::ray_cast_px_against_vertices_of(enemy_handle, character_pos, physics, cosm.get_si(), filter);
+	}();
+
 	const auto new_request = ::calc_current_pathfinding_request(
 		cosm,
 		ai_state.last_behavior,
@@ -672,7 +690,9 @@ arena_ai_result update_arena_mode_ai(
 		bomb_entity,
 		global_time_secs,
 		navmesh,
-		stable_rng
+		stable_rng,
+		angle_to_shoot,
+		has_direct_los_to_enemy
 	);
 
 	/* Check if request changed - reinitialize pathfinding. */

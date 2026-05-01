@@ -6,6 +6,23 @@
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
 
 /*
+	Returns the bot_angle_to_shoot for the first wielded gun found on the
+	character, falling back to 5.0f when no gun is wielded.
+*/
+template <class CharacterHandle>
+real32 calc_angle_to_shoot(const CharacterHandle& character_handle) {
+	const auto& cosm = character_handle.get_cosmos();
+
+	for (const auto& item_id : character_handle.get_wielded_items()) {
+		if (const auto gun_def = cosm[item_id].template find<invariants::gun>()) {
+			return gun_def->bot_angle_to_shoot;
+		}
+	}
+
+	return 5.0f;
+}
+
+/*
 	Stateless calculation of hand_flags.
 	
 	This function determines whether the bot should be holding the trigger based on:
@@ -56,18 +73,7 @@ inline hand_flags_result calc_hand_flags(
 				const auto target_aim = vec2(aim_direction).normalize();
 				const auto angle_diff = current_aim.degrees_between(target_aim);
 
-				auto angle_threshold = 5.0f;
-
-				const auto& cosm = character_handle.get_cosmos();
-
-				for (const auto& item_id : character_handle.get_wielded_items()) {
-					if (const auto gun_def = cosm[item_id].template find<invariants::gun>()) {
-						angle_threshold = gun_def->bot_angle_to_shoot;
-						break;
-					}
-				}
-
-				if (angle_diff <= angle_threshold) {
+				if (angle_diff <= ::calc_angle_to_shoot(character_handle)) {
 					result.hand_flag_0 = true;
 					result.hand_flag_1 = true;
 				}
