@@ -182,7 +182,7 @@ inline ai_behavior_variant eval_behavior_tree(
 				const bool should_push = !is_bomb_carrier || rng.randval(0, 99) < 80;
 
 				if (should_push) {
-					push_wp = ::find_random_unassigned_push_waypoint(team_state, rng);
+					push_wp = ::find_random_unassigned_push_waypoint(cosm, team_state, rng);
 				}
 			}
 			else if (is_metropolis) {
@@ -192,7 +192,7 @@ inline ai_behavior_variant eval_behavior_tree(
 				const bool choose_push = rng.randval(0, 99) < 20;
 
 				if (choose_push) {
-					push_wp = ::find_random_unassigned_push_waypoint(team_state, rng);
+					push_wp = ::find_random_unassigned_push_waypoint(cosm, team_state, rng);
 				}
 			}
 

@@ -10,6 +10,7 @@
 #include "augs/misc/constant_size_vector.h"
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
 #include "game/modes/ai/behaviors/ai_target_tracking.hpp"
+#include "game/detail/sentience/sentience_getters.h"
 
 #if !NDEBUG
 #define LOG_AI 0
@@ -141,11 +142,12 @@ struct ai_waypoint_state {
 
 	/*
 		Non-introspected: Assignment cache, updated statelessly each frame.
+		Stores the character entity_id so alive-ness can be checked directly.
 	*/
-	mode_player_id assigned_bot;
+	entity_id assigned_bot;
 
-	bool is_assigned() const {
-		return assigned_bot.is_set();
+	bool is_assigned(const cosmos& cosm) const {
+		return sentient_and_conscious(cosm[assigned_bot]);
 	}
 };
 
@@ -222,10 +224,10 @@ struct arena_mode_ai_team_state {
 
 	void clear_waypoint_assignments() {
 		for (auto& wp : patrol_waypoints) {
-			wp.assigned_bot = mode_player_id::dead();
+			wp.assigned_bot = entity_id::dead();
 		}
 		for (auto& wp : push_waypoints) {
-			wp.assigned_bot = mode_player_id::dead();
+			wp.assigned_bot = entity_id::dead();
 		}
 	}
 };

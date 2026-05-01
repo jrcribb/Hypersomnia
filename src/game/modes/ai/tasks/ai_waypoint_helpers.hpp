@@ -106,7 +106,7 @@ inline void gather_bombsite_mappings(
 inline void assign_waypoint(
 	arena_mode_ai_team_state& team_state,
 	const entity_id waypoint_id,
-	const mode_player_id& bot_id
+	const entity_id bot_char_id
 ) {
 	if (!waypoint_id.is_set()) {
 		return;
@@ -114,14 +114,14 @@ inline void assign_waypoint(
 
 	for (auto& wp : team_state.patrol_waypoints) {
 		if (wp.waypoint_id == waypoint_id) {
-			wp.assigned_bot = bot_id;
+			wp.assigned_bot = bot_char_id;
 			return;
 		}
 	}
 
 	for (auto& wp : team_state.push_waypoints) {
 		if (wp.waypoint_id == waypoint_id) {
-			wp.assigned_bot = bot_id;
+			wp.assigned_bot = bot_char_id;
 			return;
 		}
 	}
@@ -136,7 +136,7 @@ inline entity_id find_random_unassigned_patrol_waypoint(
 	const cosmos& cosm,
 	arena_mode_ai_team_state& team_state,
 	const marker_letter_type letter,
-	const mode_player_id& bot_id,
+	const entity_id bot_char_id,
 	const entity_id ignore_waypoint_id,
 	randomization& rng
 ) {
@@ -159,7 +159,7 @@ inline entity_id find_random_unassigned_patrol_waypoint(
 			continue;
 		}
 
-		if (!wp.is_assigned() || wp.assigned_bot == bot_id) {
+		if (!wp.is_assigned(cosm) || wp.assigned_bot == bot_char_id) {
 			available.push_back(wp.waypoint_id);
 		}
 	}
@@ -177,13 +177,14 @@ inline entity_id find_random_unassigned_patrol_waypoint(
 */
 
 inline entity_id find_random_unassigned_push_waypoint(
+	const cosmos& cosm,
 	arena_mode_ai_team_state& team_state,
 	randomization& rng
 ) {
 	std::vector<entity_id> available;
 
 	for (auto& wp : team_state.push_waypoints) {
-		if (!wp.is_assigned()) {
+		if (!wp.is_assigned(cosm)) {
 			available.push_back(wp.waypoint_id);
 		}
 	}
@@ -200,13 +201,13 @@ inline entity_id find_random_unassigned_push_waypoint(
 	Also returns an example assigned bot (from the first match).
 */
 
-inline std::pair<std::size_t, mode_player_id> count_assigned_waypoints_for_letter(
+inline std::pair<std::size_t, entity_id> count_assigned_waypoints_for_letter(
 	const cosmos& cosm,
 	const arena_mode_ai_team_state& team_state,
 	const marker_letter_type letter
 ) {
 	std::size_t count = 0;
-	mode_player_id example_bot;
+	entity_id example_bot;
 
 	for (const auto& wp : team_state.patrol_waypoints) {
 		const auto waypoint_handle = cosm[wp.waypoint_id];
@@ -217,7 +218,7 @@ inline std::pair<std::size_t, mode_player_id> count_assigned_waypoints_for_lette
 
 		const auto& marker_comp = waypoint_handle.template get<components::marker>();
 
-		if (marker_comp.letter == letter && wp.is_assigned()) {
+		if (marker_comp.letter == letter && wp.is_assigned(cosm)) {
 			if (count == 0) {
 				example_bot = wp.assigned_bot;
 			}
@@ -248,7 +249,7 @@ inline void for_each_marker_letter(F callback) {
 struct bombsite_assignment_info {
 	marker_letter_type letter = marker_letter_type::A;
 	std::size_t count = 0;
-	mode_player_id example_bot;
+	entity_id example_bot;
 };
 
 /*

@@ -149,7 +149,6 @@ inline void ai_behavior_patrol::process(ai_behavior_process_ctx& ctx) {
 	auto& cosm = ctx.cosm;
 	auto& ai_state = ctx.ai_state;
 	auto& team_state = ctx.team_state;
-	const auto& bot_player_id = ctx.bot_player_id;
 	const auto& character_pos = ctx.character_pos;
 	const auto dt_secs = ctx.dt_secs;
 	auto& rng = ctx.rng;
@@ -244,14 +243,14 @@ inline void ai_behavior_patrol::process(ai_behavior_process_ctx& ctx) {
 		   	sprint back to the actual patrol waypoint.
 		*/
 
-		AI_LOG("patrol::process: no waypoint - searching for new one (patrol_letter=%x, bot_id=%x)",
-			static_cast<int>(ai_state.patrol_letter), bot_player_id.value);
+		AI_LOG("patrol::process: no waypoint - searching for new one (patrol_letter=%x)",
+			static_cast<int>(ai_state.patrol_letter));
 
 		const auto new_wp = ::find_random_unassigned_patrol_waypoint(
 			cosm,
 			team_state,
 			ai_state.patrol_letter,
-			bot_player_id,
+			ctx.controlled_character_id,
 			current_waypoint_id,
 			rng
 		);

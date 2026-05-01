@@ -43,13 +43,13 @@ inline bool is_in_line_of_sight(
 
 /*
 	Returns true if ANY polygon vertex of entity_handle has a clear line of sight
-	to target_pos (i.e., the raycast hits nothing between the vertex and the target).
+	from source_pos (i.e., the raycast hits nothing between the source and the vertx).
 	Falls back to the entity's logical position when no polygon fixture is found.
 */
 template <class E, class Physics>
 bool los_to_any_vertices_of(
 	const E& entity_handle,
-	const vec2 target_pos,
+	const vec2 source_pos,
 	const Physics& physics,
 	const si_scaling si,
 	const b2Filter filter
@@ -69,7 +69,7 @@ bool los_to_any_vertices_of(
 			for (int v = 0; v < poly.GetVertexCount(); ++v) {
 				const auto world_px = si.get_pixels(static_cast<vec2>(b2Mul(xf, poly.GetVertex(v))));
 
-				if (!physics.ray_cast_px(si, world_px, target_pos, filter).hit) {
+				if (!physics.ray_cast_px(si, source_pos, world_px, filter).hit) {
 					return true;
 				}
 			}
@@ -80,7 +80,7 @@ bool los_to_any_vertices_of(
 
 	/* No fixture data — fall back to entity centre */
 	if (const auto transform = entity_handle.find_logic_transform()) {
-		return !physics.ray_cast_px(si, transform->pos, target_pos, filter).hit;
+		return !physics.ray_cast_px(si, source_pos, transform->pos, filter).hit;
 	}
 
 	return false;

@@ -87,9 +87,9 @@ void update_arena_mode_ai_team(
 		const auto least = ::find_least_assigned_bombsite(cosm, team_state, arena_meta);
 		const auto most = ::find_most_assigned_bombsite(cosm, team_state, arena_meta);
 
-		if (most.count >= least.count + 2 && most.example_bot.is_set()) {
+		if (most.count >= least.count + 2 && sentient_and_conscious(cosm[most.example_bot])) {
 			for (auto& bot : only_bot(players)) {
-				if (bot.first == most.example_bot) {
+				if (bot.second.controlled_character_id == most.example_bot) {
 					bot.second.ai_state.patrol_letter = least.letter;
 
 					if (auto* patrol = ::get_behavior_if<ai_behavior_patrol>(bot.second.ai_state.last_behavior)) {
