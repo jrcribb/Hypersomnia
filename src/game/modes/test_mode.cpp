@@ -333,12 +333,12 @@ void test_mode::mode_pre_solve(input_type in, const mode_entropy& entropy, logic
 
 	/*
 		Debug pathfinding for playtesting.
-		Run AI pathfinding on the first player if debug_pathfinding_end is set.
+		Run AI pathfinding on the first player if debug_navigation_end is set.
 	*/
 	if (playtesting_context.has_value()) {
 		const bool has_debug_target = 
-			playtesting_context->debug_pathfinding_end.has_value() ||
-			playtesting_context->debug_pathfinding_bomb_target.is_set()
+			playtesting_context->debug_navigation_end.has_value() ||
+			playtesting_context->debug_navigation_bomb_target.is_set()
 		;
 
 		if (has_debug_target && !players.empty()) {
@@ -354,12 +354,12 @@ void test_mode::mode_pre_solve(input_type in, const mode_entropy& entropy, logic
 				bool has_pathfinding_target = false;
 				bool use_exact_destination = false;
 
-				if (playtesting_context->debug_pathfinding_end.has_value()) {
-					target_transform = *playtesting_context->debug_pathfinding_end;
+				if (playtesting_context->debug_navigation_end.has_value()) {
+					target_transform = *playtesting_context->debug_navigation_end;
 					has_pathfinding_target = true;
 					use_exact_destination = true;
 				}
-				else if (const auto bomb_handle = cosm[playtesting_context->debug_pathfinding_bomb_target]) {
+				else if (const auto bomb_handle = cosm[playtesting_context->debug_navigation_bomb_target]) {
 					/*
 						Use the stored bomb entity for pathfinding.
 					*/
@@ -388,7 +388,7 @@ void test_mode::mode_pre_solve(input_type in, const mode_entropy& entropy, logic
 					}
 
 					/*
-						Set exact_destination for DEBUG_PATHFINDING_END markers.
+						Set exact_destination for DEBUG_NAVIGATION_END markers.
 					*/
 					if (use_exact_destination && first_player.debug_navigation.has_value()) {
 						first_player.debug_navigation->exact_destination = true;

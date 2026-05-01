@@ -267,7 +267,7 @@ inline void behavior_state_transition(
 
 	/*
 		NOTE: We do NOT reset pathfinding here.
-		Pathfinding resets itself when the calc_pathfinding_request changes.
+		Pathfinding resets itself when the calc_navigation_request changes.
 		
 		NOTE: We do NOT assign/unassign waypoints here.
 		Waypoint assignments are handled statelessly via calc_assigned_waypoint.

@@ -15,7 +15,7 @@
 	
 	This function determines HOW the bot should move based on:
 	- Current behavior type
-	- Current pathfinding state (if navigating to a target)
+	- Current navigation state (if navigating to a target)
 	- Camp twitching result (from patrol's process())
 	- Defusing (no movement)
 	
@@ -47,7 +47,7 @@
 template <typename CharacterHandle>
 inline navigate_path_result calc_movement_and_crosshair(
 	const ai_behavior_variant& behavior,
-	std::optional<ai_path_navigation_state>& pathfinding,
+	std::optional<ai_path_navigation_state>& navigation,
 	const vec2 character_pos,
 	const cosmos_navmesh& navmesh,
 	CharacterHandle character,
@@ -121,10 +121,10 @@ inline navigate_path_result calc_movement_and_crosshair(
 	/*
 		If navigation is active, use navigate_path for proper path following.
 	*/
-	if (pathfinding.has_value()) {
+	if (navigation.has_value()) {
 		const auto physics_hints = make_physics_path_hints(cosm);
 		result = ::navigate_path(
-			pathfinding,
+			navigation,
 			character_pos,
 			navmesh,
 			character,

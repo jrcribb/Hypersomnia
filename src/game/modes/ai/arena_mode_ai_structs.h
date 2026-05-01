@@ -90,14 +90,14 @@ struct ai_path_navigation_state {
 	efficient comparison (two requests to the same cell are equivalent).
 */
 
-struct ai_pathfinding_request {
-	// GEN INTROSPECTOR struct ai_pathfinding_request
+struct ai_navigation_request {
+	// GEN INTROSPECTOR struct ai_navigation_request
 	transformr target;
 	cell_on_navmesh resolved_cell;
 	bool exact = false;
 	// END GEN INTROSPECTOR
 
-	bool operator==(const ai_pathfinding_request& other) const {
+	bool operator==(const ai_navigation_request& other) const {
 		/*
 			If not exact, compare resolved cells since they will result
 			in the same pathfinding anyway.
@@ -108,22 +108,22 @@ struct ai_pathfinding_request {
 		return target == other.target && exact == other.exact;
 	}
 
-	bool operator!=(const ai_pathfinding_request& other) const {
+	bool operator!=(const ai_navigation_request& other) const {
 		return !(*this == other);
 	}
 
-	static ai_pathfinding_request none() {
-		return ai_pathfinding_request{};
+	static ai_navigation_request none() {
+		return ai_navigation_request{};
 	}
 
-	static ai_pathfinding_request to_position(const vec2 pos) {
-		ai_pathfinding_request req;
+	static ai_navigation_request to_position(const vec2 pos) {
+		ai_navigation_request req;
 		req.target = transformr(pos, 0.0f);
 		return req;
 	}
 
-	static ai_pathfinding_request to_transform(const transformr t, const bool exact_flag = false) {
-		ai_pathfinding_request req;
+	static ai_navigation_request to_transform(const transformr t, const bool exact_flag = false) {
+		ai_navigation_request req;
 		req.target = t;
 		req.exact = exact_flag;
 		return req;
@@ -431,14 +431,14 @@ struct arena_mode_ai_state {
 	bool has_acquired_target_by_hearing_during_bomb_plant = false;
 
 	std::optional<ai_path_navigation_state> navigation;
-	std::optional<ai_pathfinding_request> current_pathfinding_request;
+	std::optional<ai_navigation_request> current_navigation_request;
 
 	entity_id source_spawn_point;
 	std::optional<vec2> avoidance_dir;
 
-	std::optional<ai_pathfinding_request> danger_pathfinding_request;
-	float danger_pathfinding_time_left = -1.0f;
-	std::optional<ai_pathfinding_request> take_cover_pathfinding_request;
+	std::optional<ai_navigation_request> danger_navigation_request;
+	float danger_navigation_time_left = -1.0f;
+	std::optional<ai_navigation_request> take_cover_navigation_request;
 	bool take_cover_reached_once = false;
 	// END GEN INTROSPECTOR
 
@@ -472,12 +472,12 @@ struct arena_mode_ai_state {
 		purchase_decision_countdown = -10000.0f;
 		has_acquired_target_by_hearing_during_bomb_plant = false;
 		navigation.reset();
-		current_pathfinding_request = std::nullopt;
+		current_navigation_request = std::nullopt;
 		source_spawn_point = {};
 		avoidance_dir = std::nullopt;
-		danger_pathfinding_request = std::nullopt;
-		danger_pathfinding_time_left = -1.0f;
-		take_cover_pathfinding_request = std::nullopt;
+		danger_navigation_request = std::nullopt;
+		danger_navigation_time_left = -1.0f;
+		take_cover_navigation_request = std::nullopt;
 		take_cover_reached_once = false;
 	}
 };

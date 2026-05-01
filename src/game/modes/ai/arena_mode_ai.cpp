@@ -45,7 +45,7 @@
 #include "game/modes/ai/behaviors/ai_behavior_defuse_process.hpp"
 #include "game/modes/ai/behaviors/ai_behavior_retrieve_bomb_process.hpp"
 #include "game/modes/ai/behaviors/ai_behavior_plant_process.hpp"
-#include "game/modes/ai/intents/calc_pathfinding_request.hpp"
+#include "game/modes/ai/intents/calc_navigation_request.hpp"
 #include "game/modes/ai/intents/calc_movement_and_crosshair.hpp"
 #include "game/modes/ai/intents/calc_wielding_intent.hpp"
 #include "game/modes/ai/intents/calc_assigned_waypoint.hpp"
@@ -692,7 +692,7 @@ arena_ai_result update_arena_mode_ai(
 		return any_los;
 	}();
 
-	const auto new_request = ::calc_current_pathfinding_request(
+	const auto new_request = ::calc_current_navigation_request(
 		cosm,
 		ai_state.last_behavior,
 		ai_state.combat_target,
@@ -715,22 +715,22 @@ arena_ai_result update_arena_mode_ai(
 		Danger avoidance and take-cover avoidance can override the effective
 		pathfinding request. Priority: danger > take cover > normal target.
 	*/
-	const auto effective_request = [&]() -> std::optional<ai_pathfinding_request> {
-		if (ai_state.danger_pathfinding_request.has_value()) {
-			return ai_state.danger_pathfinding_request;
+	const auto effective_request = [&]() -> std::optional<ai_navigation_request> {
+		if (ai_state.danger_navigation_request.has_value()) {
+			return ai_state.danger_navigation_request;
 		}
 
-		if (ai_state.take_cover_pathfinding_request.has_value()) {
-			return ai_state.take_cover_pathfinding_request;
+		if (ai_state.take_cover_navigation_request.has_value()) {
+			return ai_state.take_cover_navigation_request;
 		}
 
 		return new_request;
 	}();
 
-	if (effective_request != ai_state.current_pathfinding_request) {
+	if (effective_request != ai_state.current_navigation_request) {
 		AI_LOG("Pathfinding request changed - reinitializing");
 
-		ai_state.current_pathfinding_request = effective_request;
+		ai_state.current_navigation_request = effective_request;
 		ai_state.clear_navigation();
 
 		if (effective_request != std::nullopt) {
@@ -995,7 +995,7 @@ arena_ai_result update_arena_mode_ai(
 	}
 
 	if (move_result.path_completed) {
-		ai_state.current_pathfinding_request = std::nullopt;
+		ai_state.current_navigation_request = std::nullopt;
 		ai_state.clear_navigation();
 	}
 

@@ -1,5 +1,4 @@
 #pragma once
-#include "game/detail/pathfinding/pathfinding.h"
 #include "game/modes/ai/arena_mode_ai_structs.h"
 #include "game/detail/path_navigation/path_helpers.hpp"
 #include "game/debug_drawing_settings.h"
@@ -46,16 +45,16 @@ struct navigation_direction_result {
 */
 
 inline navigation_direction_result get_navigation_movement_direction(
-	ai_path_navigation_state& pathfinding,
+	ai_path_navigation_state& navigation,
 	const vec2 bot_pos,
 	const cosmos_navmesh& navmesh,
 	const float dt
 ) {
 	navigation_direction_result result;
 	
-	const auto current_target_opt = ::get_current_path_target(pathfinding, navmesh);
-	const auto target_pos = pathfinding.target_position();
-	const auto target_direction = pathfinding.target_transform.get_direction();
+	const auto current_target_opt = ::get_current_path_target(navigation, navmesh);
+	const auto target_pos = navigation.target_position();
+	const auto target_direction = navigation.target_transform.get_direction();
 
 	if (!current_target_opt.has_value()) {
 		/*
@@ -63,7 +62,7 @@ inline navigation_direction_result get_navigation_movement_direction(
 			Navigate directly to final target with target transform rotation.
 		*/
 		const auto dir = target_pos - bot_pos;
-		const auto& main_path = pathfinding.main.path;
+		const auto& main_path = navigation.main.path;
 		
 		if (main_path.island_index < navmesh.islands.size() && !main_path.nodes.empty()) {
 			const auto& island = navmesh.islands[main_path.island_index];
@@ -101,15 +100,15 @@ inline navigation_direction_result get_navigation_movement_direction(
 	*/
 	vec2 look_ahead_target = current_target;
 
-	const bool is_rerouting = pathfinding.rerouting.has_value();
+	const bool is_rerouting = navigation.rerouting.has_value();
 
 	const path_navigation_progress* active_progress_ptr = nullptr;
 
 	if (is_rerouting) {
-		active_progress_ptr = &*pathfinding.rerouting;
+		active_progress_ptr = &*navigation.rerouting;
 	}
 	else {
-		active_progress_ptr = &pathfinding.main;
+		active_progress_ptr = &navigation.main;
 	}
 
 	const auto& active_progress = *active_progress_ptr;
@@ -168,8 +167,8 @@ inline navigation_direction_result get_navigation_movement_direction(
 					At the last node of rerouting path - ease towards the target node on main path.
 					This preserves continuity when transitioning from rerouting back to main path.
 				*/
-				const auto& main_path = pathfinding.main.path;
-				const auto main_idx = pathfinding.main.node_index + 1;
+				const auto& main_path = navigation.main.path;
+				const auto main_idx = navigation.main.node_index + 1;
 
 				if (main_path.island_index < navmesh.islands.size() &&
 				    main_idx < main_path.nodes.size()
@@ -262,34 +261,34 @@ inline navigation_direction_result get_navigation_movement_direction(
 	if (path.island_index < navmesh.islands.size() && active_progress.node_index < path.nodes.size()) {
 		const auto current_cell_xy = path.nodes[active_progress.node_index].cell_xy;
 
-		if (current_cell_xy == pathfinding.stuck_cell) {
+		if (current_cell_xy == navigation.stuck_cell) {
 			/*
 				Still on the same cell - accumulate time.
 			*/
-			pathfinding.stuck_time += dt;
+			navigation.stuck_time += dt;
 
-			if (pathfinding.stuck_time >= STUCK_ROTATION_INTERVAL_SECS) {
+			if (navigation.stuck_time >= STUCK_ROTATION_INTERVAL_SECS) {
 				/*
 					Rotate the crosshair offset by 90 degrees for every 2-second interval.
 				*/
-				const int rotation_count = static_cast<int>(pathfinding.stuck_time / STUCK_ROTATION_INTERVAL_SECS);
+				const int rotation_count = static_cast<int>(navigation.stuck_time / STUCK_ROTATION_INTERVAL_SECS);
 				const float target_rotation = static_cast<float>(rotation_count) * (3.14159265f / 2.0f);
 
 				const float ROTATION_SMOOTH_TIME = 0.5f;
 				const float alpha = std::min(dt / ROTATION_SMOOTH_TIME, 1.0f);
 
-				pathfinding.stuck_rotation += (target_rotation - pathfinding.stuck_rotation) * alpha;
+				navigation.stuck_rotation += (target_rotation - navigation.stuck_rotation) * alpha;
 
-				result.crosshair_offset = result.crosshair_offset.rotate_radians(pathfinding.stuck_rotation);
+				result.crosshair_offset = result.crosshair_offset.rotate_radians(navigation.stuck_rotation);
 			}
 		}
 		else {
 			/*
 				Changed cells - reset stuck timer.
 			*/
-			pathfinding.stuck_rotation = 0.0f;
-			pathfinding.stuck_cell = current_cell_xy;
-			pathfinding.stuck_time = 0.0f;
+			navigation.stuck_rotation = 0.0f;
+			navigation.stuck_cell = current_cell_xy;
+			navigation.stuck_time = 0.0f;
 		}
 	}
 

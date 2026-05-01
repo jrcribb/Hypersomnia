@@ -2202,11 +2202,11 @@ void editor_setup::draw_custom_gui(const draw_setup_gui_input& in) {
 
 		/*
 			Draw pathfinding debug visualization.
-			Iterate over DEBUG_PATHFINDING_START and DEBUG_PATHFINDING_END point markers
+			Iterate over DEBUG_NAVIGATION_START and DEBUG_NAVIGATION_END point markers
 			and draw paths between them.
 		*/
 
-		const auto pathfinding_color = project.settings.debug_pathfinding_color;
+		const auto navigation_color = project.settings.debug_navigation_color;
 		const auto arrow_image_id = assets::necessary_image_id::EDITOR_TOOL_PLAIN_ARROW;
 
 		/*
@@ -2219,10 +2219,10 @@ void editor_setup::draw_custom_gui(const draw_setup_gui_input& in) {
 			[&](const auto& typed_handle) {
 				const auto& marker = typed_handle.template get<invariants::point_marker>();
 
-				if (marker.type == point_marker_type::DEBUG_PATHFINDING_START) {
+				if (marker.type == point_marker_type::DEBUG_NAVIGATION_START) {
 					pathfinding_starts.push_back(typed_handle.get_logic_transform().pos);
 				}
-				else if (marker.type == point_marker_type::DEBUG_PATHFINDING_END) {
+				else if (marker.type == point_marker_type::DEBUG_NAVIGATION_END) {
 					pathfinding_ends.push_back(typed_handle.get_logic_transform().pos);
 				}
 			}
@@ -2264,7 +2264,7 @@ void editor_setup::draw_custom_gui(const draw_setup_gui_input& in) {
 						triangles.aabb(
 							blank_tex,
 							ltrb(screen_lt, screen_rb - screen_lt),
-							pathfinding_color
+							navigation_color
 						);
 
 						/*
@@ -3617,9 +3617,9 @@ arena_playtesting_context editor_setup::make_playtesting_context() const {
 	ctx.first_player_faction = project.playtesting.starting_faction;
 
 	/*
-		Look for DEBUG_PATHFINDING_START and DEBUG_PATHFINDING_END markers.
-		If DEBUG_PATHFINDING_START exists, spawn at that position.
-		If DEBUG_PATHFINDING_END exists, store it for AI pathfinding testing.
+		Look for DEBUG_NAVIGATION_START and DEBUG_NAVIGATION_END markers.
+		If DEBUG_NAVIGATION_START exists, spawn at that position.
+		If DEBUG_NAVIGATION_END exists, store it for AI pathfinding testing.
 	*/
 	std::optional<vec2> pathfinding_start;
 	std::optional<transformr> pathfinding_end;
@@ -3628,10 +3628,10 @@ arena_playtesting_context editor_setup::make_playtesting_context() const {
 		[&](const auto& typed_handle) {
 			const auto& marker = typed_handle.template get<invariants::point_marker>();
 
-			if (marker.type == point_marker_type::DEBUG_PATHFINDING_START) {
+			if (marker.type == point_marker_type::DEBUG_NAVIGATION_START) {
 				pathfinding_start = typed_handle.get_logic_transform().pos;
 			}
-			else if (marker.type == point_marker_type::DEBUG_PATHFINDING_END) {
+			else if (marker.type == point_marker_type::DEBUG_NAVIGATION_END) {
 				pathfinding_end = typed_handle.get_logic_transform();
 			}
 		}
@@ -3642,7 +3642,7 @@ arena_playtesting_context editor_setup::make_playtesting_context() const {
 	}
 
 	if (pathfinding_end.has_value()) {
-		ctx.debug_pathfinding_end = pathfinding_end;
+		ctx.debug_navigation_end = pathfinding_end;
 	}
 	else {
 		/*
@@ -3651,7 +3651,7 @@ arena_playtesting_context editor_setup::make_playtesting_context() const {
 		scene.world.for_each_having<invariants::hand_fuse>(
 			[&](const auto& typed_handle) {
 				if (::is_like_plantable_bomb(typed_handle)) {
-					ctx.debug_pathfinding_bomb_target = typed_handle.get_id();
+					ctx.debug_navigation_bomb_target = typed_handle.get_id();
 				}
 			}
 		);

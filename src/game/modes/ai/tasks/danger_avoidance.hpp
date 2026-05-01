@@ -9,7 +9,7 @@
 #include "game/detail/pathfinding/pathfinding.h"
 #include "game/enums/filters.h"
 #include "game/modes/ai/ai_character_context.h"
-#include "game/modes/ai/intents/calc_pathfinding_request.hpp"
+#include "game/modes/ai/intents/calc_navigation_request.hpp"
 #include "game/modes/ai/tasks/line_of_sight.hpp"
 
 /*
@@ -23,8 +23,8 @@
 	it is applied last (after bot_avoidance) so its direction wins.
 
 	State fields in arena_mode_ai_state:
-	  danger_pathfinding_request  — target cover cell; nullopt = in cover or inactive
-	  danger_pathfinding_time_left — seconds remaining; -1.0f = inactive
+	  danger_navigation_request  — target cover cell; nullopt = in cover or inactive
+	  danger_navigation_time_left — seconds remaining; -1.0f = inactive
 
 	Behaviour:
 	  - Each scan tick (throttled by should_run_avoidance_update) the closest
@@ -184,12 +184,12 @@ inline bool update_danger_avoidance(
 	const auto& clk = cosm.get_clock();
 
 	/* Tick the danger timer down every frame */
-	if (ai_state.danger_pathfinding_time_left >= 0.0f) {
-		ai_state.danger_pathfinding_time_left -= dt_secs;
+	if (ai_state.danger_navigation_time_left >= 0.0f) {
+		ai_state.danger_navigation_time_left -= dt_secs;
 
-		if (ai_state.danger_pathfinding_time_left < 0.0f) {
-			ai_state.danger_pathfinding_time_left = -1.0f;
-			ai_state.danger_pathfinding_request = std::nullopt;
+		if (ai_state.danger_navigation_time_left < 0.0f) {
+			ai_state.danger_navigation_time_left = -1.0f;
+			ai_state.danger_navigation_request = std::nullopt;
 		}
 	}
 
@@ -199,10 +199,10 @@ inline bool update_danger_avoidance(
 		the grenade is still visible from the new position.
 	*/
 	if (move_result.path_completed
-		&& ai_state.current_pathfinding_request == ai_state.danger_pathfinding_request
-		&& ai_state.danger_pathfinding_request.has_value()
+		&& ai_state.current_navigation_request == ai_state.danger_navigation_request
+		&& ai_state.danger_navigation_request.has_value()
 	) {
-		ai_state.danger_pathfinding_request = std::nullopt;
+		ai_state.danger_navigation_request = std::nullopt;
 	}
 
 	/*
@@ -279,23 +279,23 @@ inline bool update_danger_avoidance(
 			const auto cover_pos = ::find_closest_cover(navmesh, character_pos, closest->pos, std::nullopt, physics, si, closest->cover_radius);
 
 			if (cover_pos.has_value()) {
-				auto req = ai_pathfinding_request::to_position(*cover_pos);
+				auto req = ai_navigation_request::to_position(*cover_pos);
 				req.resolved_cell = ::resolve_cell_for_position(navmesh, *cover_pos);
-				ai_state.danger_pathfinding_time_left = closest->remaining_secs;
-				ai_state.danger_pathfinding_request = req;
+				ai_state.danger_navigation_time_left = closest->remaining_secs;
+				ai_state.danger_navigation_request = req;
 			}
 		}
 	}
 
-	const bool danger_active = ai_state.danger_pathfinding_time_left >= 0.0f;
+	const bool danger_active = ai_state.danger_navigation_time_left >= 0.0f;
 
 	if (!danger_active) {
 		return false;
 	}
 
-	if (ai_state.danger_pathfinding_request.has_value()) {
+	if (ai_state.danger_navigation_request.has_value()) {
 		if (move_result.movement_direction.has_value()
-			&& ai_state.current_pathfinding_request == ai_state.danger_pathfinding_request
+			&& ai_state.current_navigation_request == ai_state.danger_navigation_request
 		) {
 			/* Navigating to cover — sprint, dash, and follow the pathfinding direction */
 			movement.flags.sprinting = move_result.can_sprint || move_result.nearing_end;

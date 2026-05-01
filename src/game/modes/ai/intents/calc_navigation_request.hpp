@@ -53,19 +53,19 @@ inline cell_on_navmesh resolve_cell_for_position(
 	Now uses the resolved_cell from bomb_pathfinding_target directly
 	to avoid redundant recalculation.
 */
-inline std::optional<ai_pathfinding_request> create_bomb_pathfinding_request(
+inline std::optional<ai_navigation_request> create_bomb_navigation_request(
 	const std::optional<bomb_pathfinding_target>& bomb_target
 ) {
 	if (!bomb_target.has_value()) {
 		return std::nullopt;
 	}
 	
-	auto req = ai_pathfinding_request::to_transform(bomb_target->target_pathfinding_transform);
+	auto req = ai_navigation_request::to_transform(bomb_target->target_pathfinding_transform);
 	req.resolved_cell = bomb_target->resolved_cell;
 	return req;
 }
 
-inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
+inline std::optional<ai_navigation_request> calc_current_navigation_request(
 	const cosmos& cosm,
 	ai_behavior_variant& behavior,
 	const ai_target_tracking& combat_target,
@@ -84,7 +84,7 @@ inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
 	(void)bot_player_id;
 	(void)global_time_secs;
 
-	return std::visit([&](auto& b) -> std::optional<ai_pathfinding_request> {
+	return std::visit([&](auto& b) -> std::optional<ai_navigation_request> {
 		using T = std::decay_t<decltype(b)>;
 
 		if constexpr (std::is_same_v<T, ai_behavior_combat>) {
@@ -97,7 +97,7 @@ inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
 				return std::nullopt;
 			}
 
-			auto req = ai_pathfinding_request::to_position(combat_target.last_known_pos);
+			auto req = ai_navigation_request::to_position(combat_target.last_known_pos);
 			req.resolved_cell = ::resolve_cell_for_position(navmesh, combat_target.last_known_pos);
 			return req;
 		}
@@ -110,7 +110,7 @@ inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
 
 				if (bomb_handle.alive()) {
 					const auto bomb_target = ::find_bomb_pathfinding_target(bomb_handle, navmesh, character_pos);
-					return ::create_bomb_pathfinding_request(bomb_target);
+					return ::create_bomb_navigation_request(bomb_target);
 				}
 			}
 
@@ -129,7 +129,7 @@ inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
 
 				if (bomb_handle.alive()) {
 					const auto bomb_target = ::find_bomb_pathfinding_target(bomb_handle, navmesh, character_pos);
-					return ::create_bomb_pathfinding_request(bomb_target);
+					return ::create_bomb_navigation_request(bomb_target);
 				}
 			}
 
@@ -144,12 +144,12 @@ inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
 
 			if (wp_handle.alive()) {
 				const auto wp_transform = wp_handle.get_logic_transform();
-				auto req = ai_pathfinding_request::to_transform(wp_transform, true);
+				auto req = ai_navigation_request::to_transform(wp_transform, true);
 				req.resolved_cell = ::resolve_cell_for_position(navmesh, wp_transform.pos);
 				return req;
 			}
 
-			AI_LOG("calc_pathfinding_request: patrol has no alive waypoint (push=%x, patrol=%x)",
+			AI_LOG("calc_navigation_request: patrol has no alive waypoint (push=%x, patrol=%x)",
 				b.push_waypoint.is_set(), b.patrol_waypoint.is_set());
 			return std::nullopt;
 		}
@@ -220,7 +220,7 @@ inline std::optional<ai_pathfinding_request> calc_current_pathfinding_request(
 			*/
 			if (b.cached_plant_target.has_value()) {
 				const auto& target = *b.cached_plant_target;
-				auto req = ai_pathfinding_request::to_transform(target, true);
+				auto req = ai_navigation_request::to_transform(target, true);
 				req.resolved_cell = ::resolve_cell_for_position(navmesh, target.pos);
 				return req;
 			}

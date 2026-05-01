@@ -5,7 +5,7 @@
 #include "game/detail/pathfinding/pathfinding.h"
 #include "game/modes/ai/ai_character_context.h"
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
-#include "game/modes/ai/intents/calc_pathfinding_request.hpp"
+#include "game/modes/ai/intents/calc_navigation_request.hpp"
 #include "game/modes/ai/tasks/danger_avoidance.hpp"
 
 /*
@@ -18,7 +18,7 @@
 	the other avoidance functions and throttles the BFS cover search.
 
 	State field in arena_mode_ai_state:
-	  take_cover_pathfinding_request — current cover target; nullopt = idle.
+	  take_cover_navigation_request — current cover target; nullopt = idle.
 
 	Behaviour:
 	  - Activates when ai_behavior_combat is active AND the bot is reloading.
@@ -58,9 +58,9 @@ inline bool update_take_cover(
 	const bool taking_cover = in_combat && ::must_take_cover(ctx.character_handle);
 
 	if (!taking_cover) {
-		if (ai_state.take_cover_pathfinding_request.has_value()) {
-			ai_state.take_cover_pathfinding_request = std::nullopt;
-			ai_state.current_pathfinding_request = std::nullopt;
+		if (ai_state.take_cover_navigation_request.has_value()) {
+			ai_state.take_cover_navigation_request = std::nullopt;
+			ai_state.current_navigation_request = std::nullopt;
 			ai_state.clear_navigation();
 		}
 
@@ -75,10 +75,10 @@ inline bool update_take_cover(
 		permitted on subsequent throttled ticks.
 	*/
 	if (move_result.path_completed
-		&& ai_state.current_pathfinding_request == ai_state.take_cover_pathfinding_request
-		&& ai_state.take_cover_pathfinding_request.has_value()
+		&& ai_state.current_navigation_request == ai_state.take_cover_navigation_request
+		&& ai_state.take_cover_navigation_request.has_value()
 	) {
-		ai_state.take_cover_pathfinding_request = std::nullopt;
+		ai_state.take_cover_navigation_request = std::nullopt;
 		ai_state.take_cover_reached_once = true;
 	}
 
@@ -91,9 +91,9 @@ inline bool update_take_cover(
 		from making forward progress.
 	*/
 	if (should_run_avoidance_update) {
-		const bool need_calc = !ai_state.take_cover_pathfinding_request.has_value() && target_acquired;
+		const bool need_calc = !ai_state.take_cover_navigation_request.has_value() && target_acquired;
 		const bool need_recalc =
-			ai_state.take_cover_pathfinding_request.has_value()
+			ai_state.take_cover_navigation_request.has_value()
 			&& ai_state.take_cover_reached_once
 			&& target_acquired
 		;
@@ -125,9 +125,9 @@ inline bool update_take_cover(
 				);
 
 				if (cover_pos.has_value()) {
-					auto req = ai_pathfinding_request::to_position(*cover_pos);
+					auto req = ai_navigation_request::to_position(*cover_pos);
 					req.resolved_cell = ::resolve_cell_for_position(navmesh, *cover_pos);
-					ai_state.take_cover_pathfinding_request = req;
+					ai_state.take_cover_navigation_request = req;
 					ai_state.take_cover_reached_once = false;
 				}
 			}
@@ -139,8 +139,8 @@ inline bool update_take_cover(
 		Navigate to cover when a path is active; stand still otherwise
 		(either at cover or waiting for the next throttled recalculation).
 	*/
-	if (ai_state.take_cover_pathfinding_request.has_value()
-		&& ai_state.current_pathfinding_request == ai_state.take_cover_pathfinding_request
+	if (ai_state.take_cover_navigation_request.has_value()
+		&& ai_state.current_navigation_request == ai_state.take_cover_navigation_request
 		&& move_result.movement_direction.has_value()
 	) {
 		movement.flags.sprinting = move_result.can_sprint;

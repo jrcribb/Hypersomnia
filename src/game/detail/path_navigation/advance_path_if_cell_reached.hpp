@@ -1,11 +1,10 @@
 #pragma once
-#include "game/detail/pathfinding/pathfinding.h"
 #include "game/modes/ai/arena_mode_ai_structs.h"
 #include "game/detail/path_navigation/path_helpers.hpp"
 
 /*
 	Advance along the current path when reaching cell centers.
-	Does NOT clear pathfinding state when reaching portal - that should only happen
+	Does NOT clear navigation state when reaching portal - that should only happen
 	when receiving a teleportation message.
 	
 	Cell advancement logic:
@@ -17,7 +16,7 @@
 */
 
 inline void advance_path_if_cell_reached(
-	ai_path_navigation_state& pathfinding,
+	ai_path_navigation_state& navigation,
 	const vec2 bot_pos,
 	const cosmos_navmesh& navmesh,
 	bool& cell_path_completed
@@ -168,7 +167,7 @@ inline void advance_path_if_cell_reached(
 
 			/*
 				Check if we've finished this path segment.
-				Don't clear pathfinding - let teleportation message handle that.
+				Don't clear navigation - let teleportation message handle that.
 			*/
 			if (progress.node_index >= path.nodes.size()) {
 				return true;
@@ -180,20 +179,20 @@ inline void advance_path_if_cell_reached(
 
 	bool main_path_finished = false;
 
-	if (pathfinding.rerouting.has_value()) {
-		const bool finished = try_advance(*pathfinding.rerouting);
+	if (navigation.rerouting.has_value()) {
+		const bool finished = try_advance(*navigation.rerouting);
 
 		/*
 			If we've finished rerouting, we're back on the main path.
 		*/
 		if (finished || 
-		    pathfinding.rerouting->node_index >= pathfinding.rerouting->path.nodes.size()
+		    navigation.rerouting->node_index >= navigation.rerouting->path.nodes.size()
 		) {
-			pathfinding.clear_rerouting();
+			navigation.clear_rerouting();
 		}
 	}
 	else {
-		main_path_finished = try_advance(pathfinding.main);
+		main_path_finished = try_advance(navigation.main);
 
 		/*
 			If we've finished main path and there's no portal,

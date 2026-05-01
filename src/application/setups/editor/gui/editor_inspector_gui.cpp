@@ -2364,7 +2364,7 @@ SINGLE_EDIT_FUNCTION(editor_arena_settings& insp, const editor_arena_settings de
 		text_tooltip("Color used to display portal cells in the navmesh.");
 	}
 
-	PROPERTY("Debug pathfinding color", debug_pathfinding_color);
+	PROPERTY("Debug navigation color", debug_navigation_color);
 
 	if (ImGui::IsItemHovered()) {
 		text_tooltip("Color used to display pathfinding debug path in the editor.");
