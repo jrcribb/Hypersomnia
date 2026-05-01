@@ -440,6 +440,11 @@ struct arena_mode_ai_state {
 	float danger_navigation_time_left = -1.0f;
 	std::optional<ai_navigation_request> take_cover_navigation_request;
 	bool take_cover_reached_once = false;
+
+	signi_entity_id avoided_bullet;
+	int avoided_bullet_dir = 0;
+	real32 avoided_bullet_timer = -1.0f;
+	vec2 avoided_bullet_dodge = {};
 	// END GEN INTROSPECTOR
 
 	bool is_navigating() const {
@@ -479,5 +484,9 @@ struct arena_mode_ai_state {
 		danger_navigation_time_left = -1.0f;
 		take_cover_navigation_request = std::nullopt;
 		take_cover_reached_once = false;
+		avoided_bullet = {};
+		avoided_bullet_dir = 0;
+		avoided_bullet_timer = -1.0f;
+		avoided_bullet_dodge = {};
 	}
 };

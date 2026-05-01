@@ -14,10 +14,10 @@ summary: That which we are brainstorming at the moment.
 	- when planting, all bots on that site engage
 	- aggro zrandomizowac np. jak szlyszy krok do 20% szansy na aggro od metropolis i wiekszy dla resistance
 	- jak slychac kroki gdzies to przy kampieniu celowac w najblizsza kratke z coverem albo nawet stanac jak patroluje i on jest blisko
-	- avoidance of bullets
 	- jak nie ma nic to melee i jazda
 
 - boty (done)
+	- avoidance of bullets
 	- unikanie nejdow tez najblizszy cover
 	- zeby sie nie obijaly o siebie - opcjonalnie omijac tile zajety przez bota
 	- zeby nie strzelaly w siebie

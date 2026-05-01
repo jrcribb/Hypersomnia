@@ -55,6 +55,7 @@
 #include "game/modes/ai/tasks/can_weapon_penetrate.hpp"
 #include "game/cosmos/make_physics_path_hints.h"
 #include "game/modes/ai/tasks/bot_avoidance.hpp"
+#include "game/modes/ai/tasks/bullet_avoidance.hpp"
 #include "game/modes/ai/tasks/danger_avoidance.hpp"
 #include "game/modes/ai/tasks/take_cover.hpp"
 
@@ -736,6 +737,10 @@ arena_ai_result update_arena_mode_ai(
 		navigation request. Priority: danger > take cover > normal target.
 	*/
 	const auto effective_request = [&]() -> std::optional<ai_navigation_request> {
+		if (ai_state.avoided_bullet_timer >= 0.0f) {
+			return std::nullopt;
+		}
+
 		if (ai_state.danger_navigation_request.has_value()) {
 			return ai_state.danger_navigation_request;
 		}
@@ -957,7 +962,18 @@ arena_ai_result update_arena_mode_ai(
 		is_freeze_time
 	);
 
-	if (avoidance_overrode || take_cover_overrode || danger_overrode) {
+	/* Bullet avoidance — applied last, overrides all other avoidance layers. */
+	const bool bullet_overrode = can_sense_anything && ::update_bullet_avoidance(
+		ctx,
+		movement,
+		dt_secs,
+		difficulty,
+		should_run_avoidance_update,
+		is_freeze_time,
+		is_thinking_what_to_buy
+	);
+
+	if (avoidance_overrode || take_cover_overrode || danger_overrode || bullet_overrode) {
 		if (auto* patrol = ::get_behavior_if<ai_behavior_patrol>(ai_state.last_behavior)) {
 			if (patrol->is_camping()) {
 				patrol->camp_timer = 0.0f;
