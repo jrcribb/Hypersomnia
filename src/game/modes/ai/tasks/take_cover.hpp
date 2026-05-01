@@ -55,9 +55,9 @@ inline bool update_take_cover(
 	const bool in_combat = ::get_behavior_if<ai_behavior_combat>(ai_state.last_behavior) != nullptr;
 	const bool currently_reloading = ::is_currently_reloading(ctx.character_handle);
 	const bool chambering = ::must_chamber_weapon(ctx.character_handle) && !currently_reloading;
-	const bool must_take_cover = in_combat && (currently_reloading || chambering);
+	const bool taking_cover = in_combat && ::must_take_cover(ctx.character_handle);
 
-	if (!must_take_cover) {
+	if (!taking_cover) {
 		if (ai_state.take_cover_pathfinding_request.has_value()) {
 			ai_state.take_cover_pathfinding_request = std::nullopt;
 			ai_state.current_pathfinding_request = std::nullopt;
@@ -106,10 +106,10 @@ inline bool update_take_cover(
 
 				const auto filter = predefined_queries::pathfinding();
 				const auto enemy_handle = cosm[ai_state.combat_target.id];
-				const bool enemy_occluded = ::ray_cast_px_against_vertices_of(enemy_handle, character_pos, physics, si, filter);
+				const bool enemy_visible = ::los_to_any_vertices_of(enemy_handle, character_pos, physics, si, filter);
 
 				const auto secondary_danger = 
-					(chambering && enemy_occluded) ?
+					(chambering && enemy_visible) ?
 					std::optional<vec2>() :
 					std::optional<vec2>(character_pos)
 				;

@@ -127,7 +127,7 @@ namespace invariants {
 		bool delay_shell_spawn_until_chambering = false;
 		bool bots_ban = false;
 
-		real32 bot_aim_radius_to_shoot = 25.0f;
+		real32 bot_aim_radius_to_shoot = 50.0f;
 
 		constrained_entity_flavour_id<invariants::missile, components::sender> magic_missile_flavour;
 		recoil_player_instance_def recoil;

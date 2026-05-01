@@ -678,7 +678,7 @@ arena_ai_result update_arena_mode_ai(
 		}
 
 		const auto filter = predefined_queries::pathfinding();
-		const bool any_los = ::ray_cast_px_against_vertices_of(enemy_handle, character_pos, physics, cosm.get_si(), filter);
+		const bool any_los = ::los_to_any_vertices_of(enemy_handle, character_pos, physics, cosm.get_si(), filter);
 		return any_los;
 	}();
 
@@ -941,7 +941,6 @@ arena_ai_result update_arena_mode_ai(
 			ai_state.last_behavior,
 			target_acquired,
 			target_enemy_pos,
-			character_pos,
 			character_handle
 		);
 

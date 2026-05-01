@@ -3,6 +3,7 @@
 #include "game/cosmos/cosmos.h"
 #include "game/cosmos/entity_handle.h"
 #include "game/cosmos/make_physics_path_hints.h"
+#include "game/detail/inventory/weapon_reloading.hpp"
 #include "game/detail/path_navigation/navigate_pathfinding.hpp"
 #include "game/modes/ai/arena_mode_ai_structs.h"
 #include "game/modes/ai/behaviors/ai_behavior_variant.hpp"
@@ -133,11 +134,13 @@ inline navigate_pathfinding_result calc_movement_and_crosshair(
 	}
 
 	/*
-		If has combat target, aim at the target position.
+		If has combat target, aim at the target position —
+		unless the bot is reloading or chambering, in which case
+		path navigation controls the look direction instead.
 		If velocity is provided, predict enemy movement using estimate_aiming_target.
 		Otherwise (wall penetration), aim at the position directly.
 	*/
-	if (target_acquired) {
+	if (target_acquired && !::must_take_cover(character)) {
 		if (target_enemy_velocity.has_value()) {
 			/*
 				We see the enemy - predict their position based on velocity.

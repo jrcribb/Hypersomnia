@@ -220,3 +220,8 @@ bool must_chamber_weapon(const E& character_handle) {
 
 	return false;
 }
+
+template <class E>
+bool must_take_cover(const E& character_handle) {
+	return ::is_currently_reloading(character_handle) || ::must_chamber_weapon(character_handle);
+}

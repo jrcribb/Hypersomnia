@@ -169,7 +169,7 @@ inline float estimate_danger_radius(const cosmos& cosm, const E& entity) {
 	Falls back to the entity's logical position when no polygon fixture is found.
 */
 template <class E, class Physics>
-bool ray_cast_px_against_vertices_of(
+bool los_to_any_vertices_of(
 	const E& entity_handle,
 	const vec2 target_pos,
 	const Physics& physics,
@@ -280,7 +280,7 @@ inline bool update_danger_avoidance(
 				shielded from the danger. Check all vertices and exit as soon as
 				one is exposed (no wall between it and the danger).
 			*/
-			const bool any_vertex_exposed = ::ray_cast_px_against_vertices_of(ctx.character_handle, pos, physics, si, filter);
+			const bool any_vertex_exposed = ::los_to_any_vertices_of(ctx.character_handle, pos, physics, si, filter);
 
 			if (!any_vertex_exposed) {
 				/* Every vertex is shielded — character is already safe from this danger */
