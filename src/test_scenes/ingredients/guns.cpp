@@ -4143,7 +4143,7 @@ namespace test_flavours {
 			gun_def.bot_aim_radius_to_shoot = 8.0f;
 
 			gun_def.action_mode = gun_action_type::BOLT_ACTION;
-			gun_def.muzzle_velocity = {16000.f, 16000.f};
+			gun_def.muzzle_velocity = {14000.f, 14000.f};
 			gun_def.shot_cooldown_ms = 600.f;
 			gun_def.after_transfer_shot_cooldown_mult = 0.5f;
 			gun_def.chambering_sound.id = to_sound_id(test_scene_sound_id::HPSR_CHAMBERING);
@@ -4174,10 +4174,10 @@ namespace test_flavours {
 
 			test_flavours::add_sprite(meta, caches, test_scene_image_id::HPSR, white);
 			test_flavours::add_lying_item_dynamic_body(meta);
-			set_density_mult(meta, 3.0f);
+			set_density_mult(meta, 3.2f);
 			make_default_gun_container(meta, item_holding_stance::SNIPER_LIKE, 1850.f, 0.f, false, "0.1");
 			meta.get<invariants::item>().wield_sound.id = to_sound_id(test_scene_sound_id::STANDARD_SNIPER_DRAW);
-			meta.get<invariants::item>().standard_price = 6000;
+			meta.get<invariants::item>().standard_price = 7000;
 			set_chambering_duration_ms(meta, 650.f*1.1f);
 			meta.template get<invariants::item>().space_occupied_per_charge = to_space_units("8");
 			only_allow_mag(meta, test_container_items::AWKA_MAGAZINE);
