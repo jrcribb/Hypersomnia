@@ -421,10 +421,6 @@ arena_ai_result update_arena_mode_ai(
 	*/
 	const bool defuse_soon = bomb_planted && bot_faction == faction_type::METROPOLIS;
 
-	if (defuse_soon) {
-		ai_state.combat_target.timeout_from_engagement_start = true;
-	}
-
 	auto get_bomb_time_remaining = [&]() -> real32 {
 		if (!bomb_planted || !bomb_entity.is_set()) {
 			return 1000.0f;

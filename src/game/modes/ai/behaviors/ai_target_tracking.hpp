@@ -138,9 +138,16 @@ struct ai_target_tracking {
 		last_known_pos = enemy_pos;
 		last_known_time_secs = global_time_secs;
 
-		if (switching_target) {
+		/*
+			Reset engagement timer if:
+			- Switching to a different target, or
+			- Re-acquiring the same target after engagement timeout expired
+		*/
+		const bool engagement_timed_out = (global_time_secs - engagement_started_secs) > engagement_timeout_secs;
+		
+		if (switching_target || engagement_timed_out) {
 			/*
-				Re-randomize combat time when switching targets.
+				Re-randomize combat time when switching targets or re-engaging after timeout.
 			*/
 			engagement_started_secs = global_time_secs;
 			engagement_timeout_secs = ::pick_combat_time_secs(rng, is_bomb_carrier, is_defuser, bomb_time_remaining_secs) + reaction_time_secs;
