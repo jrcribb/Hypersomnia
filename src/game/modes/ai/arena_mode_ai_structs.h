@@ -209,6 +209,7 @@ struct arena_mode_ai_team_state {
 	marker_letter_type chosen_bombsite = marker_letter_type::COUNT;
 	entity_id bot_with_defuse_mission;
 	entity_id bot_with_bomb_retrieval_mission;
+	bool bomb_plant_handled = false;
 	// END GEN INTROSPECTOR
 
 	void round_reset() {
@@ -220,6 +221,7 @@ struct arena_mode_ai_team_state {
 		chosen_bombsite = marker_letter_type::COUNT;
 		bot_with_defuse_mission = entity_id::dead();
 		bot_with_bomb_retrieval_mission = entity_id::dead();
+		bomb_plant_handled = false;
 	}
 
 	void clear_waypoint_assignments() {

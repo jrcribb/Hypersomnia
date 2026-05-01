@@ -30,7 +30,8 @@ namespace components {
 
 		bool arming_requested = false;
 		uint8_t arming_source = arming_source_type::NONE;
-		pad_bytes<2> pad;
+		uint8_t bombsite_letter = -1;
+		pad_bytes<1> pad;
 		real32 damping_mult = 1.0f;
 
 		signi_entity_id character_now_defusing;

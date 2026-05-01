@@ -192,6 +192,35 @@ void update_arena_mode_ai_team(
 			}
 		}
 	}
+
+	/*
+		Metropolis: when the bomb is first planted, read the bombsite letter from the fuse
+		and steer all living Metropolis bots to patrol that site.
+		Only done once per round (guarded by bomb_plant_handled).
+	*/
+	if (faction == faction_type::METROPOLIS && bomb_planted && !team_state.bomb_plant_handled) {
+		if (const auto bomb_handle = cosm[bomb_entity]) {
+			if (const auto* fuse = bomb_handle.find<components::hand_fuse>()) {
+				if (fuse->bombsite_letter != static_cast<uint8_t>(-1)) {
+					const auto planted_letter = static_cast<marker_letter_type>(fuse->bombsite_letter);
+
+					for (auto& bot : only_bot(players)) {
+						if (bot.second.get_faction() != faction_type::METROPOLIS) {
+							continue;
+						}
+
+						bot.second.ai_state.patrol_letter = planted_letter;
+
+						if (auto* patrol = ::get_behavior_if<ai_behavior_patrol>(bot.second.ai_state.last_behavior)) {
+							*patrol = ai_behavior_patrol();
+						}
+					}
+
+					team_state.bomb_plant_handled = true;
+				}
+			}
+		}
+	}
 }
 
 arena_ai_result update_arena_mode_ai(
@@ -489,6 +518,41 @@ arena_ai_result update_arena_mode_ai(
 						0.49f,
 						alert_acquire_type::FULL
 					});
+				}
+			}
+		}
+	}
+
+	/*
+		===========================================================================
+		PHASE 0.875: If bomb is being planted by a RESISTANCE soldier, alert this
+		METROPOLIS bot so it rushes to engage the planter.
+		Only queued when the bot is not already in combat.
+		===========================================================================
+	*/
+
+	if (
+		!bomb_planted &&
+		bot_faction == faction_type::METROPOLIS &&
+		!::is_behavior<ai_behavior_combat>(ai_state.last_behavior) &&
+		bomb_entity.is_set()
+	) {
+		if (const auto bomb_handle = cosm[bomb_entity]) {
+			if (const auto* fuse = bomb_handle.find<components::hand_fuse>()) {
+				if (fuse->when_started_arming.was_set() && !fuse->armed()) {
+					const auto planter_handle = bomb_handle.get_owning_transfer_capability();
+
+					if (planter_handle.alive() && sentient_and_conscious(planter_handle)) {
+						const auto planter_pos = planter_handle.get_logic_transform().pos;
+
+						ai_state.alertness.queue_alert(ai_pending_alert{
+							planter_handle.get_id(),
+							planter_pos,
+							global_time_secs,
+							1.0f,
+							alert_acquire_type::FULL
+						});
+					}
 				}
 			}
 		}

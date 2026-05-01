@@ -96,26 +96,22 @@ struct stepless_fuse_logic_provider {
 		return fuse.amount_defused >= 0.f;
 	}
 
-	bool bombsite_in_range() const {
+	std::optional<marker_letter_type> bombsite_in_range() const {
 		return ::bombsite_in_range(fused_entity);
 	}
 
-	bool arming_conditions_fulfilled() const {
+	std::optional<marker_letter_type> arming_conditions_fulfilled() const {
 		if (holder.dead()) {
-			return false;
+			return std::nullopt;
 		}
 
 		if (fuse_def.must_stand_still_to_arm) {
 			if (!is_standing_still(holder)) {
-				return false;
+				return std::nullopt;
 			}
 		}
 
-		if (!bombsite_in_range()) {
-			return false;
-		}
-
-		return true;
+		return this->bombsite_in_range();
 	}
 
 	template <class C>
@@ -407,8 +403,12 @@ struct fuse_logic_provider : public stepless_fuse_logic_provider<E> {
 						return;
 					}
 
-					if (arming_conditions_fulfilled()) {
+					if (const auto site = this->arming_conditions_fulfilled()) {
 						if (!has_started_arming()) {
+							if (*site != marker_letter_type::COUNT) {
+								fuse.bombsite_letter = static_cast<uint8_t>(*site);
+							}
+
 							start_arming();
 							play_started_arming_sound();
 							return;

@@ -90,7 +90,7 @@ void draw_circular_progresses(const draw_circular_progresses_input in) {
 							auto first_col = white;
 							auto second_col = red_violet;
 
-							if (!::bombsite_in_range(it)) {
+							if (!::bombsite_in_range(it).has_value()) {
 								first_col = red;
 								second_col = red;
 							}

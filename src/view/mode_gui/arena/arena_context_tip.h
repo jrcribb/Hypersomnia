@@ -268,7 +268,7 @@ inline void draw_context_tip(
 		}
 
 		if (is_bomb_in_hand) {
-			if (::bombsite_in_range(bomb)) {
+			if (::bombsite_in_range(bomb).has_value()) {
 				if (bomb_hand_index == 0) {
 					return do_text("Press and hold {SHOOT} to plant the bomb.");
 				}
@@ -281,7 +281,7 @@ inline void draw_context_tip(
 			}
 		}
 
-		if (::bombsite_in_range_of_entity(viewed_character)) {
+		if (::bombsite_in_range_of_entity(viewed_character).has_value()) {
 			if (bomb) {
 				return do_text("Press {WIELD_BOMB} to pull out the bomb.");
 			}
