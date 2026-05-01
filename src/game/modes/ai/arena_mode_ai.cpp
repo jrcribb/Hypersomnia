@@ -241,6 +241,16 @@ arena_ai_result update_arena_mode_ai(
 		character_handle
 	};
 
+	const auto* const bot_sentience = character_handle.find<components::sentience>();
+
+	/*
+		Flash/stun thresholds — blind/deafen the bot when hit by a flashbang.
+		Blinded: visual detection and LoS updates are frozen (last known state is kept).
+		Deafened: footstep processing is skipped in post_solve.
+	*/
+	const bool is_blinded  = bot_sentience != nullptr && bot_sentience->visual_flash_secs > 0.5f;
+	const bool is_deafened = bot_sentience != nullptr && bot_sentience->audio_flash_secs  > 2.0f;
+
 	/*
 		===========================================================================
 		PHASE 0: Per-bot patrol_letter initialization.
@@ -367,35 +377,41 @@ arena_ai_result update_arena_mode_ai(
 
 	/* Commit LOS change alert (dedicated slot, never evicted). */
 	if (ai_state.alertness.is_los_change_ready(global_time_secs)) {
-		const auto& alert = *ai_state.alertness.los_change_alert;
+		if (is_blinded) {
+			/* Blinded — discard the stale visual alert without committing. */
+			ai_state.alertness.los_change_alert.reset();
+		}
+		else {
+			const auto& alert = *ai_state.alertness.los_change_alert;
 
-		if (alert.enemy.is_set()) {
-			const auto enemy_handle = cosm[alert.enemy];
+			if (alert.enemy.is_set()) {
+				const auto enemy_handle = cosm[alert.enemy];
 
-			if (enemy_handle.alive() && sentient_and_conscious(enemy_handle)) {
-				ai_state.perceived_enemy = alert.enemy;
+				if (enemy_handle.alive() && sentient_and_conscious(enemy_handle)) {
+					ai_state.perceived_enemy = alert.enemy;
 
-				ai_state.combat_target.on_visual_contact(
-					stable_rng,
-					global_time_secs,
-					alert.enemy,
-					alert.enemy_pos,
-					character_pos,
-					bot_is_bomb_carrier,
-					bot_is_defuser,
-					bomb_time_remaining,
-					ai_state.alertness.base_rt_secs
-				);
+					ai_state.combat_target.on_visual_contact(
+						stable_rng,
+						global_time_secs,
+						alert.enemy,
+						alert.enemy_pos,
+						character_pos,
+						bot_is_bomb_carrier,
+						bot_is_defuser,
+						bomb_time_remaining,
+						ai_state.alertness.base_rt_secs
+					);
+				}
+				else {
+					ai_state.perceived_enemy = {};
+				}
 			}
 			else {
 				ai_state.perceived_enemy = {};
 			}
-		}
-		else {
-			ai_state.perceived_enemy = {};
-		}
 
-		ai_state.alertness.los_change_alert.reset();
+			ai_state.alertness.los_change_alert.reset();
+		}
 	}
 
 	/* Commit regular alerts (damage, gunshots, footsteps). */
@@ -424,17 +440,19 @@ arena_ai_result update_arena_mode_ai(
 						break;
 					case alert_acquire_type::SEEN:
 					case alert_acquire_type::CLOSEST_LOS_CHANGE:
-						ai_state.combat_target.on_visual_contact(
-							stable_rng,
-							global_time_secs,
-							alert.enemy,
-							alert.enemy_pos,
-							character_pos,
-							bot_is_bomb_carrier,
-							bot_is_defuser,
-							bomb_time_remaining,
-							ai_state.alertness.base_rt_secs
-						);
+						if (!is_blinded) {
+							ai_state.combat_target.on_visual_contact(
+								stable_rng,
+								global_time_secs,
+								alert.enemy,
+								alert.enemy_pos,
+								character_pos,
+								bot_is_bomb_carrier,
+								bot_is_defuser,
+								bomb_time_remaining,
+								ai_state.alertness.base_rt_secs
+							);
+						}
 						break;
 					case alert_acquire_type::HEARD_ONLY:
 						ai_state.combat_target.on_heard_footstep(
@@ -487,32 +505,34 @@ arena_ai_result update_arena_mode_ai(
 		return ::is_behavior<ai_behavior_combat>(ai_state.last_behavior);
 	};
 
-	const auto detected_enemy = ::find_closest_enemy(ctx, is_ffa, is_camping, is_in_combat());
+	if (!is_blinded) {
+		const auto detected_enemy = ::find_closest_enemy(ctx, is_ffa, is_camping, is_in_combat());
 
-	if (detected_enemy != ai_state.perceived_enemy) {
-		/* World state differs from bot's perception — queue/update LOS change. */
-		const auto enemy_pos = detected_enemy.is_set()
-			? cosm[detected_enemy].get_logic_transform().pos
-			: vec2::zero;
+		if (detected_enemy != ai_state.perceived_enemy) {
+			/* World state differs from bot's perception — queue/update LOS change. */
+			const auto enemy_pos = detected_enemy.is_set()
+				? cosm[detected_enemy].get_logic_transform().pos
+				: vec2::zero;
 
-		ai_state.alertness.queue_los_change(detected_enemy, enemy_pos, global_time_secs);
-	}
-	else {
-		if (const auto enemy_handle = cosm[ai_state.perceived_enemy]) {
-			/* Confirmed visual contact with same target — immediate position update. */
-			const auto enemy_pos = enemy_handle.get_logic_transform().pos;
+			ai_state.alertness.queue_los_change(detected_enemy, enemy_pos, global_time_secs);
+		}
+		else {
+			if (const auto enemy_handle = cosm[ai_state.perceived_enemy]) {
+				/* Confirmed visual contact with same target — immediate position update. */
+				const auto enemy_pos = enemy_handle.get_logic_transform().pos;
 
-			ai_state.combat_target.on_visual_contact(
-				stable_rng,
-				global_time_secs,
-				ai_state.perceived_enemy,
-				enemy_pos,
-				character_pos,
-				bot_is_bomb_carrier,
-				bot_is_defuser,
-				bomb_time_remaining,
-				ai_state.alertness.base_rt_secs
-			);
+				ai_state.combat_target.on_visual_contact(
+					stable_rng,
+					global_time_secs,
+					ai_state.perceived_enemy,
+					enemy_pos,
+					character_pos,
+					bot_is_bomb_carrier,
+					bot_is_defuser,
+					bomb_time_remaining,
+					ai_state.alertness.base_rt_secs
+				);
+			}
 		}
 	}
 
@@ -924,7 +944,10 @@ arena_ai_result update_arena_mode_ai(
 		target_acquired
 	);
 
-	const bool danger_overrode = ::update_danger_avoidance(
+	const bool fully_stunned = is_blinded && is_deafened;
+	const bool can_sense_anything = !fully_stunned;
+
+	const bool danger_overrode = can_sense_anything && ::update_danger_avoidance(
 		ctx,
 		movement,
 		navmesh,
@@ -1031,8 +1054,14 @@ void post_solve_arena_mode_ai(
 
 	/*
 		Listen for footsteps - must be done in post_solve since footstep sounds are posted here.
+		Skip if deafened by a flashbang.
 	*/
-	::listen_for_footsteps(ctx, step, is_ffa, global_time_secs, bomb_planted);
+	const auto* const bot_sentience_ps = character_handle.find<components::sentience>();
+	const bool is_deafened_ps = bot_sentience_ps != nullptr && bot_sentience_ps->audio_flash_secs > 2.0f;
+
+	if (!is_deafened_ps) {
+		::listen_for_footsteps(ctx, step, is_ffa, global_time_secs, bomb_planted);
+	}
 
 	/*
 		Check for teleportation messages - clear pathfinding if this bot was teleported.

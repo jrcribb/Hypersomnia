@@ -14,7 +14,8 @@ summary: That which we are brainstorming at the moment.
 	- when planting, all bots on that site engage
 	- aggro zrandomizowac np. jak szlyszy krok do 20% szansy na aggro od metropolis i wiekszy dla resistance
 	- jak slychac kroki gdzies to przy kampieniu celowac w najblizsza kratke z coverem albo nawet stanac jak patroluje i on jest blisko
-	- flashbang amount > 50% - nie widzi nic
+	- avoidance of bullets
+	- jak nie ma nic to melee i jazda
 
 - boty (done)
 	- unikanie nejdow tez najblizszy cover
@@ -24,6 +25,7 @@ summary: That which we are brainstorming at the moment.
 	- sprint cooldown do halfa
 	- shorter combat time for bomb carrier if he has the bomb
 	- jak przeladowuje to do najblizszego tile z coverem
+	- flashbang amount > 50% - nie widzi nic
 
 - przed releasem
 	- logi usunac
