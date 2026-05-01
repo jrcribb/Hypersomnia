@@ -48,7 +48,8 @@ inline ai_behavior_variant eval_behavior_tree(
 	const faction_type bot_faction,
 	const vec2 character_pos,
 	const ai_round_state& round_state,
-	randomization& rng
+	randomization& rng,
+	const bool should_avoid_combat = false
 ) {
 	const bool is_metropolis = (bot_faction == faction_type::METROPOLIS);
 	const bool is_resistance = (bot_faction == faction_type::RESISTANCE);
@@ -59,8 +60,9 @@ inline ai_behavior_variant eval_behavior_tree(
 
 	/*
 		Priority 1: COMBAT if we have an active combat target.
+		Skip if defuser bot is in critical defuse window.
 	*/
-	if (ai_state.combat_target.within_engagement_window(cosm, global_time_secs)) {
+	if (!should_avoid_combat && ai_state.combat_target.within_engagement_window(cosm, global_time_secs)) {
 		AI_LOG("eval_behavior_tree: COMBAT (faction=%x, bomb_planted=%x)", static_cast<int>(bot_faction), round_state.bomb_planted);
 		return ai_behavior_combat{};
 	}

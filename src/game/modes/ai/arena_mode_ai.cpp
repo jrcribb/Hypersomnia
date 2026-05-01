@@ -419,9 +419,9 @@ arena_ai_result update_arena_mode_ai(
 		it indefinitely. This avoids ugly state transitions when the defuse mission
 		changes hands mid-round.
 	*/
-	const bool bot_is_defuser = bomb_planted && bot_faction == faction_type::METROPOLIS;
+	const bool defuse_soon = bomb_planted && bot_faction == faction_type::METROPOLIS;
 
-	if (bot_is_defuser) {
+	if (defuse_soon) {
 		ai_state.combat_target.timeout_from_engagement_start = true;
 	}
 
@@ -443,6 +443,8 @@ arena_ai_result update_arena_mode_ai(
 	};
 
 	const auto bomb_time_remaining = get_bomb_time_remaining();
+	constexpr auto CRITICAL_DEFUSE_TIME_SECS = 5.0f;
+	const bool should_avoid_combat = (team_state.bot_with_defuse_mission == controlled_character_id) && bomb_time_remaining < CRITICAL_DEFUSE_TIME_SECS;
 
 	/* Commit LOS change alert (dedicated slot, never evicted). */
 	if (ai_state.alertness.is_los_change_ready(global_time_secs)) {
@@ -466,7 +468,7 @@ arena_ai_result update_arena_mode_ai(
 						alert.enemy_pos,
 						character_pos,
 						bot_is_bomb_carrier,
-						bot_is_defuser,
+						defuse_soon,
 						bomb_time_remaining,
 						ai_state.alertness.base_rt_secs
 					);
@@ -502,7 +504,7 @@ arena_ai_result update_arena_mode_ai(
 							alert.enemy,
 							alert.enemy_pos,
 							bot_is_bomb_carrier,
-							bot_is_defuser,
+							defuse_soon,
 							bomb_time_remaining,
 							ai_state.alertness.base_rt_secs
 						);
@@ -517,7 +519,7 @@ arena_ai_result update_arena_mode_ai(
 								alert.enemy_pos,
 								character_pos,
 								bot_is_bomb_carrier,
-								bot_is_defuser,
+								defuse_soon,
 								bomb_time_remaining,
 								ai_state.alertness.base_rt_secs
 							);
@@ -632,7 +634,7 @@ arena_ai_result update_arena_mode_ai(
 					enemy_pos,
 					character_pos,
 					bot_is_bomb_carrier,
-					bot_is_defuser,
+					defuse_soon,
 					bomb_time_remaining,
 					ai_state.alertness.base_rt_secs
 				);
@@ -688,7 +690,8 @@ arena_ai_result update_arena_mode_ai(
 		bot_faction,
 		character_pos,
 		round_state,
-		stable_rng
+		stable_rng,
+		should_avoid_combat
 	);
 
 	/*
