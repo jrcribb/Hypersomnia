@@ -2367,7 +2367,7 @@ SINGLE_EDIT_FUNCTION(editor_arena_settings& insp, const editor_arena_settings de
 	PROPERTY("Debug navigation color", debug_navigation_color);
 
 	if (ImGui::IsItemHovered()) {
-		text_tooltip("Color used to display pathfinding debug path in the editor.");
+		text_tooltip("Color used to display navigation debug path in the editor.");
 	}
 
 	return result;

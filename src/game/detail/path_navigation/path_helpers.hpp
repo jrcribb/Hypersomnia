@@ -39,15 +39,15 @@ inline bool is_within_cell(
 */
 
 inline std::optional<vec2> get_current_path_target(
-	const ai_path_navigation_state& pathfinding,
+	const ai_path_navigation_state& navigation,
 	const cosmos_navmesh& navmesh
 ) {
 	/*
 		If rerouting, use rerouting path.
 	*/
-	const auto& progress = pathfinding.rerouting.has_value() 
-		? *pathfinding.rerouting 
-		: pathfinding.main
+	const auto& progress = navigation.rerouting.has_value() 
+		? *navigation.rerouting 
+		: navigation.main
 	;
 
 	const auto& path = progress.path;

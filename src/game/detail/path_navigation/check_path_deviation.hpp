@@ -17,7 +17,7 @@
 */
 
 inline void check_path_deviation(
-	ai_path_navigation_state& pathfinding,
+	ai_path_navigation_state& navigation,
 	const vec2 bot_pos,
 	const cosmos_navmesh& navmesh,
 	const physics_path_hints* physics_hints = nullptr,
@@ -245,18 +245,18 @@ inline void check_path_deviation(
 			/*
 				Rerouting path trimmed to nothing - we're already on the main path.
 			*/
-			pathfinding.main.node_index = best_main_idx;
+			navigation.main.node_index = best_main_idx;
 			return;
 		}
 
-		pathfinding.rerouting = path_navigation_progress{
+		navigation.rerouting = path_navigation_progress{
 			std::move(*rerouting_path),
 			0
 		};
-		pathfinding.main.node_index = best_main_idx;
+		navigation.main.node_index = best_main_idx;
 	};
 
-	const auto& main_path = pathfinding.main.path;
+	const auto& main_path = navigation.main.path;
 
 	if (main_path.island_index >= navmesh.islands.size()) {
 		return;
@@ -267,14 +267,14 @@ inline void check_path_deviation(
 	/*
 		Check if rerouting path is active.
 	*/
-	if (pathfinding.rerouting.has_value()) {
-		auto& rerouting = *pathfinding.rerouting;
+	if (navigation.rerouting.has_value()) {
+		auto& rerouting = *navigation.rerouting;
 
 		if (rerouting.path.island_index >= navmesh.islands.size()) {
 			/*
 				Invalid rerouting path - recalculate.
 			*/
-			calculate_rerouting(pathfinding.main);
+			calculate_rerouting(navigation.main);
 			return;
 		}
 
@@ -284,7 +284,7 @@ inline void check_path_deviation(
 			/*
 				Fell off rerouting path - recalculate rerouting to main path.
 			*/
-			calculate_rerouting(pathfinding.main);
+			calculate_rerouting(navigation.main);
 		}
 
 		return;
@@ -293,10 +293,10 @@ inline void check_path_deviation(
 	/*
 		Check main path.
 	*/
-	if (!check_path_out_of_bounds(pathfinding.main, main_island)) {
+	if (!check_path_out_of_bounds(navigation.main, main_island)) {
 		/*
 			Fell off main path - begin rerouting.
 		*/
-		calculate_rerouting(pathfinding.main);
+		calculate_rerouting(navigation.main);
 	}
 }

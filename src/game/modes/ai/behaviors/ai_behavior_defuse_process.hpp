@@ -21,7 +21,7 @@
 inline void ai_behavior_defuse::process(ai_behavior_process_ctx& ctx) {
 	auto& cosm = ctx.cosm;
 	const auto bomb_entity = ctx.bomb_entity;
-	const bool pathfinding_just_completed = ctx.pathfinding_just_completed;
+	const bool navigation_just_completed = ctx.navigation_just_completed;
 
 	const auto character_handle = cosm[ctx.controlled_character_id];
 
@@ -55,7 +55,7 @@ inline void ai_behavior_defuse::process(ai_behavior_process_ctx& ctx) {
 		}
 	}
 
-	if (!is_defusing && pathfinding_just_completed) {
+	if (!is_defusing && navigation_just_completed) {
 		AI_LOG("Reached bomb - starting defuse");
 		is_defusing = true;
 	}

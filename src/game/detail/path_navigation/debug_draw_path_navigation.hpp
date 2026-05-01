@@ -17,7 +17,7 @@ inline void debug_draw_path_navigation(
 		return;
 	}
 
-	const auto& pathfinding = *navigation_opt;
+	const auto& navigation = *navigation_opt;
 
 	auto draw_path = [&](const path_navigation_progress& progress, bool rerouting) {
 		const auto& path = progress.path;
@@ -63,17 +63,17 @@ inline void debug_draw_path_navigation(
 		}
 	};
 
-	draw_path(pathfinding.main, false);
+	draw_path(navigation.main, false);
 
-	if (pathfinding.rerouting.has_value()) {
-		draw_path(*pathfinding.rerouting, true);
+	if (navigation.rerouting.has_value()) {
+		draw_path(*navigation.rerouting, true);
 	}
 
-	if (const auto target = ::get_current_path_target(pathfinding, navmesh)) {
+	if (const auto target = ::get_current_path_target(navigation, navmesh)) {
 		DEBUG_LOGIC_STEP_LINES.emplace_back(cyan, bot_pos, *target);
 	}
 
-	if (pathfinding.exact_destination) {
-		DEBUG_LOGIC_STEP_LINES.emplace_back(cyan, bot_pos, pathfinding.target_position());
+	if (navigation.exact_destination) {
+		DEBUG_LOGIC_STEP_LINES.emplace_back(cyan, bot_pos, navigation.target_position());
 	}
 }

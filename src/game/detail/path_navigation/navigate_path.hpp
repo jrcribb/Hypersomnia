@@ -48,7 +48,7 @@ inline navigate_path_result navigate_path(
 		return result;
 	}
 
-	auto& pathfinding = *navigation_opt;
+	auto& navigation = *navigation_opt;
 
 	/*
 		Advance along path and check for deviation.
@@ -69,7 +69,7 @@ inline navigate_path_result navigate_path(
 	}
 
 	if (!is_inert) {
-		::advance_path_if_cell_reached(pathfinding, bot_pos, navmesh, cell_path_completed);
+		::advance_path_if_cell_reached(navigation, bot_pos, navmesh, cell_path_completed);
 	}
 
 	/*
@@ -77,8 +77,8 @@ inline navigate_path_result navigate_path(
 		the bot reaches the exact target position, not just the target cell center.
 	*/
 	if (cell_path_completed) {
-		if (pathfinding.exact_destination) {
-			const auto target_pos = pathfinding.target_position();
+		if (navigation.exact_destination) {
+			const auto target_pos = navigation.target_position();
 			const float dist_to_exact = (bot_pos - target_pos).length();
 			constexpr float EXACT_REACH_EPSILON = 30.0f;
 
@@ -90,7 +90,7 @@ inline navigate_path_result navigate_path(
 					which handles it continuously from the final cell center to the exact destination.
 				*/
 				const auto dir_result = ::get_navigation_movement_direction(
-					pathfinding,
+					navigation,
 					bot_pos,
 					navmesh,
 					dt
@@ -106,7 +106,7 @@ inline navigate_path_result navigate_path(
 			else {
 				/* Reached exact destination - mark as completed. */
 				result.path_completed = true;
-				result.crosshair_offset = pathfinding.target_transform.get_direction() * 200.0f;
+				result.crosshair_offset = navigation.target_transform.get_direction() * 200.0f;
 				navigation_opt.reset();
 				return result;
 			}
@@ -120,7 +120,7 @@ inline navigate_path_result navigate_path(
 	}
 
 	if (!is_inert) {
-		::check_path_deviation(pathfinding, bot_pos, navmesh, physics_hints, nullptr);
+		::check_path_deviation(navigation, bot_pos, navmesh, physics_hints, nullptr);
 	}
 
 	/*
@@ -128,20 +128,20 @@ inline navigate_path_result navigate_path(
 		This happens when the cell path is complete but we haven't reached
 		the exact destination yet.
 	*/
-	const auto current_target = ::get_current_path_target(pathfinding, navmesh);
+	const auto current_target = ::get_current_path_target(navigation, navmesh);
 	
-	if (!current_target.has_value() && pathfinding.exact_destination) {
+	if (!current_target.has_value() && navigation.exact_destination) {
 		/*
 			Cell path is complete. Check if we've reached the exact destination.
 		*/
-		const auto target_pos = pathfinding.target_position();
+		const auto target_pos = navigation.target_position();
 		const float dist_to_exact = (bot_pos - target_pos).length();
 		constexpr float EXACT_REACH_EPSILON = 30.0f;
 		
 		if (dist_to_exact <= EXACT_REACH_EPSILON) {
 			/* Reached exact destination - mark as completed. */
 			result.path_completed = true;
-			result.crosshair_offset = pathfinding.target_transform.get_direction() * 200.0f;
+			result.crosshair_offset = navigation.target_transform.get_direction() * 200.0f;
 			navigation_opt.reset();
 			return result;
 		}
@@ -154,7 +154,7 @@ inline navigate_path_result navigate_path(
 		Also calculates crosshair offset (un-normalized).
 	*/
 	const auto dir_result = ::get_navigation_movement_direction(
-		pathfinding,
+		navigation,
 		bot_pos,
 		navmesh,
 		dt
@@ -199,8 +199,8 @@ inline navigate_path_result navigate_path(
 				result.can_sprint = true;
 			}
 
-			const auto nodes_n = pathfinding.main.path.nodes.size();
-			const auto nodes_i = pathfinding.main.node_index;
+			const auto nodes_n = navigation.main.path.nodes.size();
+			const auto nodes_i = navigation.main.node_index;
 
 			if (nodes_n <= 1 || nodes_i >= nodes_n - 1) {
 				result.can_sprint = false;

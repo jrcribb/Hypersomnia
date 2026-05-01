@@ -120,7 +120,7 @@ Prefer `build_file` to verify edits to a specific file before running a full `bu
 	/*
 		Long initialization:
 	*/
-	pathfinding.rerouting = pathfinding_progress {
+	navigation.rerouting = navigation_progress {
 		std::move(*new_rerouting),
 		0
 	};

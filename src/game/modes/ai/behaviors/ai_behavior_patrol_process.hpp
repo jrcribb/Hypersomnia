@@ -153,7 +153,7 @@ inline void ai_behavior_patrol::process(ai_behavior_process_ctx& ctx) {
 	const auto& character_pos = ctx.character_pos;
 	const auto dt_secs = ctx.dt_secs;
 	auto& rng = ctx.rng;
-	const bool pathfinding_just_completed = ctx.pathfinding_just_completed;
+	const bool navigation_just_completed = ctx.navigation_just_completed;
 
 	auto now_waypoint = calc_assigned_waypoint();
 	const auto current_waypoint_id = now_waypoint.waypoint_id;
@@ -181,22 +181,22 @@ inline void ai_behavior_patrol::process(ai_behavior_process_ctx& ctx) {
 		clear_waypoint();
 
 		/*
-			PHASE 4 (calc_pathfinding_request) ran before this process() call
-			and may have started pathfinding back to the old camp waypoint
+			PHASE 4 (calc_navigation_request) ran before this process() call
+			and may have started navigating back to the old camp waypoint
 			(since is_camping() was already false but patrol_waypoint was still set).
 
-			Clear that spurious pathfinding so it doesn't immediately complete
+			Clear that spurious navigation so it doesn't immediately complete
 			next frame (bot is already at old position) and falsely trigger
-			pathfinding_just_completed on whatever new waypoint we pick below.
+			navigation_just_completed on whatever new waypoint we pick below.
 		*/
 		ai_state.clear_navigation();
 		ai_state.current_navigation_request = std::nullopt;
 	}
 
 	/*
-		Handle pathfinding completion.
+		Handle navigation completion.
 	*/
-	if (pathfinding_just_completed) {
+	if (navigation_just_completed) {
 		AI_LOG("Reached patrol waypoint");
 		const auto wp_handle = cosm[current_waypoint_id];
 

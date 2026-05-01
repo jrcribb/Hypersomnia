@@ -21,7 +21,7 @@
 inline void ai_behavior_plant::process(ai_behavior_process_ctx& ctx) {
 	auto& cosm = ctx.cosm;
 	const auto bomb_entity = ctx.bomb_entity;
-	const bool pathfinding_just_completed = ctx.pathfinding_just_completed;
+	const bool navigation_just_completed = ctx.navigation_just_completed;
 
 	const auto character_handle = cosm[ctx.controlled_character_id];
 
@@ -83,7 +83,7 @@ inline void ai_behavior_plant::process(ai_behavior_process_ctx& ctx) {
 		}
 	}
 
-	if (!is_planting && pathfinding_just_completed) {
+	if (!is_planting && navigation_just_completed) {
 		AI_LOG("Reached bombsite - starting plant");
 		is_planting = true;
 	}

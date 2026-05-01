@@ -670,7 +670,7 @@ arena_ai_result update_arena_mode_ai(
 
 	/*
 		===========================================================================
-		PHASE 4: Calculate pathfinding request (after movement calculation).
+		PHASE 4: Calculate navigation request (after movement calculation).
 		===========================================================================
 	*/
 
@@ -709,11 +709,11 @@ arena_ai_result update_arena_mode_ai(
 		has_direct_los_to_enemy
 	);
 
-	/* Check if request changed - reinitialize pathfinding. */
+	/* Check if request changed - reinitialize navigation. */
 
 	/*
 		Danger avoidance and take-cover avoidance can override the effective
-		pathfinding request. Priority: danger > take cover > normal target.
+		navigation request. Priority: danger > take cover > normal target.
 	*/
 	const auto effective_request = [&]() -> std::optional<ai_navigation_request> {
 		if (ai_state.danger_navigation_request.has_value()) {
@@ -728,7 +728,7 @@ arena_ai_result update_arena_mode_ai(
 	}();
 
 	if (effective_request != ai_state.current_navigation_request) {
-		AI_LOG("Pathfinding request changed - reinitializing");
+		AI_LOG("Navigation request changed - reinitializing");
 
 		ai_state.current_navigation_request = effective_request;
 		ai_state.clear_navigation();

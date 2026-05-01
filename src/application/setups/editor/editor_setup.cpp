@@ -2201,7 +2201,7 @@ void editor_setup::draw_custom_gui(const draw_setup_gui_input& in) {
 		}
 
 		/*
-			Draw pathfinding debug visualization.
+			Draw navigation debug visualization.
 			Iterate over DEBUG_NAVIGATION_START and DEBUG_NAVIGATION_END point markers
 			and draw paths between them.
 		*/
@@ -2212,18 +2212,18 @@ void editor_setup::draw_custom_gui(const draw_setup_gui_input& in) {
 		/*
 			Collect start and end positions.
 		*/
-		std::vector<vec2> pathfinding_starts;
-		std::vector<vec2> pathfinding_ends;
+		std::vector<vec2> navigation_starts;
+		std::vector<vec2> navigation_ends;
 
 		scene.world.for_each_having<invariants::point_marker>(
 			[&](const auto& typed_handle) {
 				const auto& marker = typed_handle.template get<invariants::point_marker>();
 
 				if (marker.type == point_marker_type::DEBUG_NAVIGATION_START) {
-					pathfinding_starts.push_back(typed_handle.get_logic_transform().pos);
+					navigation_starts.push_back(typed_handle.get_logic_transform().pos);
 				}
 				else if (marker.type == point_marker_type::DEBUG_NAVIGATION_END) {
-					pathfinding_ends.push_back(typed_handle.get_logic_transform().pos);
+					navigation_ends.push_back(typed_handle.get_logic_transform().pos);
 				}
 			}
 		);
@@ -2234,8 +2234,8 @@ void editor_setup::draw_custom_gui(const draw_setup_gui_input& in) {
 		pathfinding_context pf_ctx;
 		const auto physics_hints = make_physics_path_hints(scene.world);
 
-		for (const auto& start_pos : pathfinding_starts) {
-			for (const auto& end_pos : pathfinding_ends) {
+		for (const auto& start_pos : navigation_starts) {
+			for (const auto& end_pos : navigation_ends) {
 				const auto all_paths = ::find_path_across_islands_many_full(navmesh, start_pos, end_pos, &physics_hints, &pf_ctx);
 
 				for (const auto& path : all_paths) {
@@ -3619,34 +3619,34 @@ arena_playtesting_context editor_setup::make_playtesting_context() const {
 	/*
 		Look for DEBUG_NAVIGATION_START and DEBUG_NAVIGATION_END markers.
 		If DEBUG_NAVIGATION_START exists, spawn at that position.
-		If DEBUG_NAVIGATION_END exists, store it for AI pathfinding testing.
+		If DEBUG_NAVIGATION_END exists, store it for AI navigation testing.
 	*/
-	std::optional<vec2> pathfinding_start;
-	std::optional<transformr> pathfinding_end;
+	std::optional<vec2> navigation_start;
+	std::optional<transformr> navigation_end;
 
 	scene.world.for_each_having<invariants::point_marker>(
 		[&](const auto& typed_handle) {
 			const auto& marker = typed_handle.template get<invariants::point_marker>();
 
 			if (marker.type == point_marker_type::DEBUG_NAVIGATION_START) {
-				pathfinding_start = typed_handle.get_logic_transform().pos;
+				navigation_start = typed_handle.get_logic_transform().pos;
 			}
 			else if (marker.type == point_marker_type::DEBUG_NAVIGATION_END) {
-				pathfinding_end = typed_handle.get_logic_transform();
+				navigation_end = typed_handle.get_logic_transform();
 			}
 		}
 	);
 
-	if (pathfinding_start.has_value()) {
-		ctx.initial_spawn_pos = *pathfinding_start;
+	if (navigation_start.has_value()) {
+		ctx.initial_spawn_pos = *navigation_start;
 	}
 
-	if (pathfinding_end.has_value()) {
-		ctx.debug_navigation_end = pathfinding_end;
+	if (navigation_end.has_value()) {
+		ctx.debug_navigation_end = navigation_end;
 	}
 	else {
 		/*
-			Check if there's a planted bomb on the ground to use as pathfinding target.
+			Check if there's a planted bomb on the ground to use as navigation target.
 		*/
 		scene.world.for_each_having<invariants::hand_fuse>(
 			[&](const auto& typed_handle) {

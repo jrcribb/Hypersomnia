@@ -11,16 +11,16 @@
 #include "game/components/marker_component.h"
 
 /*
-	Stateless calculation of the current pathfinding request.
+	Stateless calculation of the current navigation request.
 	
-	This function determines WHERE the bot wants to pathfind based on:
+	This function determines WHERE the bot wants to navigate based on:
 	- Current behavior type (COMBAT, PATROLLING, etc.)
 	- Persistent state (combat_target, etc.)
 	- Team state (bomb retrieval, defuse missions)
 	- Game state (bomb planted, etc.)
 	
-	The actual pathfinding is only reinitialized when the request changes.
-	This centralizes all pathfinding target decisions in one place.
+	The actual navigation is only reinitialized when the request changes.
+	This centralizes all navigation target decisions in one place.
 	Uses std::visit on the behavior variant.
 	
 	Note: Push waypoints are now handled inside patrol behavior.
@@ -49,7 +49,7 @@ inline cell_on_navmesh resolve_cell_for_position(
 }
 
 /*
-	Helper to create a pathfinding request from a bomb_pathfinding_target.
+	Helper to create a navigation request from a bomb_pathfinding_target.
 	Now uses the resolved_cell from bomb_pathfinding_target directly
 	to avoid redundant recalculation.
 */

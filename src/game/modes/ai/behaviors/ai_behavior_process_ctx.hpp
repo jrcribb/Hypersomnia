@@ -31,5 +31,5 @@ struct ai_behavior_process_ctx {
 	randomization& rng;
 	const entity_id bomb_entity;
 	const bool bomb_planted;
-	const bool pathfinding_just_completed;
+	const bool navigation_just_completed;
 };

@@ -9,16 +9,16 @@
 /*
 	Implementation of ai_behavior_retrieve_bomb::process().
 	
-	When pathfinding completes, force item_pickup { bomb }.process(step, character)
+	When navigation completes, force item_pickup { bomb }.process(step, character)
 	to pick up the bomb. The behavior tree will automatically re-evaluate
 	to a different behavior once the bomb is picked up.
 */
 
 inline void ai_behavior_retrieve_bomb::process(ai_behavior_process_ctx& ctx) {
-	const bool pathfinding_just_completed = ctx.pathfinding_just_completed;
+	const bool navigation_just_completed = ctx.navigation_just_completed;
 	const auto bomb_entity = ctx.bomb_entity;
 
-	if (!pathfinding_just_completed) {
+	if (!navigation_just_completed) {
 		return;
 	}
 

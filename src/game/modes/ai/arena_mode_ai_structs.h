@@ -82,9 +82,9 @@ struct ai_path_navigation_state {
 };
 
 /*
-	Pathfinding request - describes WHERE the bot wants to pathfind.
+	Navigation request - describes WHERE the bot wants to navigate.
 	This is a stateless calculation based on current game state.
-	The actual pathfinding only reinitializes when this request changes.
+	The actual navigation only reinitializes when this request changes.
 	
 	The resolved_cell is set when creating the request and is used for
 	efficient comparison (two requests to the same cell are equivalent).
@@ -100,7 +100,7 @@ struct ai_navigation_request {
 	bool operator==(const ai_navigation_request& other) const {
 		/*
 			If not exact, compare resolved cells since they will result
-			in the same pathfinding anyway.
+			in the same navigation anyway.
 		*/
 		if (!exact && !other.exact) {
 			return resolved_cell == other.resolved_cell;
