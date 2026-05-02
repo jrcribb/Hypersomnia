@@ -9,6 +9,7 @@
 #include "game/inferred_caches/physics_world_cache.h"
 #include "game/enums/filters.h"
 #include "game/detail/physics/physics_queries.h"
+#include "game/modes/ai/tasks/line_of_sight.hpp"
 
 /*
 	Default threshold for penetration checks.
@@ -200,4 +201,36 @@ inline bool can_weapon_penetrate(
 	*/
 	const auto remaining_ratio = penetration_remaining / basic_penetration_distance;
 	return remaining_ratio >= threshold;
+}
+
+/*
+	"Can my current attack reach target_handle?"
+
+	With a wielded gun, defers to can_weapon_penetrate against target_pos
+	(covers both clear paths and wall penetration).
+
+	Without a gun (melee or bare hands), uses los_to_any_vertices_of so a
+	partially-visible target still counts as visible — mirroring how
+	find_closest_enemy decides visual contact. Whether melee actually connects
+	(swing range) is decided downstream by calc_hand_flags.
+*/
+
+template <typename CharacterHandle, typename TargetHandle>
+inline bool can_attack_position(
+	const CharacterHandle& character,
+	const TargetHandle& target_handle,
+	const vec2 target_pos,
+	const real32 threshold = AI_PENETRATION_THRESHOLD
+) {
+	if (!character.get_wielded_guns().empty()) {
+		return ::can_weapon_penetrate(character, target_pos, threshold);
+	}
+
+	const auto& cosm = character.get_cosmos();
+	const auto& physics = cosm.get_solvable_inferred().physics;
+	const auto si = cosm.get_si();
+	const auto character_pos = character.get_logic_transform().pos;
+	const auto filter = predefined_queries::bullet_penetration_check();
+
+	return ::los_to_any_vertices_of(target_handle, character_pos, physics, si, filter);
 }

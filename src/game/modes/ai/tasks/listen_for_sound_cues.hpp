@@ -66,10 +66,12 @@ inline void listen_for_sound_cues(
 		}
 
 		/*
-			No direct line of sight. Check if we can penetrate walls to shoot them.
-			If weapon can penetrate to the target position, queue alert.
+			Direct LoS or weapon-penetrated path to the heard source — queue alert.
+			can_attack_position covers both: clear LoS to any of the source's
+			vertices works for melee/bare hands too, while a gun additionally
+			engages when its bullet can punch through walls to cue.position.
 		*/
-		if (::can_weapon_penetrate(ctx.character_handle, cue.position)) {
+		if (::can_attack_position(ctx.character_handle, source, cue.position)) {
 			ctx.ai_state.alertness.queue_alert({
 				cue.source_entity,
 				cue.position,

@@ -734,13 +734,18 @@ arena_ai_result update_arena_mode_ai(
 			if (ai_state.perceived_enemy.is_set()) {
 				/*
 					Confirmed visual contact — direct engagement.
-					For melee wielding, line-of-sight alone is enough; the swing
-					decision is made by calc_hand_flags based on distance.
+					can_attack_position handles both gun (penetration) and melee/bare-hands
+					(LoS-only); the swing/range decision is made downstream by calc_hand_flags.
 				*/
-				const bool wielding_melee = !character_handle.get_wielded_melees().empty();
-				target_acquired = wielding_melee || ::can_weapon_penetrate(character_handle, ai_state.combat_target.last_known_pos);
+				const auto enemy_handle = cosm[ai_state.perceived_enemy];
 
-				if (const auto enemy_handle = cosm[ai_state.perceived_enemy]) {
+				target_acquired = ::can_attack_position(
+					character_handle,
+					enemy_handle,
+					ai_state.combat_target.last_known_pos
+				);
+
+				if (enemy_handle) {
 					aim_velocity = enemy_handle.get_effective_velocity();
 				}
 			}
@@ -759,7 +764,20 @@ arena_ai_result update_arena_mode_ai(
 					);
 
 					if (has_wall_between) {
+						/*
+							Speculative shot through a wall: with no current LoS we can't
+							verify the enemy moved, so assume they may still be hiding behind
+							it — wall penetration is the only branch worth blind-firing on.
+						*/
 						target_acquired = ::can_weapon_penetrate(character_handle, ai_state.combat_target.last_known_pos);
+					}
+					else {
+						/*
+							Clear LoS to last_known_pos but no perceived_enemy this frame —
+							the enemy must have moved (or we're facing away / awaiting reaction
+							time). Don't blind-fire at empty space; let perceived_enemy
+							re-acquire visually first.
+						*/
 					}
 				}
 			}
