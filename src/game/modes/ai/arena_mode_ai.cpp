@@ -34,7 +34,7 @@
 #include "game/modes/ai/tasks/find_closest_enemy.hpp"
 #include "game/modes/ai/tasks/interpolate_crosshair.hpp"
 #include "game/modes/ai/tasks/handle_purchases.hpp"
-#include "game/modes/ai/tasks/listen_for_footsteps.hpp"
+#include "game/modes/ai/tasks/listen_for_sound_cues.hpp"
 #include "game/modes/ai/tasks/find_best_weapon.hpp"
 #include "game/modes/ai/tasks/line_of_sight.hpp"
 #include "game/modes/ai/intents/calc_movement_flags.hpp"
@@ -598,7 +598,7 @@ arena_ai_result update_arena_mode_ai(
 	/*
 		===========================================================================
 		PHASE 1: Update combat target tracking (before behavior tree evaluation).
-		NOTE: listen_for_footsteps is now called in post_solve_arena_mode_ai.
+		NOTE: listen_for_sound_cues is now called in post_solve_arena_mode_ai.
 		===========================================================================
 	*/
 
@@ -1194,7 +1194,7 @@ void post_solve_arena_mode_ai(
 	const bool is_deafened_ps = bot_sentience_ps != nullptr && bot_sentience_ps->audio_flash_secs > 2.0f;
 
 	if (!is_deafened_ps) {
-		::listen_for_footsteps(ctx, step, is_ffa, global_time_secs, bomb_planted);
+		::listen_for_sound_cues(ctx, step, is_ffa, global_time_secs, bomb_planted);
 	}
 
 	/*

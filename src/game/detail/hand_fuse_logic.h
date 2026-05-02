@@ -9,6 +9,7 @@
 #include "game/detail/physics/shape_overlapping.hpp"
 #include "game/detail/bombsite_in_range.h"
 #include "game/messages/battle_event_message.h"
+#include "game/messages/sound_cue_message.h"
 #include "game/detail/sentience/sentience_getters.h"
 #include "game/detail/physics/infer_damping.hpp"
 #include "game/cosmos/logic_step.h"
@@ -221,6 +222,14 @@ struct fuse_logic_provider : public stepless_fuse_logic_provider<E> {
 				sound_effect_start_input::fire_and_forget(fused_transform).set_listener(holder),
 				predictable_only_by(holder)
 			);
+
+			if (holder) {
+				messages::sound_cue_message cue;
+				cue.position = fused_transform.pos;
+				cue.max_distance = fuse_def.armed_sound.modifier.max_distance * 0.75f;
+				cue.source_entity = holder.get_id();
+				step.post_message(cue);
+			}
 		}
 
 		if (fuse_def.always_release_when_armed) {

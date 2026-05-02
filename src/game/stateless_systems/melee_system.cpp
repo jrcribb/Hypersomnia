@@ -25,6 +25,7 @@
 #include "game/detail/physics/physics_queries.h"
 #include "augs/misc/enum/enum_bitset.h"
 #include "game/messages/damage_message.h"
+#include "game/messages/sound_cue_message.h"
 #include "game/messages/thunder_effect.h"
 #include "game/detail/sentience/sentience_getters.h"
 #include "game/detail/movement/dash_logic.h"
@@ -200,6 +201,14 @@ void melee_system::initiate_and_update_moves(const logic_step step) {
 								sound_effect_start_input::at_entity(typed_weapon).set_listener(it),
 								predictable_only_by(it)
 							);
+
+							{
+								messages::sound_cue_message cue;
+								cue.position = it.get_logic_transform().pos;
+								cue.max_distance = current_attack_def.init_sound.modifier.max_distance * 0.75f;
+								cue.source_entity = it.get_id();
+								step.post_message(cue);
+							}
 						}
 
 						{

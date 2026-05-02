@@ -9,17 +9,15 @@
 #include "augs/misc/randomization.h"
 
 /*
-	Check for sound cues (footsteps) from enemy players and update target tracking.
-	
-	Uses the new ai_target_tracking system instead of the old fields.
-	
+	Check for sound cues (footsteps, grenade unpins, melee swings) from enemy players and update target tracking.
+
 	Now includes:
 	- LoS check: if we have line of sight to the heard enemy (regardless of angle), force_engage
 	- Penetration check: if we can shoot through obstacles to the target, force_engage
 	- should_acquire_target_by_hearing: faction-specific logic for aggressive acquisition
 */
 
-inline void listen_for_footsteps(
+inline void listen_for_sound_cues(
 	const ai_character_context& ctx,
 	const logic_step step,
 	const bool is_ffa,
