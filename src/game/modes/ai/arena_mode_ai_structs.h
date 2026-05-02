@@ -431,7 +431,6 @@ struct arena_mode_ai_state {
 	marker_letter_type patrol_letter = marker_letter_type::COUNT;
 	push_phase_type push_phase = push_phase_type::NOT_DECIDED;
 	bool recoil_cooldown = false;
-	bool stamina_cooldown = false;
 	bool sprint_cooldown = false;
 	bool escaping_explosion = false;
 
@@ -482,7 +481,6 @@ struct arena_mode_ai_state {
 		patrol_letter = marker_letter_type::COUNT;
 		push_phase = push_phase_type::NOT_DECIDED;
 		recoil_cooldown = false;
-		stamina_cooldown = false;
 		sprint_cooldown = false;
 		escaping_explosion = false;
 		already_nothing_more_to_buy = false;

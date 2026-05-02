@@ -6,7 +6,7 @@ permalink: brainstorm_now
 summary: That which we are brainstorming at the moment.
 ---
 
-- odpinka nejda/rzut nozem powinny byc oznaczone jako heard
+- check gungame
 
 - boty (jeszcze)
 	- aggro zrandomizowac np. jak szlyszy krok do 20% szansy na aggro od metropolis i wiekszy dla resistance
@@ -15,6 +15,7 @@ summary: That which we are brainstorming at the moment.
 
 - boty (done)
 	- jak nie ma nic to melee i jazda
+	- odpinka nejda/rzut nozem powinny byc oznaczone jako heard
 	- pathfinding -> path navigation struct nomenclature
 	- when planting, all bots on that site engage
 	- avoidance of bullets

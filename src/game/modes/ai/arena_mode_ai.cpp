@@ -1048,31 +1048,13 @@ arena_ai_result update_arena_mode_ai(
 		auto& consciousness = sentience->get<consciousness_meter_instance>();
 
 		/*
-			Stamina cooldown: forbid sprinting when stamina is below threshold.
-		*/
-		if (ai_state.stamina_cooldown) {
-			if (consciousness.value < 10) {
-				ai_state.stamina_cooldown = true;
-			}
-		}
-		else {
-			if (consciousness.value > 100) {
-				ai_state.stamina_cooldown = false;
-			}
-		}
-
-		if (ai_state.stamina_cooldown) {
-			movement.flags.sprinting = false;
-		}
-
-		/*
-			Sprint cooldown: forbid sprinting when stamina <= 1 until 1/3rd regenerates.
+			Sprint cooldown: forbid sprinting when stamina <= 1 until it regenerates up to a threshold.
 		*/
 		const auto max_consciousness = consciousness.maximum;
-		const auto one_third_consciousness = max_consciousness / 3.0f;
+		const auto threshold_consciousness = max_consciousness / 2.3f;
 
 		if (ai_state.sprint_cooldown) {
-			if (consciousness.value >= one_third_consciousness) {
+			if (consciousness.value >= threshold_consciousness) {
 				ai_state.sprint_cooldown = false;
 			}
 		}
