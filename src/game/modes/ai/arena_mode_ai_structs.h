@@ -415,6 +415,12 @@ struct ai_alertness_state {
 
 real32 get_reaction_time_secs(const difficulty_type difficulty);
 
+/*
+	Time the bot must remain inside melee range before swinging.
+	Smaller value -> harder bots commit to the attack faster.
+*/
+real32 get_melee_reaction_time_secs(const difficulty_type difficulty);
+
 struct arena_mode_ai_state {
 	// GEN INTROSPECTOR struct arena_mode_ai_state
 	ai_behavior_variant last_behavior = ai_behavior_idle();
@@ -449,6 +455,8 @@ struct arena_mode_ai_state {
 	int avoided_bullet_dir = 0;
 	real32 avoided_bullet_timer = -1.0f;
 	vec2 avoided_bullet_dodge = {};
+
+	real32 melee_reaction_timer = 0.0f;
 	// END GEN INTROSPECTOR
 
 	bool is_navigating() const {
@@ -492,5 +500,6 @@ struct arena_mode_ai_state {
 		avoided_bullet_dir = 0;
 		avoided_bullet_timer = -1.0f;
 		avoided_bullet_dodge = {};
+		melee_reaction_timer = 0.0f;
 	}
 };

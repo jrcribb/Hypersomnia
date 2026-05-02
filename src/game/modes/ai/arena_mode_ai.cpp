@@ -732,8 +732,13 @@ arena_ai_result update_arena_mode_ai(
 	if (::is_behavior<ai_behavior_combat>(ai_state.last_behavior)) {
 		if (ai_state.combat_target.within_engagement_window(cosm, global_time_secs)) {
 			if (ai_state.perceived_enemy.is_set()) {
-				/* Confirmed visual contact — direct engagement. */
-				target_acquired = ::can_weapon_penetrate(character_handle, ai_state.combat_target.last_known_pos);
+				/*
+					Confirmed visual contact — direct engagement.
+					For melee wielding, line-of-sight alone is enough; the swing
+					decision is made by calc_hand_flags based on distance.
+				*/
+				const bool wielding_melee = !character_handle.get_wielded_melees().empty();
+				target_acquired = wielding_melee || ::can_weapon_penetrate(character_handle, ai_state.combat_target.last_known_pos);
 
 				if (const auto enemy_handle = cosm[ai_state.perceived_enemy]) {
 					aim_velocity = enemy_handle.get_effective_velocity();
@@ -1100,7 +1105,10 @@ arena_ai_result update_arena_mode_ai(
 			ai_state.last_behavior,
 			target_acquired,
 			aim_pos,
-			character_handle
+			character_handle,
+			ai_state.melee_reaction_timer,
+			::get_melee_reaction_time_secs(difficulty),
+			dt_secs
 		);
 
 		if (auto* sentience = character_handle.find<components::sentience>()) {
@@ -1334,5 +1342,14 @@ real32 get_reaction_time_secs(const difficulty_type difficulty) {
 		case difficulty_type::MEDIUM: return 0.50f;
 		case difficulty_type::HARD:   return 0.35f;
 		default:                      return 0.20f;
+	}
+}
+
+real32 get_melee_reaction_time_secs(const difficulty_type difficulty) {
+	switch (difficulty) {
+		case difficulty_type::EASY:   return 0.22f;
+		case difficulty_type::MEDIUM: return 0.15f;
+		case difficulty_type::HARD:   return 0.00f;
+		default:                      return 0.05f;
 	}
 }

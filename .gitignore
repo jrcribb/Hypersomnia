@@ -240,3 +240,4 @@ CLAUDE.local.md
 *.neon_map.png
 *.gif.*.png
 *.stamp
+/not

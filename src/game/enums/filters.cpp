@@ -66,6 +66,7 @@ namespace predefined_queries {
 			C::WALL,
 			C::GLASS_OBSTACLE,
 			C::CHARACTER,
+			C::CHARACTER_WEAPON,
 			C::LYING_ITEM,
 			C::FLYING_EXPLOSIVE,
 			C::FLYING_MELEE

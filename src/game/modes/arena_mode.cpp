@@ -454,7 +454,7 @@ bool arena_mode::add_player_custom(const input_type in, const add_player_input& 
 		return false;
 	}
 
-	LOG_NVPS(new_id.value, next_session_id.value);
+	// LOG_NVPS(new_id.value, next_session_id.value);
 	new_player.session.nickname = add_in.name;
 	new_player.session.id = next_session_id;
 	++next_session_id;

@@ -189,9 +189,16 @@ inline wielding_intent_result calc_wielding_intent(
 		const auto best_weapon = ::find_best_weapon(character_handle);
 
 		if (best_weapon.is_set()) {
-			result.desired_wielding = wielding_setup::bare_hands();
-			result.desired_wielding.hand_selections[0] = best_weapon;
-			result.should_change = true;
+			const bool already_wielding_best =
+				current_wielding.hand_selections[0] == best_weapon ||
+				current_wielding.hand_selections[1] == best_weapon
+			;
+
+			if (!already_wielding_best) {
+				result.desired_wielding = wielding_setup::bare_hands();
+				result.desired_wielding.hand_selections[0] = best_weapon;
+				result.should_change = true;
+			}
 		}
 	}
 

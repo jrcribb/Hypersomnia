@@ -609,7 +609,6 @@ void handle_corpse_detonation(
 
 					const auto& rigid_body = typed_entity.template get<components::rigid_body>();
 					rigid_body.set_velocity(lying_velocity);
-					LOG_NVPS(lying_velocity.length());
 					rigid_body.set_angular_velocity(0.f);
 
 					if (should_flip) {
