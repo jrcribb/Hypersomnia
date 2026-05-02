@@ -651,18 +651,6 @@ arena_ai_result update_arena_mode_ai(
 		*/
 		in_buy_area = false;
 	}
-	else {
-		/*
-			Target can be lost: if we're in combat and have already dashed to last_known_pos
-			but still don't see the target, we've reached the last known position and the
-			enemy is gone. Clear the combat target.
-		*/
-		if (auto* combat = ::get_behavior_if<ai_behavior_combat>(ai_state.last_behavior)) {
-			if (combat->has_dashed_to_known_pos(ai_state.combat_target.last_known_pos)) {
-				ai_state.combat_target.clear();
-			}
-		}
-	}
 
 	/*
 		===========================================================================
@@ -813,6 +801,82 @@ arena_ai_result update_arena_mode_ai(
 		aim_pos,
 		aim_velocity
 	);
+
+	/*
+		===========================================================================
+		PHASE 3.5: Maintain searching_cover_pos for combat-without-visual.
+		On every arrival (path_completed) while combat is still active and we
+		have no visual on the target, pick a hiding spot via find_closest_cover
+		using the previous cover (if any) as a secondary danger.  The cover is
+		then read by calc_current_navigation_request below so the bot relocates
+		from cover to cover until the engagement window closes.
+		Cleared on visual reacquire so navigation falls back to last_known_pos.
+		===========================================================================
+	*/
+
+	if (auto* combat = ::get_behavior_if<ai_behavior_combat>(ai_state.last_behavior)) {
+		auto clear_cover = [&]() {
+			combat->searching_cover_pos = std::nullopt;
+			combat->last_known_time_at_cover_calc = 0.0f;
+		};
+
+		if (has_visual) {
+			/*
+				Visual reacquired — chase the (now-fresh) last_known_pos
+				instead of hiding.
+			*/
+			clear_cover();
+		}
+		else {
+			/*
+				Heard a footstep or briefly saw the enemy: last_known_time_secs
+				advanced past the moment cover was computed.  Abandon the
+				stale cover so the bot investigates the new position first.
+			*/
+			if (
+				combat->searching_cover_pos.has_value()
+				&& ai_state.combat_target.last_known_time_secs > combat->last_known_time_at_cover_calc
+			) {
+				clear_cover();
+			}
+
+			/*
+				Trigger when navigation finishes (normal arrival at
+				last_known_pos or at the previous cover) or when the request
+				is set but pathfinding never started — last_known_pos may be
+				unreachable, so try cover from where we stand.
+			*/
+			const bool nav_failed_to_start =
+				ai_state.current_navigation_request.has_value()
+				&& !ai_state.is_navigating()
+				&& !combat->searching_cover_pos.has_value()
+			;
+
+			const bool should_recalc =
+				(move_result.path_completed || nav_failed_to_start)
+				&& ai_state.combat_target.within_engagement_window(cosm, global_time_secs)
+			;
+
+			if (should_recalc) {
+				const auto previous_cover = combat->searching_cover_pos;
+
+				const auto cover_pos = ::find_closest_cover(
+					navmesh,
+					character_pos,
+					ai_state.combat_target.last_known_pos,
+					previous_cover,
+					physics,
+					cosm.get_si(),
+					4000.0f
+				);
+
+				if (cover_pos.has_value()) {
+					combat->searching_cover_pos = cover_pos;
+					combat->last_known_time_at_cover_calc = ai_state.combat_target.last_known_time_secs;
+				}
+			}
+		}
+	}
 
 	/*
 		===========================================================================

@@ -97,6 +97,18 @@ inline std::optional<ai_navigation_request> calc_current_navigation_request(
 				return std::nullopt;
 			}
 
+			/*
+				If we lost visual after reaching last_known_pos and a cover spot
+				has been picked, navigate to that instead.  The cover is updated
+				externally on path completion (see arena_mode_ai.cpp) so this
+				request stays stable while moving toward it.
+			*/
+			if (b.searching_cover_pos.has_value()) {
+				auto req = ai_navigation_request::to_position(*b.searching_cover_pos);
+				req.resolved_cell = ::resolve_cell_for_position(navmesh, *b.searching_cover_pos);
+				return req;
+			}
+
 			auto req = ai_navigation_request::to_position(combat_target.last_known_pos);
 			req.resolved_cell = ::resolve_cell_for_position(navmesh, combat_target.last_known_pos);
 			return req;
