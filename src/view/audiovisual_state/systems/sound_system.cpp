@@ -338,18 +338,6 @@ void sound_system::generic_sound_cache::update_properties(const update_propertie
 	auto ref_distance = m.reference_distance;
 	auto dist_model = m.distance_model;
 
-	if (dist_model == augs::distance_model::NONE) {
-		dist_model = defaults.distance_model;
-	}
-
-	if (max_distance < 0.f) {
-		max_distance = defaults.max_distance;
-	}
-
-	if (ref_distance < 0.f) {
-		ref_distance = defaults.reference_distance;
-	}
-
 	if (max_distance == 0.f) {
 		max_distance = 1.f;
 	}

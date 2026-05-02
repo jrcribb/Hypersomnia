@@ -109,19 +109,8 @@ void mark_caused_danger(const E& handle, const real32 radius, std::optional<tran
 
 template <class E>
 void mark_caused_danger(const E& handle, const sound_effect_modifier& modifier, std::optional<transformr> other_transform = std::nullopt) {
-	const auto& cosm = handle.get_cosmos();
-	const auto& common = cosm.get_common_significant();
-
-	auto max_dist = modifier.max_distance;
-	auto ref_dist = modifier.reference_distance;
-
-	if (max_dist < 0) {
-		max_dist = common.default_sound_properties.max_distance;
-	}
-
-	if (ref_dist < 0) {
-		ref_dist = common.default_sound_properties.reference_distance;
-	}
+	const auto max_dist = modifier.max_distance;
+	const auto ref_dist = modifier.reference_distance;
 
 	const auto radius = max_dist + ref_dist;
 

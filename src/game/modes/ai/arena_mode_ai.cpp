@@ -1251,15 +1251,11 @@ void post_solve_arena_mode_ai(
 			if (gun_handle.alive()) {
 				gun_handle.dispatch_on_having_all<invariants::gun>([&](const auto& typed_gun) {
 					const auto& gun_def = typed_gun.template get<invariants::gun>();
-					const auto max_dist = gun_def.muzzle_shot_sound.modifier.max_distance;
+					const auto hearing_dist = gun_def.muzzle_shot_sound.modifier.max_distance * 0.8f;
+					const auto dist_sq = (character_pos - muzzle_pos).length_sq();
 
-					if (max_dist > 0.f) {
-						const auto hearing_dist = max_dist * 0.8f;
-						const auto dist_sq = (character_pos - muzzle_pos).length_sq();
-
-						if (dist_sq > hearing_dist * hearing_dist) {
-							out_of_range = true;
-						}
+					if (dist_sq > hearing_dist * hearing_dist) {
+						out_of_range = true;
 					}
 				});
 			}

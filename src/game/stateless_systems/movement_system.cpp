@@ -513,14 +513,6 @@ void movement_system::apply_movement_forces(const logic_step step) {
 				sound.modifier.gain *= gain_mult;
 				sound.modifier.pitch *= pitch_mult;
 
-				if (sound.modifier.max_distance < 0.f) {
-					sound.modifier.max_distance = standard_effect.sound.modifier.max_distance;
-				}
-
-				if (sound.modifier.reference_distance < 0.f) {
-					sound.modifier.reference_distance = standard_effect.sound.modifier.reference_distance;
-				}
-
 				const auto predictability = predictable_only_by(it);
 
 				sound.start(

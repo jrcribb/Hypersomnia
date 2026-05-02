@@ -108,13 +108,6 @@ void play_collision_sound(
 			start.collision_min_interval_ms = sound_def->min_interval_ms;
 		}
 
-		if (effect.modifier.max_distance == -1) {
-			effect.modifier.max_distance = 2700.f;
-		}
-
-		if (effect.modifier.reference_distance == -1) {
-			effect.modifier.reference_distance = 700.f;
-		}
 
 		/* TODO: properly determine predictability based on who threw the item! */
 		/* TODO: properly determine predictability based on if the collider's owning capability is a player! */

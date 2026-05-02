@@ -99,10 +99,6 @@ struct sound_effect_input {
 	sound_effect_modifier modifier;
 	// END GEN INTROSPECTOR
 
-	float calc_max_audible_distance() const {
-		return modifier.max_distance + modifier.reference_distance;
-	}
-
 	void start(const_logic_step, sound_effect_start_input, predictability_info) const;
 };
 

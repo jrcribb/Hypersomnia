@@ -40,6 +40,8 @@ void load_test_scene_physical_materials(physical_materials_pool& all_definitions
 
 		const auto c_id = to_sound_id(c);
 		def_template.effect.id = c_id;
+		def_template.effect.modifier.max_distance = 2700.f;
+		def_template.effect.modifier.reference_distance = 700.f;
 		all_definitions[a_id].default_collision = def_template;
 	};
 	(void)set_default;
@@ -64,6 +66,8 @@ void load_test_scene_physical_materials(physical_materials_pool& all_definitions
 		{
 			auto& entry = all_definitions[a_id].collision_sound_matrix[b_id];
 			def_template.effect.id = c_id;
+			def_template.effect.modifier.max_distance = 2700.f;
+			def_template.effect.modifier.reference_distance = 700.f;
 			entry = def_template;
 
 			if (silence_other) {

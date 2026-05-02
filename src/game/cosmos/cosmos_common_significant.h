@@ -27,9 +27,6 @@ using perk_meta_id = type_in_list_id<meter_tuple>;
 
 struct default_sound_properties_info {
 	// GEN INTROSPECTOR struct default_sound_properties_info
-	real32 max_distance = 3500.f;
-	real32 reference_distance = 200.f;
-	augs::distance_model distance_model = augs::distance_model::LINEAR_DISTANCE_CLAMPED;
 	real32 basic_nonlinear_rolloff = 20.f;
 	real32 air_absorption = 2.f;
 	// END GEN INTROSPECTOR
