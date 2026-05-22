@@ -1964,6 +1964,14 @@ void server_setup::finalize_webhook_jobs() {
 							break;
 						}
 
+						/*
+							The authenticated id is later assigned to server_ranked_account_id
+							(a constant_size_string) which silently truncates - two distinct ids
+							that truncate to the same prefix would alias on suspended-player
+							rejoin matching. Hard-fail at the source instead of corrupting state.
+						*/
+						ensure(new_id.size() <= max_ranked_account_id_length_v);
+
 						client->authenticated_id = new_id;
 
 						LOG(

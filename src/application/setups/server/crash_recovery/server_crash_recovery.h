@@ -99,8 +99,9 @@ struct server_crash_recovery {
 	/*
 		Serializes the current arena state and hands the bytes to the shared worker
 		to write. Triggered by the ROUND_START mode notification. No-op when recovery
-		is disabled, the match is not effectively LIVE, or the previous write is
-		still in flight (one queued snapshot per instance at a time).
+		is disabled or the match is not effectively LIVE. Every qualifying call pushes
+		a new write task; rounds are vastly longer than a disk write, so in practice
+		only one task per instance is ever queued at a time.
 	*/
 	void dump_now(
 		const online_arena_handle<true>& arena,
